@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api/v1",
+  baseURL: BASE_URL,
   withCredentials: true,
   timeout: 30000,
   headers: {
@@ -10,7 +13,7 @@ const axiosInstance = axios.create({
 });
 
 const plainAxios = axios.create({
-  baseURL: "http://localhost:8000/api/v1",
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
@@ -34,9 +37,7 @@ const processQueue = (error, token = null) => {
 };
 
 axiosInstance.interceptors.request.use(
-  (config) => {
-    return config;
-  },
+  (config) => config,
   (error) => Promise.reject(error)
 );
 
