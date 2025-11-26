@@ -2,13 +2,29 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import TopBar from "./layout/TopBar";
+import Footer from "./layout/Footer";
 import authService from "../services/authService";
+import courseService from "../services/courseService";
 import { logout as logoutAction } from "../redux/authslice";
+import FormModal from "./layout/FormModal";
+import InternshipModal from "./layout/InternshipModal";
+import axiosInstance from "../utils/axiosInstance";
+import FloatingAction from "./FloatingAction";
 
 const navLinks = [
   { label: "Home", to: "/" },
   { label: "Courses", mega: true },
-  { label: "About", to: "/about" },
+  { label: "Branches", branches: true },
+  { label: "Colleges", college: true },
+  {
+    label: "Discover",
+    dropdown: true,
+    items: [
+      { label: "About", to: "/about" },
+      { label: "Gallery", to: "/gallery" },
+    ],
+  },
   { label: "Placements", placement: true },
 
   { label: "Book demo", to: "/book-demo", cta: true },
@@ -21,132 +37,7 @@ const footerNav = [
   { label: "Support", to: "/about" },
 ];
 
-const courseCollections = [
-  {
-    name: "Product & Engineering",
-    summary:
-      "Cross-discipline programs that take builders from MVPs to production scale.",
-    items: [
-      {
-        title: "Full-Stack Product Engineer",
-        description:
-          "Ship React + Node apps with CI/CD, observability, and launch tactics.",
-        href: "/about",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 7.5V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v1.5M6 7.5h12M6 7.5h-.75A2.25 2.25 0 003 9.75v8.25A2.25 2.25 0 005.25 20.25h13.5A2.25 2.25 0 0021 18V9.75A2.25 2.25 0 0018.75 7.5H18M6 7.5V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v1.5"
-            />
-          </svg>
-        ),
-        accent: "bg-sky-100 text-sky-500 dark:bg-sky-500/10 dark:text-sky-300",
-      },
-      {
-        title: "AI & ML Systems",
-        description:
-          "Deploy applied AI backed by MLOps, eval suites, and LLM patterns.",
-        href: "/about",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6l3 3"
-            />
-            <circle cx="12" cy="12" r="9" />
-          </svg>
-        ),
-        accent:
-          "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300",
-      },
-    ],
-  },
-  {
-    name: "Data & Design",
-    summary:
-      "Transform raw insights into polished experiences and exec-grade dashboards.",
-    items: [
-      {
-        title: "Data Engineering Catalyst",
-        description:
-          "Modern pipelines, metadata ops, and analytics reliability playbooks.",
-        href: "/about",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 6.75v10.5A2.25 2.25 0 006 19.5h12a2.25 2.25 0 002.25-2.25V6.75m-13.5 0A2.25 2.25 0 0110.5 4.5h3a2.25 2.25 0 012.25 2.25m-7.5 0h7.5"
-            />
-          </svg>
-        ),
-        accent:
-          "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300",
-      },
-      {
-        title: "Product Design Studio",
-        description:
-          "Systems thinking, UX research, and prototyping for venture-ready UX.",
-        href: "/about",
-        icon: (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M11.25 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5M6 4.5h12A1.5 1.5 0 0119.5 6v12a1.5 1.5 0 01-1.5 1.5H6A1.5 1.5 0 014.5 18V6A1.5 1.5 0 016 4.5z"
-            />
-          </svg>
-        ),
-        accent:
-          "bg-rose-100 text-rose-500 dark:bg-rose-500/10 dark:text-rose-300",
-      },
-    ],
-  },
-];
-
-const courseSpotlight = {
-  label: "Next cohort",
-  title: "Systems Leadership Accelerator",
-  description:
-    "6-week intensive with live build reviews, async labs, and executive mentors.",
-  highlights: [
-    "Daily design critiques",
-    "Career concierge support",
-    "Industry-backed capstone",
-  ],
-  ctaLabel: "Explore program",
-  ctaHref: "/about",
-};
+// courseCollections removed — using backend-provided collections only
 
 const placementLinks = [
   {
@@ -158,6 +49,63 @@ const placementLinks = [
     label: "Recruiters",
     description: "Hire-ready talent pools and partner benefits.",
     to: "/placements/recruiters",
+  },
+];
+
+const branches = [
+  {
+    name: "Ameerpet",
+    phone: "+91 78159 24610",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/ameerpet.webp",
+    id: "ameerpet",
+  },
+  {
+    name: "Hitec City",
+    phone: "+91 78159 24622",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/secunderabad.webp",
+    id: "hitec-city",
+  },
+  {
+    name: "Secunderabad",
+    phone: "+91 92814 66365",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/bangalore.webp",
+    id: "secunderabad",
+  },
+  {
+    name: "Dilsukhnagar",
+    phone: "+91 78159 24700",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/bangalore.webp",
+    id: "dilsukhnagar",
+  },
+  {
+    name: "Mehdipatnam",
+    phone: "+91 98660 47567",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/secunderabad.webp",
+    id: "mehdipatnam",
+  },
+  {
+    name: "Kukatpally",
+    phone: "+91 86884 08352",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/bangalore.webp",
+    id: "kukatpally",
+  },
+  {
+    name: "Bangalore",
+    phone: "+91 70754 63275",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/secunderabad.webp",
+    id: "bangalore",
+  },
+  {
+    name: "Visakhapatnam",
+    phone: "+91 91333 08352",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/bangalore.webp",
+    id: "visakhapatnam",
+  },
+  {
+    name: "Delhi",
+    phone: "+91 91333 08352",
+    icon: "	https://teksacademynewwebsite.s3.ap-south-1.amazonaws.com/assets/img/branchnavimg/salem.webp",
+    id: "visakhapsasaatnam",
   },
 ];
 
@@ -212,21 +160,200 @@ function Layout({ children }) {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [topCourses, setTopCourses] = useState([]);
+  const [topCoursesLoading, setTopCoursesLoading] = useState(false);
   const [isCoursesOpen, setIsCoursesOpen] = useState(false);
   const [isPlacementsOpen, setIsPlacementsOpen] = useState(false);
+  const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
+  const [isBranchesOpen, setIsBranchesOpen] = useState(false);
+  const [isCollegesOpen, setIsCollegesOpen] = useState(false);
   const [isCoursesMobileOpen, setIsCoursesMobileOpen] = useState(false);
   const [isPlacementsMobileOpen, setIsPlacementsMobileOpen] = useState(false);
+  const [isDiscoverMobileOpen, setIsDiscoverMobileOpen] = useState(false);
+  const [isBranchesMobileOpen, setIsBranchesMobileOpen] = useState(false);
   const [showAllMobileCourses, setShowAllMobileCourses] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const coursesTriggerRef = useRef(null);
   const coursesMenuRef = useRef(null);
   const coursesHoverTimeoutRef = useRef(null);
+  const discoverTriggerRef = useRef(null);
+  const discoverMenuRef = useRef(null);
+  const discoverHoverTimeoutRef = useRef(null);
+  const branchesTriggerRef = useRef(null);
+  const branchesMenuRef = useRef(null);
+  const branchesHoverTimeoutRef = useRef(null);
+  const collegesTriggerRef = useRef(null);
+  const collegesMenuRef = useRef(null);
+  const collegesHoverTimeoutRef = useRef(null);
   const placementsTriggerRef = useRef(null);
   const placementsMenuRef = useRef(null);
   const placementsHoverTimeoutRef = useRef(null);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [modalBranch, setModalBranch] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  const [formDataFormModal, setFormDataFormModal] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+    courseId: "",
+  });
+
+  const [formDataInternshipModal, setFormDataInternshipModal] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    resume: null,
+    courseId: "",
+    year: "",
+    department: "",
+    linkedin: "",
+    portfolio: "",
+  });
+
+  const openModal = (type, branch) => {
+    setModalType(type);
+    setModalBranch(branch);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalType(null);
+    setModalBranch(null);
+    if (modalType === "enroll") {
+      setFormDataFormModal({
+        name: "",
+        email: "",
+        phone: "",
+        city: "",
+        course: "",
+      });
+    } else if (modalType === "internship") {
+      setFormDataInternshipModal({
+        name: "",
+        email: "",
+        phone: "",
+        resume: null,
+        course: "",
+        year: "",
+        department: "",
+        linkedin: "",
+        portfolio: "",
+      });
+    }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+
+    if (modalType === "enroll") {
+      setFormDataFormModal((prev) => ({ ...prev, [name]: value }));
+    } else if (modalType === "internship") {
+      setFormDataInternshipModal((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    if (modalType === "internship") {
+      setFormDataInternshipModal((prev) => ({ ...prev, resume: file }));
+    }
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const dataToSubmit =
+        modalType === "enroll" ? formDataFormModal : formDataInternshipModal;
+
+      if (modalType === "enroll") {
+        const { data } = await axiosInstance.post("/courseForm/create-form", {
+          name: dataToSubmit.name,
+          email: dataToSubmit.email,
+          mobile: dataToSubmit.phone,
+          city: dataToSubmit.city,
+          courseId: dataToSubmit.course,
+        });
+
+        if (data.success) {
+          alert(data.message);
+          closeModal();
+        }
+      } else if (modalType === "internship") {
+        const formData = new FormData();
+        for (let key in dataToSubmit) {
+          if (key === "resume" && dataToSubmit.resume) {
+            formData.append("resumeUrl", dataToSubmit.resume);
+          } else {
+            formData.append(key, dataToSubmit[key]);
+          }
+        }
+
+        const { data } = await axiosInstance.post(
+          "/internship/create",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (data.success) {
+          alert(data.message);
+          closeModal();
+        }
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        error;
+      console.error(message);
+      alert(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const { data } = await axiosInstance.get("/course/all-courses");
+
+      if (data.success) {
+        const options = data.data.map((c) => ({
+          value: c._id,
+          label: c.title,
+        }));
+        setCourses(options);
+      } else {
+        console.warn("API returned success=false", data);
+      }
+    } catch (err) {
+      console.error("Error fetching courses:", err);
+    }
+  };
+
+  fetchCourses();
+}, []);
+
   useEffect(() => {
-    if (!isCoursesOpen && !isPlacementsOpen) return undefined;
+    if (
+      !isCoursesOpen &&
+      !isPlacementsOpen &&
+      !isDiscoverOpen &&
+      !isBranchesOpen &&
+      !isCollegesOpen
+    )
+      return undefined;
 
     const handleClickOutside = (event) => {
       const triggerEl = coursesTriggerRef.current;
@@ -252,12 +379,48 @@ function Layout({ children }) {
       ) {
         setIsPlacementsOpen(false);
       }
+      const discoverTriggerEl = discoverTriggerRef.current;
+      const discoverMenuEl = discoverMenuRef.current;
+      if (
+        isDiscoverOpen &&
+        discoverMenuEl &&
+        !discoverMenuEl.contains(event.target) &&
+        discoverTriggerEl &&
+        !discoverTriggerEl.contains(event.target)
+      ) {
+        setIsDiscoverOpen(false);
+      }
+      const branchesTriggerEl = branchesTriggerRef.current;
+      const branchesMenuEl = branchesMenuRef.current;
+      if (
+        isBranchesOpen &&
+        branchesMenuEl &&
+        !branchesMenuEl.contains(event.target) &&
+        branchesTriggerEl &&
+        !branchesTriggerEl.contains(event.target)
+      ) {
+        setIsBranchesOpen(false);
+      }
+      const collegesTriggerEl = collegesTriggerRef.current;
+      const collegesMenuEl = collegesMenuRef.current;
+      if (
+        isCollegesOpen &&
+        collegesMenuEl &&
+        !collegesMenuEl.contains(event.target) &&
+        collegesTriggerEl &&
+        !collegesTriggerEl.contains(event.target)
+      ) {
+        setIsCollegesOpen(false);
+      }
     };
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setIsCoursesOpen(false);
         setIsPlacementsOpen(false);
+        setIsDiscoverOpen(false);
+        setIsBranchesOpen(false);
+        setIsCollegesOpen(false);
       }
     };
 
@@ -268,7 +431,13 @@ function Layout({ children }) {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isCoursesOpen, isPlacementsOpen]);
+  }, [
+    isCoursesOpen,
+    isPlacementsOpen,
+    isDiscoverOpen,
+    isBranchesOpen,
+    isCollegesOpen,
+  ]);
 
   useEffect(
     () => () => {
@@ -277,6 +446,15 @@ function Layout({ children }) {
       }
       if (placementsHoverTimeoutRef.current) {
         clearTimeout(placementsHoverTimeoutRef.current);
+      }
+      if (discoverHoverTimeoutRef.current) {
+        clearTimeout(discoverHoverTimeoutRef.current);
+      }
+      if (branchesHoverTimeoutRef.current) {
+        clearTimeout(branchesHoverTimeoutRef.current);
+      }
+      if (collegesHoverTimeoutRef.current) {
+        clearTimeout(collegesHoverTimeoutRef.current);
       }
     },
     []
@@ -298,7 +476,8 @@ function Layout({ children }) {
     try {
       await authService.logout();
     } catch (error) {
-      console.error("Logout failed", error);
+      console.log(error)
+      console.error(error.message || error);
     } finally {
       dispatch(logoutAction());
       setLoggingOut(false);
@@ -311,25 +490,108 @@ function Layout({ children }) {
     if (coursesHoverTimeoutRef.current) {
       clearTimeout(coursesHoverTimeoutRef.current);
     }
+    // close other menus when opening courses
+    setIsBranchesOpen(false);
+    setIsPlacementsOpen(false);
+    setIsDiscoverOpen(false);
     setIsCoursesOpen(true);
   };
 
   const closeCoursesHoverMenu = () => {
-    coursesHoverTimeoutRef.current = setTimeout(() => {
-      setIsCoursesOpen(false);
-    }, 150);
+    setIsCoursesOpen(false);
   };
 
   const openPlacementsHoverMenu = () => {
     if (placementsHoverTimeoutRef.current) {
       clearTimeout(placementsHoverTimeoutRef.current);
     }
+    // close other menus when opening placements
+    setIsBranchesOpen(false);
+    setIsCoursesOpen(false);
+    setIsDiscoverOpen(false);
     setIsPlacementsOpen(true);
   };
+
+  const openBranchesHoverMenu = () => {
+    if (branchesHoverTimeoutRef.current) {
+      clearTimeout(branchesHoverTimeoutRef.current);
+    }
+    // close other menus when opening branches
+    setIsCoursesOpen(false);
+    setIsPlacementsOpen(false);
+    setIsDiscoverOpen(false);
+    setIsBranchesOpen(true);
+  };
+
+  const openCollegesHoverMenu = () => {
+    if (collegesHoverTimeoutRef.current) {
+      clearTimeout(collegesHoverTimeoutRef.current);
+    }
+    // close other menus when opening colleges
+    setIsCoursesOpen(false);
+    setIsPlacementsOpen(false);
+    setIsDiscoverOpen(false);
+    setIsBranchesOpen(false);
+    setIsCollegesOpen(true);
+  };
+
+  const closeCollegesHoverMenu = () => {
+    collegesHoverTimeoutRef.current = setTimeout(() => {
+      setIsCollegesOpen(false);
+    }, 150);
+  };
+
+  const openDiscoverHoverMenu = () => {
+    if (discoverHoverTimeoutRef.current) {
+      clearTimeout(discoverHoverTimeoutRef.current);
+    }
+    // close other menus when opening discover
+    setIsBranchesOpen(false);
+    setIsCoursesOpen(false);
+    setIsPlacementsOpen(false);
+    setIsDiscoverOpen(true);
+  };
+
+  // Fetch 8 courses for mega menu
+  useEffect(() => {
+    let mounted = true;
+    async function loadCourses() {
+      setTopCoursesLoading(true);
+      try {
+        const resp = await courseService.getAllCourses({ page: 1, limit: 8 });
+        if (!mounted) return;
+        setTopCourses(resp?.data || []);
+      } catch (err) {
+        console.error("Failed to load courses", err?.message || err);
+      } finally {
+        if (mounted) setTopCoursesLoading(false);
+      }
+    }
+
+    loadCourses();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Fetch dynamic course collections from backend and group by category
 
   const closePlacementsHoverMenu = () => {
     placementsHoverTimeoutRef.current = setTimeout(() => {
       setIsPlacementsOpen(false);
+    }, 150);
+  };
+
+  const closeBranchesHoverMenu = () => {
+    branchesHoverTimeoutRef.current = setTimeout(() => {
+      setIsBranchesOpen(false);
+    }, 150);
+  };
+
+  const closeDiscoverHoverMenu = () => {
+    discoverHoverTimeoutRef.current = setTimeout(() => {
+      setIsDiscoverOpen(false);
     }, 150);
   };
 
@@ -347,6 +609,10 @@ function Layout({ children }) {
     setIsPlacementsMobileOpen((prev) => !prev);
   };
 
+  const toggleBranchesMobileAccordion = () => {
+    setIsBranchesMobileOpen((prev) => !prev);
+  };
+
   const filteredLinks = navLinks.filter((link) => {
     if (link.authOnly === true) {
       return isAuthenticated;
@@ -357,12 +623,23 @@ function Layout({ children }) {
     return true;
   });
 
-  const mobileCourseItems = courseCollections.flatMap((collection) =>
-    collection.items.map((item) => ({
-      ...item,
-      collectionName: collection.name,
-    }))
-  );
+  const mobileCourseItems =
+    topCourses && topCourses.length
+      ? topCourses.map((c) => ({
+          title: c.title,
+          href: `/course/${c._id}`,
+          description: c.shortDescription || c.description || "",
+          collectionName: "Courses",
+          accent: "bg-sky-100/60",
+          icon: (
+            <img
+              src={c.thumbnail?.secure_url}
+              alt={c.title}
+              className="h-6 w-6 rounded-md object-cover"
+            />
+          ),
+        }))
+      : [];
   const visibleMobileCourses = showAllMobileCourses
     ? mobileCourseItems
     : mobileCourseItems.slice(0, 2);
@@ -378,148 +655,19 @@ function Layout({ children }) {
     "Signed in";
 
   return (
+   <>
     <div className="min-h-screen">
       <header className="sticky top-0 z-20">
-        <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-          <div className="mx-auto flex max-w-6xl  g px-4 py-3 flex-row items-center justify-between sm:px-6 lg:px-8">
-            <div className="hidden md:flex md:flex-wrap md:items-center gap-4 text-slate-600 dark:text-slate-200">
-              <span className="inline-flex items-center gap-1.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.25 6.75c0 8.284 6.716 15 15 15h1.5a1.5 1.5 0 001.5-1.5v-3.482a1.5 1.5 0 00-1.211-1.473l-2.8-.56a1.5 1.5 0 00-1.513.624l-.97 1.293c-2.682-1.2-4.863-3.38-6.063-6.063l1.293-.97a1.5 1.5 0 00.624-1.513l-.56-2.8A1.5 1.5 0 008.482 3h-3.482a1.5 1.5 0 00-1.5 1.5v2.25z"
-                  />
-                </svg>
-                1800-120-4748
-              </span>
-              <span className="hidden md:inline-flex items-center gap-1.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 2.25h6a2.25 2.25 0 012.25 2.25v15a2.25 2.25 0 01-2.25 2.25H9A2.25 2.25 0 016.75 19.5v-15A2.25 2.25 0 019 2.25z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 18.75h6"
-                  />
-                </svg>
-                Download Mobile App
-              </span>
-              <span className="hidden items-center gap-1.5 md:inline-flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6.75v10.5m-4.5-5.25h9m3.75 1.5V7.125a2.25 2.25 0 00-2.25-2.25H5.25a2.25 2.25 0 00-2.25 2.25v9.75a2.25 2.25 0 002.25 2.25h7.125"
-                  />
-                </svg>
-                Blogs
-              </span>
-            </div>
-
-            <div className="flex justify-start md:justify-center">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30"
-              >
-                Job Mela
-              </button>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-100">
-              <button
-                type="button"
-                className="rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide dark:border-white/30"
-              >
-                Career Guidance
-              </button>
-              {!isAuthenticated ? (
-                <div className="flex items-center gap-2 text-xs font-semibold">
-                  <Link
-                    to="/login"
-                    className="login-btn relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 
-               bg-gradient-to-r from-indigo-500/10 to-purple-500/10 
-               text-slate-700 dark:text-white border border-indigo-300/40 
-               dark:border-indigo-500/30 overflow-hidden"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0"
-                      />
-                    </svg>
-                    Student Login
-                  </Link>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={goToProfile}
-                  className="inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold dark:border-white/30"
-                >
-                  Dashboard
-                </button>
-              )}
-             <div className="hidden lg:flex lg:items-center gap-2">
-  {[
-    { label: "Facebook", href: "https://facebook.com", color: "#1877F2", iconPath: "M13.5 9H15V6h-1.5c-2.2 0-3.75 1.46-3.75 3.75V12H8v3h1.75v6h3v-6H15l.5-3h-2v-1.5c0-.48.23-.75.75-.75z" },
-    { label: "Instagram", href: "https://instagram.com", color: "#E4405F", iconPath: "M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.6 0 3 1.4 3 3v10c0 1.6-1.4 3-3 3H7c-1.6 0-3-1.4-3-3V7c0-1.6 1.4-3 3-3h10zm-5 3.5A5.5 5.5 0 1017.5 13 5.51 5.51 0 0012 7.5zm0 2A3.5 3.5 0 1115.5 13 3.5 3.5 0 0112 9.5zm5.25-3.75a1.25 1.25 0 11-1.25 1.25 1.25 1.25 0 011.25-1.25z" },
-    { label: "YouTube", href: "https://youtube.com", color: "#FF0000", iconPath: "M21.8 8.001s-.2-1.4-.8-2.01c-.59-.62-1.1-.77-2.31-.83-1.19-.06-4.69-.06-4.69-.06s-3.5 0-4.69.06c-1.21.06-1.72.21-2.31.83-.6.61-.8 2.01-.8 2.01S6 9.6 6 11.2v1.59c0 1.6.2 3.2.2 3.2s.2 1.4.8 2.01c.59.62 1.37.6 1.72.67 1.25.12 4.48.16 4.48.16s3.5 0 4.69-.06c1.21-.06 1.72-.21 2.31-.83.6-.61.8-2.01.8-2.01s.2-1.6.2-3.2v-1.59c0-1.6-.2-3.2-.2-3.2zM10 14.5v-5l4.67 2.5z" },
-    { label: "LinkedIn", href: "https://linkedin.com", color: "#0077B5", iconPath: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.851-3.037-1.853 0-2.136 1.447-2.136 2.941v5.665H9.353V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.604 0 4.27 2.372 4.27 5.459v6.282zM5.337 7.433a2.062 2.062 0 01-2.063-2.063 2.062 2.062 0 112.063 2.063zM6.967 20.452H3.705V9h3.262v11.452z" },
-  ].map((item) => (
-    <a
-      key={item.label}
-      href={item.href}
-      target="_blank"
-      rel="noreferrer"
-      className="social-icon relative inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white dark:bg-slate-900 transition-transform duration-500"
-      style={{ borderColor: item.color }}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill={item.color}>
-        <path d={item.iconPath} />
-      </svg>
-    </a>
-  ))}
-</div>
-
-            </div>
-          </div>
-        </div>
+        <TopBar
+          openModal={openModal}
+          isAuthenticated={isAuthenticated}
+          goToProfile={goToProfile}
+          userLabel={userLabel}
+          socials={socials}
+        />
 
         <div className="border-b border-slate-200/70 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-slate-800 dark:bg-slate-950/80">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1450px] flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
             <Link
               to="/"
               className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
@@ -529,13 +677,109 @@ function Layout({ children }) {
             </Link>
             <div className="hidden items-center gap-6 lg:flex">
               {filteredLinks.map((link) =>
-                link.mega ? (
-                  <div
-                    key={link.label}
-                    className="relative"
-                    onMouseEnter={openCoursesHoverMenu}
-                    onMouseLeave={closeCoursesHoverMenu}
-                  >
+                link.college ? (
+                  <div key={link.label} className="relative">
+                    <button
+                      type="button"
+                      ref={collegesTriggerRef}
+                      aria-expanded={isCollegesOpen}
+                      aria-haspopup="true"
+                      aria-controls="colleges-mega-menu"
+                      className={`inline-flex items-center gap-1 text-sm font-semibold transition ${
+                        isCollegesOpen
+                          ? "text-sky-600 dark:text-sky-400"
+                          : "text-slate-600 dark:text-slate-300"
+                      }`}
+                      onClick={() => setIsCollegesOpen((prev) => !prev)}
+                      onMouseEnter={openCollegesHoverMenu}
+                      onMouseLeave={closeCollegesHoverMenu}
+                      onFocus={openCollegesHoverMenu}
+                      onBlur={closeCollegesHoverMenu}
+                    >
+                      Colleges
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className={`h-4 w-4 transition ${
+                          isCollegesOpen ? "rotate-180" : ""
+                        }`}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 9l6 6 6-6"
+                        />
+                      </svg>
+                    </button>
+
+                    <div
+                      id="colleges-mega-menu"
+                      ref={collegesMenuRef}
+                      onMouseEnter={openCollegesHoverMenu}
+                      onMouseLeave={closeCollegesHoverMenu}
+                      className={`absolute left-1/2 top-full z-10 mt-0 w-[min(90vw,64rem)] -translate-x-1/2 rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl shadow-slate-900/10 transition-opacity duration-200 dark:border-slate-800/80 dark:bg-slate-900/95 ${
+                        isCollegesOpen
+                          ? "pointer-events-auto opacity-100"
+                          : "pointer-events-none opacity-0"
+                      }`}
+                    >
+                      <div className="grid gap-6 md:grid-cols-3">
+                        <div>
+                          <h4 className="text-sm font-semibold">
+                            {" "}
+                            College Partners
+                          </h4>
+                          <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                            <li>Our College Tie-ups</li>
+                            <li>MoU Partnerships</li>
+                            <li>Campus Training Programs</li>
+                            <li>College Workshops &amp; Seminars</li>
+                            <li>Internship Collaboration</li>
+                            <li>Placement Support for Colleges</li>
+                            <li>Skill Development Programs</li>
+                            <li>Technical Fest Partnerships</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold">
+                            Collages Classroom Trainings
+                          </h4>
+                          <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                            <li>In-Person Training Sessions</li>
+                            <li>Hands-on Practical Learning</li>
+                            <li>Real-time Project Training</li>
+                            <li>Beginner to Advanced Courses</li>
+                            <li>Industry Expert Trainers</li>
+                            <li>Weekly Assessments &amp; Assignments</li>
+                            <li>Certification-Oriented Classes</li>
+                            <li>Small Batch Personalized Training</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold">
+                            College Connect Program
+                          </h4>
+                          <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                            <li>Direct College Partnership</li>
+                            <li>Professional Trainers Assigned</li>
+                            <li>On-Campus Training Programs</li>
+                            <li>Industry-Ready Skill Development</li>
+                            <li>Custom Training Modules for Colleges</li>
+                            <li>Semester-Based Technical Training</li>
+                            <li>Workshops, Seminars &amp; Bootcamps</li>
+                            <li>Internship &amp; Live Project Support</li>
+                            <li>Placement Readiness &amp; Guidance</li>
+                            <li>Dedicated College Relationship Manager</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : link.mega ? (
+                  <div key={link.label} className="relative">
                     <button
                       type="button"
                       ref={coursesTriggerRef}
@@ -547,9 +791,21 @@ function Layout({ children }) {
                           ? "text-sky-600 dark:text-sky-400"
                           : "text-slate-600 dark:text-slate-300"
                       }`}
-                      onClick={() => setIsCoursesOpen((prev) => !prev)}
+                      onClick={() =>
+                        setIsCoursesOpen((prev) => {
+                          const next = !prev;
+                          if (next) {
+                            setIsBranchesOpen(false);
+                            setIsPlacementsOpen(false);
+                            setIsDiscoverOpen(false);
+                          }
+                          return next;
+                        })
+                      }
                       onFocus={openCoursesHoverMenu}
                       onBlur={closeCoursesHoverMenu}
+                      onMouseEnter={openCoursesHoverMenu}
+                      onMouseLeave={closeCoursesHoverMenu}
                     >
                       Courses
                       <svg
@@ -573,92 +829,59 @@ function Layout({ children }) {
                     <div
                       id="courses-mega-menu"
                       ref={coursesMenuRef}
-                      className={`absolute left-1/2 top-full z-10 mt-4 w-[min(90vw,52rem)] -translate-x-1/2 rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl shadow-slate-900/10 transition-all duration-200 dark:border-slate-800/80 dark:bg-slate-900/95 ${
+                      onMouseEnter={openCoursesHoverMenu}
+                      className={`absolute left-1/2 top-full z-10 mt-0 w-[min(90vw,52rem)] -translate-x-1/2 rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl shadow-slate-900/10 transition-opacity duration-200 dark:border-slate-800/80 dark:bg-slate-900/95 ${
                         isCoursesOpen
-                          ? "pointer-events-auto opacity-100 translate-y-0"
-                          : "pointer-events-none opacity-0 -translate-y-2"
+                          ? "pointer-events-auto opacity-100"
+                          : "pointer-events-none opacity-0"
                       }`}
                     >
                       <div className="grid gap-6 lg:grid-cols-3">
-                        <div className="lg:col-span-2 grid gap-4 md:grid-cols-2">
-                          {courseCollections.map((collection) => (
-                            <div
-                              key={collection.name}
-                              className="rounded-2xl border border-slate-200/70 bg-white/80 p-4 transition hover:border-sky-400 dark:border-slate-700 dark:bg-slate-900/70"
-                            >
-                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                                {collection.name}
-                              </p>
-                              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                                {collection.summary}
-                              </p>
-                              <div className="mt-4 space-y-3">
-                                {collection.items.map((item) => (
-                                  <Link
-                                    key={item.title}
-                                    to={item.href}
-                                    className="flex items-start gap-3 rounded-2xl border border-slate-200/70 px-3 py-2 transition hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-lg dark:border-slate-700"
-                                  >
-                                    <div
-                                      className={`flex h-10 w-10 items-center justify-center rounded-2xl ${item.accent}`}
-                                    >
-                                      {item.icon}
-                                    </div>
-                                    <div>
-                                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                        {item.title}
-                                      </p>
-                                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        {item.description}
-                                      </p>
-                                    </div>
-                                  </Link>
-                                ))}
-                              </div>
+                        <div className="col-span-full">
+                          {topCoursesLoading ? (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              {Array.from({ length: 8 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-3 rounded-md p-2"
+                                >
+                                  <div className="h-10 w-14 rounded-md bg-slate-100 dark:bg-slate-800" />
+                                  <div className="flex-1">
+                                    <div className="h-3 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                        <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 text-white shadow-inner dark:border-slate-700">
-                          <p className="text-xs uppercase tracking-wider text-slate-300">
-                            {courseSpotlight.label}
-                          </p>
-                          <p className="mt-2 text-lg font-semibold">
-                            {courseSpotlight.title}
-                          </p>
-                          <p className="mt-2 text-sm text-slate-200">
-                            {courseSpotlight.description}
-                          </p>
-                          <ul className="mt-3 space-y-1.5 text-xs text-slate-200">
-                            {courseSpotlight.highlights.map((highlight) => (
-                              <li
-                                key={highlight}
-                                className="flex items-center gap-1.5"
-                              >
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                                {highlight}
-                              </li>
-                            ))}
-                          </ul>
-                          <Link
-                            to={courseSpotlight.ctaHref}
-                            className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
-                          >
-                            {courseSpotlight.ctaLabel}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                              />
-                            </svg>
-                          </Link>
+                          ) : topCourses && topCourses.length ? (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              {topCourses.map((c) => (
+                                <Link
+                                  key={c._id}
+                                  to={`/course/${c._id}`}
+                                  onClick={() => setIsCoursesOpen(false)}
+                                  className="flex hover:cursor-pointer items-center gap-3 rounded-2xl border border-slate-200/70 px-3 py-2 transition hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-lg dark:border-slate-700"
+                                >
+                                  <img
+                                    src={c.thumbnail?.secure_url}
+                                    alt={c.title}
+                                    className="h-10 w-14 rounded-md object-cover"
+                                  />
+                                  <div>
+                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                      {c.title}
+                                    </p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                      {c.instructor?.name || ""}
+                                    </p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="mt-2 text-sm text-slate-500">
+                              No courses available.
+                            </p>
+                          )}
                         </div>
                       </div>
                       <Link
@@ -683,29 +906,36 @@ function Layout({ children }) {
                       </Link>
                     </div>
                   </div>
-                ) : link.placement ? (
-                  <div
-                    key={link.label}
-                    className="relative"
-                    onMouseEnter={openPlacementsHoverMenu}
-                    onMouseLeave={closePlacementsHoverMenu}
-                  >
+                ) : link.branches ? (
+                  <div key={link.label} className="relative">
                     <button
                       type="button"
-                      ref={placementsTriggerRef}
-                      aria-expanded={isPlacementsOpen}
+                      ref={branchesTriggerRef}
+                      aria-expanded={isBranchesOpen}
                       aria-haspopup="true"
-                      aria-controls="placements-menu"
+                      aria-controls="branches-mega-menu"
                       className={`inline-flex items-center gap-1 text-sm font-semibold transition ${
-                        isPlacementsOpen
+                        isBranchesOpen
                           ? "text-sky-600 dark:text-sky-400"
                           : "text-slate-600 dark:text-slate-300"
                       }`}
-                      onClick={() => setIsPlacementsOpen((prev) => !prev)}
-                      onFocus={openPlacementsHoverMenu}
-                      onBlur={closePlacementsHoverMenu}
+                      onClick={() =>
+                        setIsBranchesOpen((prev) => {
+                          const next = !prev;
+                          if (next) {
+                            setIsCoursesOpen(false);
+                            setIsPlacementsOpen(false);
+                            setIsDiscoverOpen(false);
+                          }
+                          return next;
+                        })
+                      }
+                      onMouseEnter={openBranchesHoverMenu}
+                      onMouseLeave={closeBranchesHoverMenu}
+                      onFocus={openBranchesHoverMenu}
+                      onBlur={closeBranchesHoverMenu}
                     >
-                      Placements
+                      Branches
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -713,7 +943,7 @@ function Layout({ children }) {
                         stroke="currentColor"
                         strokeWidth="1.5"
                         className={`h-4 w-4 transition ${
-                          isPlacementsOpen ? "rotate-180" : ""
+                          isBranchesOpen ? "rotate-180" : ""
                         }`}
                       >
                         <path
@@ -725,27 +955,113 @@ function Layout({ children }) {
                     </button>
 
                     <div
-                      id="placements-menu"
-                      ref={placementsMenuRef}
-                      className={`absolute left-1/2 top-full z-10 mt-4 w-64 -translate-x-1/2 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-xl shadow-slate-900/10 transition-all duration-150 dark:border-slate-800/80 dark:bg-slate-900/95 ${
-                        isPlacementsOpen
+                      className={`absolute left-1/2 top-full z-10 mt-4 w-[min(90vw,72rem)] -translate-x-1/2`}
+                    >
+                      <div
+                        ref={branchesMenuRef}
+                        onMouseEnter={openBranchesHoverMenu}
+                        onMouseLeave={closeBranchesHoverMenu}
+                        id="branches-mega-menu"
+                        className={`overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl transition-all duration-200 dark:border-slate-800/80 dark:bg-slate-900/95 ${
+                          isBranchesOpen
+                            ? "pointer-events-auto opacity-100 translate-y-0"
+                            : "pointer-events-none opacity-0 -translate-y-2"
+                        }`}
+                      >
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {branches.map((b) => (
+                            <Link
+                              key={b.id}
+                              to={`/branch/${b.id}`}
+                              className="flex items-start gap-4 rounded-xl bg-white p-4 shadow-md transition-transform duration-200 hover:shadow-lg hover:-translate-y-1 dark:border dark:border-gray-500 dark:bg-slate-900"
+                            >
+                              <img
+                                src={b.icon}
+                                alt={b.name}
+                                className="h-10 w-10 flex-none"
+                              />
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-sky-600 hover:underline">
+                                  {b.name}
+                                </p>
+                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                  {b.phone}
+                                </p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : link.dropdown ? (
+                  <div
+                    key={link.label}
+                    className="relative"
+                    onMouseEnter={openDiscoverHoverMenu}
+                    onMouseLeave={closeDiscoverHoverMenu}
+                  >
+                    <button
+                      type="button"
+                      ref={discoverTriggerRef}
+                      aria-expanded={isDiscoverOpen}
+                      aria-haspopup="true"
+                      aria-controls="discover-menu"
+                      className={`inline-flex items-center gap-1 text-sm font-semibold transition ${
+                        isDiscoverOpen
+                          ? "text-sky-600 dark:text-sky-400"
+                          : "text-slate-600 dark:text-slate-300"
+                      }`}
+                      onClick={() =>
+                        setIsDiscoverOpen((prev) => {
+                          const next = !prev;
+                          if (next) {
+                            setIsCoursesOpen(false);
+                            setIsPlacementsOpen(false);
+                            setIsBranchesOpen(false);
+                          }
+                          return next;
+                        })
+                      }
+                      onFocus={openDiscoverHoverMenu}
+                      onBlur={closeDiscoverHoverMenu}
+                    >
+                      Discover
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        className={`h-4 w-4 transition ${
+                          isDiscoverOpen ? "rotate-180" : ""
+                        }`}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 9l6 6 6-6"
+                        />
+                      </svg>
+                    </button>
+
+                    <div
+                      id="discover-menu"
+                      ref={discoverMenuRef}
+                      className={`absolute left-1/2 top-full z-10 mt-3 w-56 -translate-x-1/2 rounded-lg border border-slate-200/80 bg-white/95 p-3 shadow-lg transition-all duration-150 dark:border-slate-800/80 dark:bg-slate-900/95 ${
+                        isDiscoverOpen
                           ? "pointer-events-auto opacity-100 translate-y-0"
-                          : "pointer-events-none opacity-0 -translate-y-2"
+                          : "pointer-events-none opacity-0 -translate-y-1"
                       }`}
                     >
-                      <div className="space-y-3">
-                        {placementLinks.map((item) => (
+                      <div className="space-y-1">
+                        {link.items.map((it) => (
                           <Link
-                            key={item.label}
-                            to={item.to}
-                            className="block rounded-xl border border-slate-200/80 px-3 py-2 transition hover:border-sky-400 hover:text-sky-600 dark:border-slate-700 dark:text-slate-200"
+                            key={it.label}
+                            to={it.to}
+                            className="block rounded-md px-3 py-2 border border:gray-200 hover:border-sky-500 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                           >
-                            <p className="text-sm font-semibold">
-                              {item.label}
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {item.description}
-                            </p>
+                            {it.label}
                           </Link>
                         ))}
                       </div>
@@ -769,7 +1085,17 @@ function Layout({ children }) {
                           ? "text-sky-600 dark:text-sky-400"
                           : "text-slate-600 dark:text-slate-300"
                       }`}
-                      onClick={() => setIsPlacementsOpen((prev) => !prev)}
+                      onClick={() =>
+                        setIsPlacementsOpen((prev) => {
+                          const next = !prev;
+                          if (next) {
+                            setIsCoursesOpen(false);
+                            setIsBranchesOpen(false);
+                            setIsDiscoverOpen(false);
+                          }
+                          return next;
+                        })
+                      }
                       onFocus={openPlacementsHoverMenu}
                       onBlur={closePlacementsHoverMenu}
                     >
@@ -797,8 +1123,8 @@ function Layout({ children }) {
                       ref={placementsMenuRef}
                       className={`absolute left-1/2 top-full z-10 mt-4 w-64 -translate-x-1/2 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-xl shadow-slate-900/10 transition-all duration-150 dark:border-slate-800/80 dark:bg-slate-900/95 ${
                         isPlacementsOpen
-                          ? "pointer-events-auto opacity-100 translate-y-0"
-                          : "pointer-events-none opacity-0 -translate-y-2"
+                          ? "pointer-events-auto opacity-100 translate-y-0 animate-slide-up"
+                          : "pointer-events-none opacity-0 -translate-y-2 animate-slide-down"
                       }`}
                     >
                       <div className="space-y-3">
@@ -823,7 +1149,7 @@ function Layout({ children }) {
                   <Link
                     key={link.label}
                     to={link.to}
-                    className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500"
+                    className="inline-flex items-center gap-2 rounded-full bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500 button-interactive"
                   >
                     {link.label}
                     <svg
@@ -902,7 +1228,7 @@ function Layout({ children }) {
       </header>
 
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-72 transform bg-white/95 p-6 shadow-2xl transition lg:hidden dark:bg-slate-950/95 ${
+        className={`fixed inset-y-0 left-0 z-30 w-72 transform bg-white/95 p-6 shadow-2xl transition-transform duration-300 ease-out lg:hidden dark:bg-slate-950/95 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-hidden={!sidebarOpen}
@@ -1036,6 +1362,96 @@ function Layout({ children }) {
                   </div>
                 )}
               </div>
+            ) : link.dropdown ? (
+              <div key={link.label} className="space-y-3">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-100"
+                  onClick={() => setIsDiscoverMobileOpen((p) => !p)}
+                >
+                  <span>Discover</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className={`h-5 w-5 transition ${
+                      isDiscoverMobileOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 9l6 6 6-6"
+                    />
+                  </svg>
+                </button>
+                {isDiscoverMobileOpen && (
+                  <div className="space-y-3 px-2">
+                    {link.items.map((it) => (
+                      <Link
+                        key={it.label}
+                        to={it.to}
+                        onClick={closeSidebar}
+                        className="block rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-sky-400 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100"
+                      >
+                        {it.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : link.branches ? (
+              <div key={link.label} className="space-y-3">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-100"
+                  onClick={toggleBranchesMobileAccordion}
+                >
+                  <span>Branches</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    className={`h-5 w-5 transition ${
+                      isBranchesMobileOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 9l6 6 6-6"
+                    />
+                  </svg>
+                </button>
+                {isBranchesMobileOpen && (
+                  <div className="space-y-3">
+                    {branches.map((b) => (
+                      <Link
+                        key={b.id}
+                        to={`/branch/${b.id}`}
+                        onClick={closeSidebar}
+                        className="block rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-sky-400 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img src={b.icon} alt={b.name} className="h-8 w-8" />
+                          <div className="flex-1">
+                            <p className="text-sm font-semibold text-sky-600 hover:underline">
+                              {b.name}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              {b.phone}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ) : link.placement ? (
               <div key={link.label} className="space-y-3">
                 <button
@@ -1130,76 +1546,45 @@ function Layout({ children }) {
 
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-slate-900/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-20 bg-slate-900/40 backdrop-blur-sm lg:hidden animate-backdrop-fade"
           aria-hidden
           onClick={closeSidebar}
         />
       )}
 
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        {children}
-      </main>
+      {modalType === "enroll" && (
+        <FormModal
+          modalOpen={modalOpen}
+          modalBranch={modalBranch}
+          closeModal={closeModal}
+          submitForm={submitForm}
+          formData={formDataFormModal}
+          handleFormChange={handleFormChange}
+          loading={loading}
+          courses={courses}
+        />
+      )}
 
-      <footer className="mt-12 border-t border-slate-200/70 bg-white/60 px-4 py-10 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-300">
-        <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-[2fr_1fr]">
-          <div className="space-y-4">
-            <Link
-              to="/"
-              className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
-            >
-              XYNAPSE SYSTEMS
-            </Link>
-            <p>
-              Cohort-based learning, live mentorship, and production-grade
-              projects that turn ambition into offers.
-            </p>
-            <div className="flex gap-3">
-              {socials.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/70 text-slate-600 transition hover:border-sky-400 hover:text-sky-500 dark:border-slate-700 dark:text-slate-300"
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
-          </div>
-          <div className="grid gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Explore
-            </p>
-            {footerNav.map((item) => (
-              <Link
-                key={item.label}
-                to={item.to}
-                className="text-sm font-medium text-slate-700 transition hover:text-sky-500 dark:text-slate-200"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-        <div className="mx-auto mt-8 flex max-w-6xl flex-col gap-2 border-t border-slate-200/60 pt-6 text-xs text-slate-500 dark:border-slate-800/80 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-          <span>
-            © {new Date().getFullYear()} AuthFlow. All rights reserved.
-          </span>
-          <div className="flex gap-4">
-            <Link to="/about" className="hover:text-sky-500">
-              Privacy
-            </Link>
-            <Link to="/about" className="hover:text-sky-500">
-              Terms
-            </Link>
-            <Link to="/about" className="hover:text-sky-500">
-              Accessibility
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {modalType === "internship" && (
+        <InternshipModal
+          modalOpen={modalOpen}
+          modalBranch={modalBranch}
+          closeModal={closeModal}
+          submitForm={submitForm}
+          formData={formDataInternshipModal}
+          handleFormChange={handleFormChange}
+          handleFileChange={handleFileChange}
+          loading={loading}
+          courses={courses}
+        />
+      )}
+
+      <main className="max-w-7xl mx-auto pt-12">{children}</main>
+
+      <Footer footerNav={footerNav} socials={socials} />
     </div>
+    <FloatingAction/>
+   </>
   );
 }
 

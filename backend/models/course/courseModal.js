@@ -42,6 +42,12 @@ const courseSchema = new mongoose.Schema(
       ogImage: { type: String },
     },
 
+    parentCourse: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      default: null,
+    },
+
     isDeleted: { type: Boolean, default: false },
 
     moderationStatus: {

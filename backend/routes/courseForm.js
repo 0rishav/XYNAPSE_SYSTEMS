@@ -13,10 +13,15 @@ import {
 
 const courseFormRouter = express.Router();
 
-courseFormRouter.post("/create-form", isAuthenticated, submitCourseForm);
+//done
+courseFormRouter.post("/create-form", submitCourseForm);
 
-courseFormRouter.get("/all-form", isAuthenticated, getAllCourseForms);
 
+//for-admin
+courseFormRouter.get("/all-form", getAllCourseForms);
+
+
+// for admin
 courseFormRouter.get("/search-form", isAuthenticated, searchCourseForms);
 
 courseFormRouter.get("/recent-form", isAuthenticated, getRecentCourseForms);

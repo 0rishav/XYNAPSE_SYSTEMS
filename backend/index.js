@@ -13,6 +13,7 @@ import galleryRouter from "./routes/gallery.js";
 import interviewQuestionRouter from "./routes/interviewQuestion.js";
 import alumniRouter from "./routes/alumni.js";
 import talentPoolRouter from "./routes/talentPool.js";
+import internshipRouter from "./routes/internship.js";
 
 dotenv.config();
 
@@ -55,6 +56,7 @@ app.use("/api/v1/gallery", galleryRouter);
 app.use("/api/v1/interview", interviewQuestionRouter);
 app.use("/api/v1/alumni", alumniRouter);
 app.use("/api/v1/talentPool", talentPoolRouter);
+app.use("/api/v1/internship", internshipRouter);
 
 app.use(ErrorMiddleware);
 

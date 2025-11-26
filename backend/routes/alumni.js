@@ -21,7 +21,7 @@ alumniRouter.post(
   createAlumni
 );
 
-alumniRouter.get("/all", isAuthenticated, getAllAlumni);
+alumniRouter.get("/all", getAllAlumni);
 
 alumniRouter.put(
   "/update/:id",

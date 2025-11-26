@@ -1,4 +1,3 @@
-// multerMiddleware.js
 import multer from "multer";
 import path from "path";
 
@@ -21,6 +20,8 @@ const allowedMimeTypes = [
   "image/png",
   "image/webp",
   "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
 export const multerMiddleware = (fields = null) => {

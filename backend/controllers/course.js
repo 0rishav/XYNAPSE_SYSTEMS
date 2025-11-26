@@ -25,7 +25,13 @@ export const createCourse = CatchAsyncError(async (req, res, next) => {
     }
   }
 
-  // Validation
+  if (
+    body.parentCourse &&
+    !mongoose.Types.ObjectId.isValid(body.parentCourse)
+  ) {
+    return next(new ErrorHandler("Invalid parentCourse ID", 400));
+  }
+
   const { error, value } = courseValidationSchema.validate(body, {
     abortEarly: false,
     stripUnknown: true,
@@ -41,7 +47,6 @@ export const createCourse = CatchAsyncError(async (req, res, next) => {
   let uploadedFiles = [];
 
   try {
-    // Thumbnail upload
     if (req.files?.thumbnail?.[0]?.path) {
       const tempThumbnailPath = req.files.thumbnail[0].path;
       uploadedFiles.push(tempThumbnailPath);
@@ -58,7 +63,6 @@ export const createCourse = CatchAsyncError(async (req, res, next) => {
       };
     }
 
-    // Logo upload
     if (req.files?.logo?.[0]?.path) {
       const tempLogoPath = req.files.logo[0].path;
       uploadedFiles.push(tempLogoPath);
@@ -80,6 +84,10 @@ export const createCourse = CatchAsyncError(async (req, res, next) => {
     }
     courseData.instructor = req.user._id;
     courseData.moderationStatus = "pending";
+
+    if (body.parentCourse) {
+      courseData.parentCourse = body.parentCourse;
+    }
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -117,7 +125,6 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
   let uploadedFiles = [];
 
   try {
-    // Ensure aboutCourse is always an array
     if (body.aboutCourse !== undefined) {
       if (typeof body.aboutCourse === "string") {
         try {
@@ -132,7 +139,6 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
       }
     }
 
-    // Ensure tags is always an array
     if (body.tags !== undefined) {
       if (typeof body.tags === "string") {
         try {
@@ -147,7 +153,15 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
       }
     }
 
-    // Validate
+    if (body.parentCourse !== undefined) {
+      if (
+        body.parentCourse &&
+        !mongoose.Types.ObjectId.isValid(body.parentCourse)
+      ) {
+        return next(new ErrorHandler("Invalid parentCourse ID", 400));
+      }
+    }
+
     const { error, value } = courseValidationSchema.validate(body, {
       abortEarly: false,
       stripUnknown: true,
@@ -161,7 +175,6 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
 
     let updatedData = value;
 
-    // Thumbnail upload
     if (req.files?.thumbnail?.[0]?.path) {
       const tempThumbnailPath = req.files.thumbnail[0].path;
       uploadedFiles.push(tempThumbnailPath);
@@ -178,7 +191,6 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
       };
     }
 
-    // Logo upload
     if (req.files?.logo?.[0]?.path) {
       const tempLogoPath = req.files.logo[0].path;
       uploadedFiles.push(tempLogoPath);
@@ -199,6 +211,10 @@ export const updateCourse = CatchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Instructor information missing", 400));
     }
     updatedData.instructor = req.user._id;
+
+    if (body.parentCourse !== undefined) {
+      updatedData.parentCourse = body.parentCourse || null;
+    }
 
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -523,7 +539,9 @@ export const uploadCourseThumbnail = CatchAsyncError(async (req, res, next) => {
   session.startTransaction();
 
   try {
-    const course = await Course.findOne({ _id: id, isDeleted: false }).session(session);
+    const course = await Course.findOne({ _id: id, isDeleted: false }).session(
+      session
+    );
 
     if (!course) {
       await session.abortTransaction();
@@ -532,7 +550,7 @@ export const uploadCourseThumbnail = CatchAsyncError(async (req, res, next) => {
     }
 
     if (req.files?.thumbnail) {
-      const thumbPath = req.files.thumbnail[0].path;  
+      const thumbPath = req.files.thumbnail[0].path;
       tempFiles.push(thumbPath);
 
       // delete old thumbnail
@@ -557,7 +575,7 @@ export const uploadCourseThumbnail = CatchAsyncError(async (req, res, next) => {
     }
 
     if (req.files?.logo) {
-      const logoPath = req.files.logo[0].path; 
+      const logoPath = req.files.logo[0].path;
       tempFiles.push(logoPath);
 
       if (course.logo?.public_id) {
@@ -595,9 +613,9 @@ export const uploadCourseThumbnail = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler(err.message || "Failed to upload media", 500));
   } finally {
     for (const path of tempFiles) {
-      fs.promises.unlink(path).catch((e) =>
-        console.error("Temp file delete failed:", e.message)
-      );
+      fs.promises
+        .unlink(path)
+        .catch((e) => console.error("Temp file delete failed:", e.message));
     }
   }
 });

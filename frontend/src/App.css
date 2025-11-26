@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+html,body, #root {
+  width: 100%;
+}
+
+:root {
+  --select-bg: #ffffff;
+  --select-bg-open: #f8fafc;
+  --select-border: #d1d5db;
+  --select-text: #111827;
+  --select-placeholder: #6b7280;
+}
+
+.dark {
+  --select-bg: #1f2937;
+  --select-bg-open: #111827;
+  --select-border: #374151;
+  --select-text: #f3f4f6;
+  --select-placeholder: #9ca3af;
+}
+
+
 @layer base {
   :root {
     color-scheme: light dark;

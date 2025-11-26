@@ -16,12 +16,12 @@ const galleryRouter = express.Router();
 
 galleryRouter.post(
   "/create",
-  isAuthenticated,
+  // isAuthenticated,
   multerMiddleware([{ name: "image", maxCount: 1 }]),
   createGalleryItem
 );
 
-galleryRouter.get("/all-gallery", isAuthenticated, listGalleryItems);
+galleryRouter.get("/all-gallery",  listGalleryItems);
 
 galleryRouter.get("/search", isAuthenticated, searchGalleryItems);
 

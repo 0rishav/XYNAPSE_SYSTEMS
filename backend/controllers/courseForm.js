@@ -3,27 +3,18 @@ import { CatchAsyncError } from "../middlewares/CatchAsyncError.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import CourseForm from "../models/course/courseFormModal.js";
 import ApiFeatures from "../services/apiService.js";
+import { sendMail } from "../utils/sendMail.js";
 
 export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
   const { name, email, mobile, city, courseId } = req.body;
 
-  if (!name) {
-    return next(new ErrorHandler("Name field is required.", 400));
-  }
-
-  if (!email) {
-    return next(new ErrorHandler("Email field is required.", 400));
-  }
-
-  if (!mobile) {
-    return next(new ErrorHandler("Mobile number is required.", 400));
-  }
-
-  if (!courseId) {
+  if (!name) return next(new ErrorHandler("Name field is required.", 400));
+  if (!email) return next(new ErrorHandler("Email field is required.", 400));
+  if (!mobile) return next(new ErrorHandler("Mobile number is required.", 400));
+  if (!courseId)
     return next(
       new ErrorHandler("Course ID is required to submit the form.", 400)
     );
-  }
 
   if (!isObjectIdOrHexString(courseId)) {
     return next(
@@ -47,7 +38,7 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
           `You have already applied for this course. Your current status is: ${existingForm.status}.`,
           409
         )
-      ); // 409 Conflict
+      );
     }
     return next(
       new ErrorHandler(
@@ -70,6 +61,18 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
     message: "Course form submitted successfully! Status: Pending.",
     data: newForm,
   });
+
+  try {
+    await sendMail({
+      email: process.env.ADMIN_MAIL,
+      subject: "New Course Form Submission",
+      template: "course-form-mail.ejs", 
+      data: { form: newForm },
+    });
+    console.log("Admin notified via email for course form submission");
+  } catch (mailError) {
+    console.error("Error sending admin notification:", mailError);
+  }
 });
 
 export const getAllCourseForms = CatchAsyncError(async (req, res, next) => {

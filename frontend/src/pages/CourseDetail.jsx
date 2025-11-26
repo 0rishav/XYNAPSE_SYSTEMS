@@ -77,7 +77,9 @@ function CourseDetail() {
         const course = await courseService.getCourseById(courseId);
         setCourse(course);
       } catch (err) {
-        setError(err.response?.data?.message || err.message || "Course not found");
+        setError(
+          err.response?.data?.message || err.message || "Course not found"
+        );
       } finally {
         setLoading(false);
       }
@@ -170,14 +172,16 @@ function CourseDetail() {
               <h1 className="text-4xl font-semibold text-slate-900 dark:text-white">
                 {course.title}
               </h1>
-              
+
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <svg
                       key={star}
                       className={`h-5 w-5 ${
-                        star <= 4 ? "text-yellow-400 fill-current" : "text-slate-300"
+                        star <= 4
+                          ? "text-yellow-400 fill-current"
+                          : "text-slate-300"
                       }`}
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -192,22 +196,22 @@ function CourseDetail() {
                 </span>
               </div>
 
-              <p className="text-lg text-slate-600 dark:text-slate-300">
+              <p className="text-lg text-slate-800 dark:text-slate-200 leading-relaxed">
                 {course.description}
               </p>
 
-              <div className="space-y-2">
-                {course.aboutCourse?.slice(0, 4).map((highlight, index) => (
-                  <div key={index} className="flex items-center gap-2">
+              <div className="mt-4 space-y-3">
+                {course.aboutCourse?.map((highlight, index) => (
+                  <div key={index} className="flex items-start gap-3 group">
                     <svg
-                      className="h-5 w-5 text-green-500"
+                      className="h-6 w-6 text-green-500 group-hover:scale-110 transition-transform duration-300"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                     >
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
-                    <span className="text-sm text-slate-700 dark:text-slate-200">
+                    <span className="text-sm md:text-base text-slate-700 dark:text-slate-200 font-medium">
                       {highlight}
                     </span>
                   </div>
@@ -216,10 +220,12 @@ function CourseDetail() {
 
               <div className="flex items-center gap-4">
                 <span className="text-3xl font-bold text-slate-900 dark:text-white">
-                  {course.isFree ? "FREE" : `₹${course.price}`}
+                  {course.isFree ? "" : `₹${course.price}`}
                 </span>
                 {!course.isFree && (
-                  <span className="text-sm text-slate-500 line-through">₹{course.price * 1.5}</span>
+                  <span className="text-sm text-slate-500 line-through">
+                    ₹{course.price * 1.5}
+                  </span>
                 )}
               </div>
 
@@ -234,7 +240,7 @@ function CourseDetail() {
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
                 Download Syllabus
               </h3>
-              
+
               {formSubmitted ? (
                 <div className="rounded-2xl bg-green-50 border border-green-200 p-4 text-center dark:bg-green-900/20 dark:border-green-800">
                   <div className="text-2xl mb-2">✅</div>
@@ -334,18 +340,19 @@ function CourseDetail() {
             <h2 className="text-3xl font-semibold text-slate-900 dark:text-white mb-6">
               What you will learn
             </h2>
-            <div className="grid gap-4 md:grid-cols-2">
+
+            <div className="grid gap-6 md:grid-cols-2">
               {course.aboutCourse?.map((item, index) => (
-                <div key={index} className="flex items-start gap-3">
+                <div key={index} className="flex items-start gap-3 group">
                   <svg
-                    className="h-6 w-6 text-green-500 mt-0.5"
+                    className="h-6 w-6 text-green-500 mt-1 group-hover:scale-110 transition-transform duration-300"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                   </svg>
-                  <span className="text-sm text-slate-700 dark:text-slate-200">
+                  <span className="text-sm md:text-base text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
                     {item}
                   </span>
                 </div>
@@ -381,7 +388,10 @@ function CourseDetail() {
                 "Module 4: Real-world Projects",
                 "Module 5: Portfolio Development",
               ].map((module, index) => (
-                <div key={index} className="rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div
+                  key={index}
+                  className="rounded-2xl border border-slate-200 dark:border-slate-700"
+                >
                   <button
                     onClick={() => toggleSection(index)}
                     className="w-full flex items-center justify-between p-4 text-left"
@@ -405,7 +415,8 @@ function CourseDetail() {
                   {expandedSection === index && (
                     <div className="px-4 pb-4">
                       <p className="text-sm text-slate-600 dark:text-slate-300">
-                        Comprehensive coverage of {module.toLowerCase()} with hands-on exercises and real-world applications.
+                        Comprehensive coverage of {module.toLowerCase()} with
+                        hands-on exercises and real-world applications.
                       </p>
                     </div>
                   )}
@@ -431,7 +442,8 @@ function CourseDetail() {
                 </div>
               </div>
               <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">
-                Experienced professional with years of industry expertise and passion for teaching.
+                Experienced professional with years of industry expertise and
+                passion for teaching.
               </p>
             </div>
           </AnimatedReveal>

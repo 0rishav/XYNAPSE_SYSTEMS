@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import alumniService from "../../services/alumniService";
 
 const introParagraphs = [
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim orci id orci varius, non volutpat augue facilisis.",
@@ -151,6 +152,40 @@ function AlumniIntroText() {
 }
 
 function Alumni() {
+  const [alumniList, setAlumniList] = useState([]);
+  const [alumniLoading, setAlumniLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadAlumni() {
+      setAlumniLoading(true);
+      try {
+        const resp = await alumniService.getAll({ page, limit });
+        // alumniService.handleResponse returns backend response object
+        if (mounted && resp) {
+          setAlumniList(resp.data || []);
+          setTotal(resp.total || 0);
+        }
+      } catch (err) {
+        console.warn("Failed to load alumni", err);
+        if (mounted) {
+          setAlumniList([]);
+          setTotal(0);
+        }
+      } finally {
+        if (mounted) setAlumniLoading(false);
+      }
+    }
+
+    loadAlumni();
+    return () => {
+      mounted = false;
+    };
+  }, [page, limit]);
   return (
     <main className="min-h-screen  text-slate-900  dark:text-slate-50">
       <div className="mx-auto w-full  max-w-6xl space-y-16 px-4 py-16 sm:px-6 lg:px-10">
@@ -168,9 +203,56 @@ function Alumni() {
             </p>
           </AnimatedBlock>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {alumniProfiles.map((profile) => (
-              <AlumniCard key={profile.name} {...profile} />
-            ))}
+            {alumniLoading ? (
+              Array.from({ length: limit }).map((_, i) => (
+                <div
+                  key={`skeleton-${i}`}
+                  className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 dark:border-slate-800/70 dark:bg-slate-900/50"
+                >
+                  <div className="h-40 w-full rounded-md bg-slate-100 dark:bg-slate-800" />
+                  <div className="mt-4 h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+                  <div className="mt-2 h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
+                </div>
+              ))
+            ) : alumniList && alumniList.length ? (
+              alumniList.map((a) => (
+                <AlumniCard
+                  key={a._id}
+                  image={a.images && a.images.length ? a.images[0].secure_url : "https://via.placeholder.com/320x320?text=Alumni"}
+                  name={a.name}
+                  course={a.certificateName}
+                  description={a.tags ? a.tags.join(", ") : ""}
+                  certificateImage={a.images && a.images.length ? a.images[0].secure_url : null}
+                />
+              ))
+            ) : (
+              alumniProfiles.map((profile) => (
+                <AlumniCard key={profile.name} {...profile} />
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1 || alumniLoading}
+              className="rounded-md px-4 py-2 text-sm font-semibold border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/60 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span className="text-sm text-slate-600 dark:text-slate-300">
+              Page {page} of {Math.max(1, Math.ceil(total / limit))}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page >= Math.ceil(total / limit) || alumniLoading}
+              className="rounded-md px-4 py-2 text-sm font-semibold border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/60 disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </section>
       </div>

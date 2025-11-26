@@ -26,7 +26,7 @@ courseRouter.post(
   createCourse
 );
 
-courseRouter.get("/all-courses", isAuthenticated, getAllCourses);
+courseRouter.get("/all-courses", getAllCourses);
 
 courseRouter.put(
   "/:id",
@@ -38,7 +38,7 @@ courseRouter.put(
   updateCourse
 );
 
-courseRouter.get("/:id", isAuthenticated, getCourseById);
+courseRouter.get("/:id", getCourseById);
 
 courseRouter.patch("/delete/:id", isAuthenticated, deleteCourse);
 
