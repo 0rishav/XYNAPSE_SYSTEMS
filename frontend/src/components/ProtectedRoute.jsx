@@ -11,7 +11,6 @@ const ProtectedRoute = ({
   const { isAuthenticated, user, loading } = useAuth();
   const location = useLocation();
 
-  // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -20,41 +19,33 @@ const ProtectedRoute = ({
     );
   }
 
-  // If authentication is required but user is not authenticated
   if (requireAuth && !isAuthenticated) {
     return <Navigate to={redirectTo} state={{ from: location }} replace />;
   }
 
-  // If user is authenticated but no specific roles are required, allow access
   if (isAuthenticated && allowedRoles.length === 0) {
     return children;
   }
 
-  // If user is authenticated and specific roles are required, check if user has required role
   if (isAuthenticated && allowedRoles.length > 0) {
     const userRole = user?.role;
 
-    // Check if user has any of the allowed roles
     if (allowedRoles.includes(userRole)) {
       return children;
     } else {
-      // User doesn't have required role, redirect to unauthorized page or home
       return <Navigate to="/unauthorized" replace />;
     }
   }
 
-  // If no authentication required, allow access
   if (!requireAuth) {
     return children;
   }
 
-  // Fallback: redirect to login
   return <Navigate to={redirectTo} state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;
 
-// Additional helper components for common use cases
 export const AdminRoute = ({ children }) => (
   <ProtectedRoute allowedRoles={['admin', 'super_admin']} requireAuth={true}>
     {children}

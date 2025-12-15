@@ -18,6 +18,7 @@ const auditLogSchema = new mongoose.Schema(
         "PASSWORD_CHANGE",
         "PROFILE_UPDATE",
         "ROLE_UPDATE",
+        "FETCH_ALL_USERS",
         "OTP_SENT",
         "FETCH_ME",
         "OTP_VERIFIED",

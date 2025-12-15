@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/auth.js";
+import { isAuthenticated, requireRole } from "../middlewares/auth.js";
 import {
   createInterviewQuestion,
   deleteInterviewQuestion,
@@ -19,7 +19,18 @@ interviewQuestionRouter.post(
 
 interviewQuestionRouter.get("/all", isAuthenticated, listInterviewQuestions);
 
-interviewQuestionRouter.put("/update/:id", isAuthenticated, updateInterviewQuestion);
+interviewQuestionRouter.get(
+  "/all-admin",
+  isAuthenticated,
+  requireRole("admin"),
+  listInterviewQuestions
+);
+
+interviewQuestionRouter.put(
+  "/update/:id",
+  isAuthenticated,
+  updateInterviewQuestion
+);
 
 interviewQuestionRouter.get("/:id", isAuthenticated, getInterviewQuestionById);
 

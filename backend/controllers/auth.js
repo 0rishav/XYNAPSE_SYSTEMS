@@ -11,6 +11,7 @@ import ErrorHandler from "../utils/ErrorHandler.js";
 import { sendMail } from "../utils/sendMail.js";
 import bcrypt from "bcrypt";
 import fs from "fs/promises";
+import InternshipApplication from "../models/Internship/internshipModal.js";
 
 export const registerUser = CatchAsyncError(async (req, res, next) => {
   const { name, email, mobile, bio, password, confirmPassword, role } =
@@ -275,6 +276,21 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
   user.failedLoginAttempts = 0;
   user.lastLoginAt = new Date();
   await user.save();
+
+  try {
+    const updatedApplications = await InternshipApplication.updateMany(
+      { email: user.email, studentId: null },
+      { $set: { studentId: user._id } }
+    );
+
+    if (updatedApplications.modifiedCount > 0) {
+      console.log(
+        `Updated ${updatedApplications.modifiedCount} internship application(s) with studentId ${user._id}`
+      );
+    }
+  } catch (err) {
+    console.error("Error updating internship applications:", err);
+  }
 
   await AuditLog.create({
     userId: user._id,
@@ -576,6 +592,36 @@ export const getMe = CatchAsyncError(async (req, res, next) => {
     success: true,
     message: "User profile fetched successfully",
     user: safeUser,
+  });
+});
+
+export const getAllUsers = CatchAsyncError(async (req, res, next) => {
+  const admin = req.user; 
+
+  if (admin.role !== "admin") {
+    return next(new ErrorHandler("Access denied", 403));
+  }
+
+  await AuditLog.create({
+    userId: admin._id,
+    eventType: "FETCH_ALL_USERS",
+    ipAddress: req.ip,
+    userAgent: req.headers["user-agent"] || "",
+    metadata: { action: "admin_fetch_all_users" },
+  });
+
+  const users = await Auth.find({ isDeleted: false })
+    .select(
+      "_id name email mobile bio socialLinks role roleStatus emailVerified phoneVerified isTwofaEnabled lastLoginAt createdAt updatedAt"
+    )
+    .sort({ createdAt: -1 })
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    message: "Users fetched successfully",
+    total: users.length,
+    data: users,
   });
 });
 

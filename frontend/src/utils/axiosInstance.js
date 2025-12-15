@@ -2,7 +2,6 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
@@ -57,7 +56,7 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await plainAxios.post("/user/refresh-token");
+        const response = await plainAxios.post("/auth/refresh");
         if (response.data.success) {
           const newToken = response.data.accessToken;
           processQueue(null, newToken);
@@ -75,7 +74,8 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    if (!config || (config.__retryCount || 0) >= MAX_RETRIES) return Promise.reject(error);
+    if (!config || (config.__retryCount || 0) >= MAX_RETRIES)
+      return Promise.reject(error);
 
     const isRetryable =
       !error.response ||

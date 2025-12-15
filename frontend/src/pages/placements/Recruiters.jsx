@@ -176,7 +176,7 @@ function Recruiters() {
             <h2 className="text-3xl font-semibold">What Recruiters Say</h2>
           </AnimatedSection>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((recruiter, index) => (
+            {testimonials.map((recruiter) => (
               <RecruiterCard key={recruiter.name} {...recruiter} />
             ))}
           </div>

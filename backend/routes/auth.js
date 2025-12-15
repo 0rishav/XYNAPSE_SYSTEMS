@@ -2,6 +2,7 @@ import express from "express";
 import {
   activateUser,
   changePassword,
+  getAllUsers,
   getMe,
   loginUser,
   logoutUser,
@@ -29,7 +30,7 @@ authRouter.post("/login", loginUser);
 
 authRouter.post("/logout", isAuthenticated, logoutUser);
 
-authRouter.post("/refresh", isAuthenticated, refreshToken);
+authRouter.post("/refresh", refreshToken);
 
 // regarding forgot password
 authRouter.post("/forgot/send", sendForgotPasswordOtp);
@@ -40,6 +41,13 @@ authRouter.post("/password/reset", resetPassword);
 
 // regarding profile
 authRouter.get("/me", isAuthenticated, getMe);
+
+authRouter.get(
+  "/all-users",
+  isAuthenticated,
+  requireRole("admin"),
+  getAllUsers
+);
 
 authRouter.patch("/change-password", isAuthenticated, changePassword);
 

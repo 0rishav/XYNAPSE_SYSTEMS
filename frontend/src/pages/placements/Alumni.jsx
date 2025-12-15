@@ -3,29 +3,34 @@ import alumniService from "../../services/alumniService";
 
 const introParagraphs = [
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim orci id orci varius, non volutpat augue facilisis.",
-  "Integer gravida, orci sed viverra maximus, augue dui egestas metus, ac convallis tortor tellus nec nulla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia." ,
+  "Integer gravida, orci sed viverra maximus, augue dui egestas metus, ac convallis tortor tellus nec nulla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia.",
 ];
 
 const alumniProfiles = [
   {
-    image: "https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg",
+    image:
+      "https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg",
     name: "Alumni Name",
     course: "Full Stack Program",
-    description: "Short summary about the learning path and placement milestone.",
-    certificateImage: "https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg",
+    description:
+      "Short summary about the learning path and placement milestone.",
+    certificateImage:
+      "https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg",
   },
   {
     image: "https://via.placeholder.com/320x320?text=Alumni",
     name: "Placeholder Person",
     course: "Data Science Certification",
-    description: "Brief placeholder copy describing achievements in the cohort.",
+    description:
+      "Brief placeholder copy describing achievements in the cohort.",
     certificateImage: "https://via.placeholder.com/160x90?text=Certificate",
   },
   {
     image: "https://via.placeholder.com/320x320?text=Alumni",
     name: "Sample Graduate",
     course: "Product Design Intensive",
-    description: "Summary text about transitioning into a new role via mentorship.",
+    description:
+      "Summary text about transitioning into a new role via mentorship.",
     certificateImage: "https://via.placeholder.com/160x90?text=Certificate",
   },
   {
@@ -37,9 +42,15 @@ const alumniProfiles = [
   },
 ];
 
-const sectionCardClasses = "rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
+const sectionCardClasses =
+  "rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
 
-function AnimatedBlock({ children, className = "", variant = "up", delay = 0 }) {
+function AnimatedBlock({
+  children,
+  className = "",
+  variant = "up",
+  delay = 0,
+}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -76,31 +87,59 @@ function AnimatedBlock({ children, className = "", variant = "up", delay = 0 }) 
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-600 ease-out ${visible ? shown : hiddenMap[variant] || hiddenMap.up} ${className}`}
+      className={`transition-all duration-600 ease-out ${
+        visible ? shown : hiddenMap[variant] || hiddenMap.up
+      } ${className}`}
     >
       {children}
     </div>
   );
 }
 
-function AlumniCard({ image, name, course, description, certificateImage }) {
+function AlumniCard({ image, name, course, tags, description }) {
   return (
     <AnimatedBlock
-      className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 transition duration-300 hover:-translate-y-1 hover:scale-[1.01] dark:border-slate-800/60 dark:bg-slate-900/60"
+      className="rounded-2xl border border-slate-200/80 bg-white p-6 transition duration-300 hover:-translate-y-1 hover:scale-[1.02] dark:border-slate-800/60 dark:bg-slate-900/60 shadow-lg"
       variant="up"
     >
       <div className="flex flex-col gap-4">
-        <img src={image} alt={name} className="w-full rounded-xl object-cover" />
-        <div className="space-y-1">
-          <p className="text-lg font-semibold text-slate-900 dark:text-white">{name}</p>
-          <p className="text-sm text-slate-600 dark:text-slate-300">{course}</p>
+        <div className="relative w-full h-56 rounded-xl overflow-hidden">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          />
         </div>
-        {description && <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{description}</p>}
-        {certificateImage && (
-          <div className="rounded-xl border border-slate-200/70 p-3 dark:border-slate-700/70">
-            <img src={certificateImage} alt="Certificate" className="w-full rounded-md object-cover" />
+
+        <div className="space-y-1">
+          <p className="text-xl font-bold text-slate-900 dark:text-white">
+            {name}
+          </p>
+          <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+            {course}
+          </p>
+        </div>
+
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {tags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="px-3 py-1 text-xs font-medium bg-gray-200 text-gray-700 rounded-full shadow-sm hover:bg-gray-300 transition-colors"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         )}
+
+        {description && (
+          <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 mt-2">
+            {description}
+          </p>
+        )}
+
+        {/* Certificate Image Removed from bottom, only main image shown */}
       </div>
     </AnimatedBlock>
   );
@@ -109,29 +148,60 @@ function AlumniCard({ image, name, course, description, certificateImage }) {
 function AlumniIntroBadges() {
   return (
     <div className="relative">
-      <AnimatedBlock className="overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-700" variant="left">
-        <img src="https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg" alt="Alumni" className="w-full object-cover" />
+      <AnimatedBlock
+        className="overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-700"
+        variant="left"
+      >
+        <img
+          src="https://www.univariety.com/blog/wp-content/uploads/2022/02/5853-min-scaled.jpg"
+          alt="Alumni"
+          className="w-full object-cover"
+        />
       </AnimatedBlock>
 
-      <AnimatedBlock className="absolute right-4 top-4 w-40 rounded-2xl border border-slate-200/80 bg-white/90 p-3 text-sm dark:border-slate-700/70 dark:bg-slate-950/70" variant="scale" delay={150}>
+      <AnimatedBlock
+        className="absolute right-4 top-4 w-40 rounded-2xl border border-slate-200/80 bg-white/90 p-3 text-sm dark:border-slate-700/70 dark:bg-slate-950/70"
+        variant="scale"
+        delay={150}
+      >
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-slate-700" />
           <div>
-            <p className="font-semibold text-slate-900 dark:text-white">Alumni Name</p>
-            <p className="text-xs text-slate-500 dark:text-slate-300">Software Developer</p>
+            <p className="font-semibold text-slate-900 dark:text-white">
+              Alumni Name
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-300">
+              Software Developer
+            </p>
           </div>
         </div>
       </AnimatedBlock>
 
-      <AnimatedBlock className="absolute left-4 top-1/2 w-40 -translate-y-1/2 rounded-2xl border border-slate-200/80 bg-white/90 p-3 dark:border-slate-700/70 dark:bg-slate-950/70" variant="scale" delay={250}>
-        <p className="text-sm font-semibold text-slate-900 dark:text-white">Successful Verified</p>
-        <p className="text-xs text-slate-500 dark:text-slate-300">Your job certification</p>
+      <AnimatedBlock
+        className="absolute left-4 top-1/2 w-40 -translate-y-1/2 rounded-2xl border border-slate-200/80 bg-white/90 p-3 dark:border-slate-700/70 dark:bg-slate-950/70"
+        variant="scale"
+        delay={250}
+      >
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+          Successful Verified
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-300">
+          Your job certification
+        </p>
       </AnimatedBlock>
 
-      <AnimatedBlock className="absolute bottom-4 left-1/2 w-44 -translate-x-1/2 rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-center dark:border-slate-700/70 dark:bg-slate-950/70" variant="scale" delay={350}>
+      <AnimatedBlock
+        className="absolute bottom-4 left-1/2 w-44 -translate-x-1/2 rounded-2xl border border-slate-200/80 bg-white/90 p-4 text-center dark:border-slate-700/70 dark:bg-slate-950/70"
+        variant="scale"
+        delay={350}
+      >
         <div className="mx-auto h-16 w-16 rounded-full border-4 border-dashed border-slate-300 dark:border-slate-600" />
-        <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">Your job experience</p>
-        <p className="text-xs text-slate-500 dark:text-slate-300">Tell us about your experience</p>
+        <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+          Your job experience
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-300">
+          Tell us about your experience
+        </p>
       </AnimatedBlock>
     </div>
   );
@@ -140,10 +210,17 @@ function AlumniIntroBadges() {
 function AlumniIntroText() {
   return (
     <AnimatedBlock className="space-y-5" variant="right">
-      <p className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">Alumni Network</p>
-      <h1 className="text-4xl font-semibold text-slate-900 dark:text-white">India’s Leading Alumni Network</h1>
+      <p className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">
+        Alumni Network
+      </p>
+      <h1 className="text-4xl font-semibold text-slate-900 dark:text-white">
+        India’s Leading Alumni Network
+      </h1>
       {introParagraphs.map((content, index) => (
-        <p key={index} className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p
+          key={index}
+          className="text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+        >
           {content}
         </p>
       ))}
@@ -165,7 +242,6 @@ function Alumni() {
       setAlumniLoading(true);
       try {
         const resp = await alumniService.getAll({ page, limit });
-        // alumniService.handleResponse returns backend response object
         if (mounted && resp) {
           setAlumniList(resp.data || []);
           setTotal(resp.total || 0);
@@ -196,40 +272,51 @@ function Alumni() {
 
         <section className={`${sectionCardClasses} space-y-6`}>
           <AnimatedBlock className="text-center">
-            <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-300">Global Success</p>
-            <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">Our Global Alumni Network</h2>
+            <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-300">
+              Global Success
+            </p>
+            <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
+              Our Global Alumni Network
+            </h2>
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-              Placeholder paragraph describing how graduates collaborate, mentor, and return to hire future batches.
+              Placeholder paragraph describing how graduates collaborate,
+              mentor, and return to hire future batches.
             </p>
           </AnimatedBlock>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {alumniLoading ? (
-              Array.from({ length: limit }).map((_, i) => (
-                <div
-                  key={`skeleton-${i}`}
-                  className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 dark:border-slate-800/70 dark:bg-slate-900/50"
-                >
-                  <div className="h-40 w-full rounded-md bg-slate-100 dark:bg-slate-800" />
-                  <div className="mt-4 h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
-                  <div className="mt-2 h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
-                </div>
-              ))
-            ) : alumniList && alumniList.length ? (
-              alumniList.map((a) => (
-                <AlumniCard
-                  key={a._id}
-                  image={a.images && a.images.length ? a.images[0].secure_url : "https://via.placeholder.com/320x320?text=Alumni"}
-                  name={a.name}
-                  course={a.certificateName}
-                  description={a.tags ? a.tags.join(", ") : ""}
-                  certificateImage={a.images && a.images.length ? a.images[0].secure_url : null}
-                />
-              ))
-            ) : (
-              alumniProfiles.map((profile) => (
-                <AlumniCard key={profile.name} {...profile} />
-              ))
-            )}
+            {alumniLoading
+              ? Array.from({ length: limit }).map((_, i) => (
+                  <div
+                    key={`skeleton-${i}`}
+                    className="rounded-2xl border border-slate-200/80 bg-white/90 p-6 dark:border-slate-800/70 dark:bg-slate-900/50"
+                  >
+                    <div className="h-40 w-full rounded-md bg-slate-100 dark:bg-slate-800" />
+                    <div className="mt-4 h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+                    <div className="mt-2 h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
+                  </div>
+                ))
+              : alumniList && alumniList.length
+              ? alumniList.map((a) => (
+                  <AlumniCard
+                    key={a._id}
+                    image={
+                      a.images && a.images.length
+                        ? a.images[0].secure_url
+                        : "https://via.placeholder.com/320x320?text=Alumni"
+                    }
+                    name={a.name}
+                    course={a.certificateName}
+                    tags={a.tags}
+                    certificateImage={
+                      a.images && a.images.length
+                        ? a.images[0].secure_url
+                        : null
+                    }
+                  />
+                ))
+              : alumniProfiles.map((profile) => (
+                  <AlumniCard key={profile.name} {...profile} />
+                ))}
           </div>
 
           {/* Pagination */}

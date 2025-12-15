@@ -8,8 +8,26 @@ const ResumeSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const ExperienceLetterSchema = new mongoose.Schema(
+  {
+    date: { type: String, default: "" },
+    startDate: { type: String, default: "" },
+    endDate: { type: String, default: "" },
+    responsibilities: { type: [String], default: [] },
+    signatoryName: { type: String, default: "" },
+    signatoryDesignation: { type: String, default: "" },
+  },
+  { _id: false }
+);
+
 const InternshipApplicationSchema = new mongoose.Schema(
   {
+    studentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth",
+      default: null,
+    },
+
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -50,6 +68,32 @@ const InternshipApplicationSchema = new mongoose.Schema(
 
     department: { type: String, required: true, trim: true, maxlength: 100 },
 
+    experiencePoints: { type: ExperienceLetterSchema, default: {} },
+
+    offerLetterData: {
+      date: { type: String, default: "" },
+      startDate: { type: String, default: "" },
+      endDate: { type: String, default: "" },
+      duration: { type: String, default: "" },
+      location: { type: String, default: "" },
+      reportingManager: { type: String, default: "" },
+      stipend: { type: String, default: "" },
+      workingHours: { type: String, default: "" },
+      responsibilities: { type: [String], default: [] },
+      completionBenefits: { type: [String], default: [] },
+      notes: { type: [String], default: [] },
+      signatoryName: { type: String, default: "" },
+      signatoryDesignation: { type: String, default: "" },
+    },
+
+    certificateData: {
+      startDate: { type: String, default: "" },
+      endDate: { type: String, default: "" },
+      responsibilities: { type: [String], default: [] },
+      signatoryName: { type: String, default: "" },
+      signatoryDesignation: { type: String, default: "" },
+    },
+
     linkedin: {
       type: String,
       trim: true,
@@ -64,9 +108,41 @@ const InternshipApplicationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "reviewed", "selected", "rejected"],
+      enum: [
+        "pending",
+        "reviewed",
+        "selected",
+        "offer_letter_issued",
+        "internship_ongoing",
+        "certificate_ready",
+        "completed",
+        "rejected",
+      ],
       default: "pending",
       index: true,
+    },
+
+    offerLetterUrl: {
+      type: ResumeSchema,
+      default: {},
+    },
+
+    certificateUrl: {
+      type: ResumeSchema,
+      default: {},
+    },
+
+    experienceLetterUrl: {
+      type: ResumeSchema,
+      default: {},
+    },
+
+    statusUpdatedAt: { type: Date, default: Date.now },
+
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth",
+      default: null,
     },
 
     isActive: { type: Boolean, default: true, index: true },
@@ -81,7 +157,6 @@ const InternshipApplicationSchema = new mongoose.Schema(
 );
 
 InternshipApplicationSchema.index({ email: 1, courseId: 1 }, { unique: false });
-
 InternshipApplicationSchema.index({ createdAt: -1 });
 
 const InternshipApplication = mongoose.model(

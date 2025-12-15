@@ -32,3 +32,17 @@ html,body, #root {
     @apply min-h-screen font-sans antialiased bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50;
   }
 }
+
+.marquee-track {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: nowrap; 
+}
+
+.marquee-item img {
+  display: block;
+  object-fit: contain;
+  height: 40px;
+  width: auto;
+}

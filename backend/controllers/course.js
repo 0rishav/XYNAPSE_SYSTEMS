@@ -273,13 +273,19 @@ export const getAllCourses = CatchAsyncError(async (req, res, next) => {
 
   if (category) filter.category = category;
   if (tags) filter.tags = { $in: tags.split(",").map((tag) => tag.trim()) };
-  if (isFree !== undefined) filter.isFree = isFree === "true";
-  if (isFeatured !== undefined) filter.isFeatured = isFeatured === "true";
+  if (isFree !== undefined) filter.isFree = isFree === "true" || isFree === true;
+  if (isFeatured !== undefined) filter.isFeatured = isFeatured === "true" || isFeatured === true;
   if (visibility) filter.visibility = visibility;
   if (moderationStatus) filter.moderationStatus = moderationStatus;
-  if (minPrice || maxPrice) filter.price = {};
-  if (minPrice) filter.price.$gte = Number(minPrice);
-  if (maxPrice) filter.price.$lte = Number(maxPrice);
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    filter.price = {};
+    if (minPrice !== undefined && minPrice !== "" && !isNaN(Number(minPrice))) {
+      filter.price.$gte = Number(minPrice);
+    }
+    if (maxPrice !== undefined && maxPrice !== "" && !isNaN(Number(maxPrice))) {
+      filter.price.$lte = Number(maxPrice);
+    }
+  }
 
   if (search) filter.$text = { $search: search };
 
@@ -474,10 +480,6 @@ export const moderateCourse = CatchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const { action } = req.body;
 
-  if (!req.user || req.user.role !== "instructor") {
-    return next(new ErrorHandler("Unauthorized: Admins only", 403));
-  }
-
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return next(new ErrorHandler("Invalid course ID", 400));
   }
@@ -668,3 +670,4 @@ export const updateCourseSEO = CatchAsyncError(async (req, res, next) => {
     );
   }
 });
+

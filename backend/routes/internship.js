@@ -3,25 +3,40 @@ import { isAuthenticated } from "../middlewares/auth.js";
 import {
   createInternshipApplication,
   deleteInternshipApplication,
+  downloadCertificate,
+  downloadExperienceLetter,
+  downloadOfferLetter,
+  generateOfferLetter,
   getAllInternshipApplications,
+  getMyInternshipApplications,
   getSingleInternshipApplication,
   hardDeleteInternshipApplication,
   toggleInternshipApplicationActive,
+  updateCertificateData,
+  updateExperiencePoints,
   updateInternshipApplicationStatus,
 } from "../controllers/internship.js";
 import { multerMiddleware } from "../utils/multerConfig.js";
 
 const internshipRouter = express.Router();
 
+//integrated
 internshipRouter.post(
   "/create",
   multerMiddleware([{ name: "resumeUrl", maxCount: 1 }]),
   createInternshipApplication
 );
 
-internshipRouter.get("/all", isAuthenticated, getAllInternshipApplications);
+//integrated
+internshipRouter.get("/all", getAllInternshipApplications);
 
-internshipRouter.post("/:id", isAuthenticated, getSingleInternshipApplication);
+internshipRouter.get(
+  "/my-internships",
+  isAuthenticated,
+  getMyInternshipApplications
+);
+
+internshipRouter.get("/:id", isAuthenticated, getSingleInternshipApplication);
 
 internshipRouter.patch(
   "/status/:id",
@@ -46,5 +61,24 @@ internshipRouter.patch(
   isAuthenticated,
   toggleInternshipApplicationActive
 );
+
+//integrated
+internshipRouter.patch("/offer-letter/:id", generateOfferLetter);
+
+//integrated
+internshipRouter.patch("/experience-point/:id", updateExperiencePoints);
+
+//integrated
+internshipRouter.patch("/certificate/:id", updateCertificateData);
+
+//integrated
+internshipRouter.get("/download-offer-letter/:id", downloadOfferLetter);
+//integrated
+internshipRouter.get(
+  "/download-experience-letter/:id",
+  downloadExperienceLetter
+);
+//integrated
+internshipRouter.get("/download-certificate/:id", downloadCertificate);
 
 export default internshipRouter;

@@ -29,6 +29,9 @@ export default {
         float: "float 2s ease-in-out infinite",
         "pulse-scale": "pulse-scale 1.5s ease-in-out infinite",
       },
+      screens: {
+        'custom-md': '940px',
+      },
     },
   },
   plugins: [],

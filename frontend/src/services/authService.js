@@ -67,6 +67,15 @@ class AuthService {
     }
   }
 
+  async getAllUsers() {
+    try {
+      const response = await axiosInstance.get("/auth/all-users");
+      return this.handleResponse(response);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
   async refreshToken() {
     try {
       const response = await axiosInstance.post("/auth/refresh");

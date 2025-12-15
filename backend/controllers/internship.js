@@ -2,11 +2,19 @@ import { CatchAsyncError } from "../middlewares/CatchAsyncError.js";
 import InternshipApplication from "../models/Internship/internshipModal.js";
 import cloudinary from "../utils/cloudinaryConfig.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
+import { fileURLToPath } from "url";
+import path from "path";
+import ejs from "ejs";
+import puppeteer from "puppeteer";
 import fs from "fs";
 import dotenv from "dotenv";
 import { sendMail } from "../utils/sendMail.js";
+import { sendStatusMail } from "../utils/sendStatusMail.js";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createInternshipApplication = CatchAsyncError(
   async (req, res, next) => {
@@ -65,6 +73,7 @@ export const createInternshipApplication = CatchAsyncError(
         department,
         linkedin,
         portfolio,
+        studentId: req.user?._id,
       });
 
       res.status(201).json({
@@ -105,8 +114,8 @@ export const getAllInternshipApplications = CatchAsyncError(
       sortBy = "createdAt",
       order = "desc",
       courseId,
-      department,
       year,
+      status, // new filter
     } = req.query;
 
     page = parseInt(page);
@@ -114,8 +123,8 @@ export const getAllInternshipApplications = CatchAsyncError(
 
     const filter = {};
     if (courseId) filter.courseId = courseId;
-    if (department) filter.department = department;
     if (year) filter.year = year;
+    if (status) filter.status = status; // apply status filter
 
     const sortOrder = order.toLowerCase() === "asc" ? 1 : -1;
 
@@ -163,6 +172,32 @@ export const getSingleInternshipApplication = CatchAsyncError(
   }
 );
 
+export const getMyInternshipApplications = CatchAsyncError(
+  async (req, res, next) => {
+    const userId = req.user?._id?.toString(); 
+
+    if (!userId || !userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return next(new ErrorHandler("Invalid User ID", 400));
+    }
+
+    const applications = await InternshipApplication.find({ studentId: userId })
+      .populate("courseId", "name title")
+      .sort({ createdAt: -1 });
+
+    if (!applications || applications.length === 0) {
+      return next(
+        new ErrorHandler("No internship applications found for this user", 404)
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      count: applications.length,
+      applications,
+    });
+  }
+);
+
 export const updateInternshipApplicationStatus = CatchAsyncError(
   async (req, res, next) => {
     const { id } = req.params;
@@ -172,7 +207,17 @@ export const updateInternshipApplicationStatus = CatchAsyncError(
       return next(new ErrorHandler("Invalid Application ID", 400));
     }
 
-    const allowedStatuses = ["pending", "reviewed", "selected", "rejected"];
+    const allowedStatuses = [
+      "pending",
+      "reviewed",
+      "selected",
+      "offer_letter_issued",
+      "internship_ongoing",
+      "certificate_ready",
+      "completed",
+      "rejected",
+    ];
+
     if (!status || !allowedStatuses.includes(status.toLowerCase())) {
       return next(
         new ErrorHandler(
@@ -188,7 +233,14 @@ export const updateInternshipApplicationStatus = CatchAsyncError(
     }
 
     application.status = status.toLowerCase();
+    application.statusUpdatedAt = new Date();
     await application.save();
+
+    try {
+      await sendStatusMail(application);
+    } catch (error) {
+      console.error(error);
+    }
 
     res.status(200).json({
       success: true,
@@ -290,3 +342,211 @@ export const hardDeleteInternshipApplication = CatchAsyncError(
     });
   }
 );
+
+export const generateOfferLetter = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { offerLetterData } = req.body;
+
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return next(new ErrorHandler("Invalid Application ID", 400));
+  }
+
+  const application = await InternshipApplication.findById(id);
+  if (!application) {
+    return next(new ErrorHandler("Internship application not found", 404));
+  }
+
+  if (offerLetterData) {
+    application.offerLetterData = offerLetterData;
+  }
+
+  await application.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Offer letter data updated successfully",
+    offerLetterData: application.offerLetterData,
+  });
+});
+
+export const updateExperiencePoints = CatchAsyncError(
+  async (req, res, next) => {
+    const { id } = req.params;
+    const experiencePoints = req.body;
+
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return next(new ErrorHandler("Invalid Application ID", 400));
+    }
+
+    const application = await InternshipApplication.findById(id);
+    if (!application) {
+      return next(new ErrorHandler("Internship application not found", 404));
+    }
+
+    application.experiencePoints = {
+      ...application.experiencePoints.toObject(),
+      ...experiencePoints,
+    };
+
+    await application.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Experience points updated successfully",
+      experiencePoints: application.experiencePoints,
+    });
+  }
+);
+
+export const updateCertificateData = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const certificateData = req.body;
+
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return next(new ErrorHandler("Invalid Application ID", 400));
+  }
+
+  const application = await InternshipApplication.findById(id);
+  if (!application) {
+    return next(new ErrorHandler("Internship application not found", 404));
+  }
+
+  application.certificateData = {
+    ...application.certificateData.toObject(),
+    ...certificateData,
+  };
+
+  await application.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Certificate data updated successfully",
+    certificateData: application.certificateData,
+  });
+});
+
+export const downloadOfferLetter = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return next(new ErrorHandler("Invalid Application ID", 400));
+  }
+
+  const application = await InternshipApplication.findById(id).select(
+    "name department year offerLetterData"
+  );
+
+  if (!application) {
+    return next(new ErrorHandler("Internship application not found", 404));
+  }
+
+  const templatePath = path.join(__dirname, "../mails/offer-letter.ejs");
+
+  const html = await ejs.renderFile(templatePath, { application });
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+
+  const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+  await browser.close();
+
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename=offer_letter_${application._id}.pdf`,
+    "Content-Length": pdfBuffer.length,
+  });
+
+  res.send(pdfBuffer);
+});
+
+export const downloadExperienceLetter = CatchAsyncError(
+  async (req, res, next) => {
+    const { id } = req.params;
+
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return next(new ErrorHandler("Invalid Application ID", 400));
+    }
+
+    const application = await InternshipApplication.findById(id).select(
+      "name department year experiencePoints"
+    );
+
+    if (!application) {
+      return next(new ErrorHandler("Internship application not found", 404));
+    }
+
+    const templatePath = path.join(__dirname, "../mails/experience-letter.ejs");
+
+    const html = await ejs.renderFile(templatePath, { application });
+
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    await browser.close();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=experience_letter_${application._id}.pdf`,
+      "Content-Length": pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+  }
+);
+
+export const downloadCertificate = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return next(new ErrorHandler("Invalid Application ID", 400));
+  }
+
+  const application = await InternshipApplication.findById(id).select(
+    "name department year certificateData"
+  );
+
+  if (!application) {
+    return next(new ErrorHandler("Internship application not found", 404));
+  }
+
+  const templatePath = path.join(__dirname, "../mails/certificate.ejs");
+
+  const html = await ejs.renderFile(templatePath, {
+    name: application.name,
+    department: application.department,
+    certificateData: application.certificateData || {},
+  });
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: "networkidle0" });
+
+  const pdfBuffer = await page.pdf({
+    printBackground: true,
+    width: "950px",
+    height: "780px",
+    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+  });
+
+  await browser.close();
+
+  res.set({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename=certificate_${application._id}.pdf`,
+    "Content-Length": pdfBuffer.length,
+  });
+
+  res.send(pdfBuffer);
+});

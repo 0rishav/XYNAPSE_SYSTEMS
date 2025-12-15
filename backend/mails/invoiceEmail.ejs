@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Notification</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #ffffff; /* Full page white */
+      color: #333;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #ffffff;
+    }
+
+    .header {
+      background-color: #1e3a8a;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .header img {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      height: 50px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 20px 0;
+      line-height: 1.7;
+    }
+
+    .invoice-details {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .invoice-details th, .invoice-details td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .invoice-details th {
+      background-color: #f9f9f9;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .invoice-details tr:last-child td {
+      font-weight: 700;
+      font-size: 16px;
+      background-color: #f4f6fb;
+      text-align: right;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background-color: #1e3a8a;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 15px 0;
+      font-size: 12px;
+      color: #777;
+      background-color: #f4f4f4;
+    }
+
+    /* Remove all border-radius and max-width restrictions */
+    * {
+      border-radius: 0 !important;
+    }
+
+    @media print {
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://yourcompany.com/logo.png" alt="Company Logo">
+      <h1>Invoice Notification</h1>
+    </div>
+    <div class="content">
+      <p>Hello <strong><%= student.name %></strong>,</p>
+      <p>Your invoice <strong>#<%= invoice.invoiceNumber %></strong> has been successfully generated. Please find the details below:</p>
+
+      <table class="invoice-details">
+        <tr>
+          <th>Course</th>
+          <td><%= invoice.courseId?.title %></td>
+        </tr>
+        <tr>
+          <th>Instructor</th>
+          <td><%= invoice.instructorId?.name %></td>
+        </tr>
+        <tr>
+          <th>Payment Mode</th>
+          <td><%= invoice.paymentMode %></td>
+        </tr>
+        <tr>
+          <th>Course Fee</th>
+          <td>₹<%= invoice.courseFee %></td>
+        </tr>
+        <tr>
+          <th>Discount</th>
+          <td>₹<%= invoice.discount %></td>
+        </tr>
+        <tr>
+          <th>CGST</th>
+          <td>₹<%= invoice.taxes.cgst || 0 %></td>
+        </tr>
+        <tr>
+          <th>SGST</th>
+          <td>₹<%= invoice.taxes.sgst || 0 %></td>
+        </tr>
+        <tr>
+          <th>IGST</th>
+          <td>₹<%= invoice.taxes.igst || 0 %></td>
+        </tr>
+        <tr>
+          <th>Other Taxes</th>
+          <td>₹<%= invoice.taxes.otherTaxes || 0 %></td>
+        </tr>
+        <tr>
+          <th>Total Amount</th>
+          <td>₹<%= invoice.totalAmount %></td>
+        </tr>
+      </table>
+
+      <% if(invoice.notes) { %>
+        <p><strong>Notes:</strong> <%= invoice.notes %></p>
+      <% } %>
+
+      <a href="#" class="button">View Invoice</a>
+    </div>
+    <div class="footer">
+      <p>© <%= new Date().getFullYear() %> Your Company. All rights reserved.</p>
+      <p>If you have any questions, contact <a href="mailto:support@yourcompany.com">support@yourcompany.com</a></p>
+    </div>
+  </div>
+</body>
+</html>

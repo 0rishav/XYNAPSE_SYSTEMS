@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Offer Letter</title>
+
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      margin: 18px 22px;
+      line-height: 1.32;
+      color: #000;
+      font-size: 13px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+
+    .header img {
+      height: 38px;
+      margin-bottom: 5px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      color: #0046be;
+      margin: 0;
+    }
+
+    .header hr {
+      border: 1px solid #0046be;
+      width: 40px;
+      margin: 6px auto 0 auto;
+    }
+
+    .content p {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .section-box {
+      background-color: #f2f8ff;
+      padding: 8px 10px;
+      border-left: 3px solid #0046be;
+      margin-bottom: 10px;
+      page-break-inside: avoid;
+    }
+
+    ul {
+      margin-left: 14px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    ul li {
+      margin-bottom: 3px;
+    }
+
+    ul li::before {
+      content: "•";
+      color: #0046be;
+      font-weight: bold;
+      display: inline-block;
+      width: 0.9em;
+      margin-left: -0.9em;
+    }
+
+    .signature {
+      margin-top: 18px;
+      text-align: right;
+      page-break-inside: avoid;
+    }
+
+    .signature img {
+      height: 38px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 10.5px;
+      color: #555;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="https://via.placeholder.com/150x50?text=Logo" alt="Institute Logo" />
+    <h1>Internship Offer Letter</h1>
+    <hr />
+  </div>
+
+  <div class="content">
+    <p>Date: <strong><%= new Date().toLocaleDateString() %></strong></p>
+    <p>To,</p>
+    <p><strong><%= application.name || 'Candidate' %></strong></p>
+    <p>Dear <%= application.name || 'Candidate' %>,</p>
+
+    <p>
+      We are pleased to offer you an internship with <strong>XYNAPSE SYSTEM</strong>
+      in the <strong><%= application.department || 'Department' %></strong> department.
+    </p>
+
+    <div class="section-box">
+      <strong>Internship Details:</strong>
+      <ul>
+        <li><strong>Period:</strong> <%= application.offerLetterData.startDate || 'N/A' %> to <%= application.offerLetterData.endDate || 'N/A' %> (<%= application.offerLetterData.duration || 'N/A' %>)</li>
+        <li><strong>Location:</strong> <%= application.offerLetterData.location || 'N/A' %></li>
+        <li><strong>Reporting Manager:</strong> <%= application.offerLetterData.reportingManager || 'N/A' %></li>
+        <li><strong>Stipend:</strong> <%= application.offerLetterData.stipend || 'N/A' %></li>
+        <li><strong>Working Hours:</strong> <%= application.offerLetterData.workingHours || 'N/A' %></li>
+      </ul>
+    </div>
+
+    <div class="section-box">
+      <strong>Responsibilities:</strong>
+      <ul>
+        <% (application.offerLetterData.responsibilities || []).forEach(function(item) { %>
+          <li><%= item %></li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <div class="section-box">
+      <strong>Completion Benefits:</strong>
+      <ul>
+        <% (application.offerLetterData.completionBenefits || []).forEach(function(item) { %>
+          <li><%= item %></li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <div class="section-box">
+      <strong>Notes:</strong>
+      <ul>
+        <% (application.offerLetterData.notes || []).forEach(function(item) { %>
+          <li><%= item %></li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <p>Please confirm your acceptance by responding via email.</p>
+  </div>
+
+  <div class="signature">
+    <img src="<%= application.offerLetterData.signatureImage || 'https://via.placeholder.com/120x40?text=Signature' %>" alt="Signature" />
+    <p><strong><%= application.offerLetterData.signatoryName || 'Head of Department' %></strong></p>
+    <p><%= application.offerLetterData.signatoryDesignation || 'Institute Name' %></p>
+  </div>
+
+  <div class="footer">
+    www.institute.com | contact@institute.com | +91-XXXXXXXXXX
+  </div>
+
+</body>
+</html>

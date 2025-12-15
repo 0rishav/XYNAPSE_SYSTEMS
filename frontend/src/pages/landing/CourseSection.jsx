@@ -55,7 +55,7 @@ const CourseSection = ({ topCoursesLoading, topCourses }) => {
                   to={`/course/${c._id}`}
                   className="relative group block rounded-2xl overflow-hidden p-0.5"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-2xl blur opacity-50 transition-opacity duration-500 group-hover:opacity-100 animate-gradient-x"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-500 via-slate-700 to-gray-400  dark:from-gray-400 dark:via-slate-500 dark:to-gray-600  rounded-2xl blur opacity-50 transition-opacity duration-500 group-hover:opacity-100 animate-gradient-x"></div>
 
                   <div className="relative bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-lg transform transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl h-[420px] flex flex-col">
                     <div className="h-40 w-full overflow-hidden rounded-md bg-slate-100">

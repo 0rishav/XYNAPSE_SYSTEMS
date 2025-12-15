@@ -67,7 +67,7 @@ export default function Gallery() {
                   <div key={it._id} className="rounded-md overflow-hidden border border-slate-200 bg-white">
                     <img src={it.image?.secure_url} alt={it.title} className="h-44 w-full object-cover" />
                     <div className="p-3">
-                      <h3 className="text-sm font-semibold text-slate-900">{it.title || "Untitled"}</h3>
+                      {/* <h3 className="text-sm font-semibold text-slate-900">{it.title || "Untitled"}</h3> */}
                       <p className="text-xs text-slate-500 mt-1">{it.description}</p>
                     </div>
                   </div>

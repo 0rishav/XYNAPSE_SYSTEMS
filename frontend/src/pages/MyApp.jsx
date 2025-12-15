@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import courseService from "../services/courseService";
+import courseFormService from "../services/courseFormService";
 
 const sectionCardClasses =
   "rounded-3xl border border-slate-00/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
@@ -100,7 +101,7 @@ function CourseDetail() {
     setFormSubmitting(true);
 
     try {
-      await courseService.submitCourseForm({
+      await courseFormService.submitCourseForm({
         ...formData,
         courseId,
       });

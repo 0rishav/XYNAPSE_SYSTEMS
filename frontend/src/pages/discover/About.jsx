@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
@@ -10,6 +9,7 @@ const stats = [
   { label: "Hiring partners", value: "120+" },
   { label: "Average rating", value: "4.9/5" },
 ];
+
 const timeline = [
   {
     title: "Where it began",
@@ -142,7 +142,6 @@ function About() {
 
   return (
     <div className="space-y-16">
-      {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-br from-sky-50 via-white to-blue-50 px-6 py-16 text-center shadow-sm dark:border-slate-800/70 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
         <div className="mx-auto max-w-3xl space-y-6">
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-500 dark:text-sky-400">
@@ -204,7 +203,7 @@ function About() {
               <div
                 key={stat.label}
                 className="rounded-2xl bg-slate-50/70 p-6 text-center dark:bg-slate-900/70"
-              > 
+              >
                 <p className="text-3xl font-semibold text-slate-900 dark:text-white">
                   {display}
                 </p>
@@ -298,7 +297,7 @@ function About() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA  */}
       <section className="rounded-3xl border border-slate-200/80 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-8 py-10 text-center text-white shadow-lg dark:border-slate-800">
         <h2 className="text-3xl font-semibold">Join our learning community</h2>
         <p className="mt-3 text-sm text-slate-200">

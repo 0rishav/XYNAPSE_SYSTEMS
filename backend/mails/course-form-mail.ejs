@@ -103,13 +103,14 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>New Course Form Submission</h1>
+        <h1>New Course Application Received</h1>
       </div>
 
       <div class="content">
-        <h2>Hello Admin!</h2>
+        <h2>Hello Admin,</h2>
         <p>
-          You have received a new course form submission. Here are the details:
+          A new course application has been submitted. Please find the applicant
+          details below:
         </p>
 
         <div class="detail-box">
@@ -117,15 +118,22 @@
           <div><strong>Email:</strong> <%= form.email %></div>
           <div><strong>Mobile:</strong> <%= form.mobile %></div>
           <div><strong>City:</strong> <%= form.city %></div>
-          <div><strong>Course ID:</strong> <%= form.courseId %></div>
-          <div><strong>Status:</strong> <%= form.status %></div>
+
+          <!-- ✅ FIXED HERE -->
           <div>
-            <strong>Submitted At:</strong> <%= new
-            Date(form.createdAt).toLocaleString() %>
+            <strong>Course Applied:</strong>
+            <%= form.courseId?.title || "N/A" %>
+          </div>
+
+          <div><strong>Status:</strong> <%= form.status %></div>
+
+          <div>
+            <strong>Submitted At:</strong>
+            <%= new Date(form.createdAt).toLocaleString() %>
           </div>
         </div>
 
-        <p>Please review this submission at your earliest convenience.</p>
+        <p>Please review this application at your earliest convenience.</p>
 
         <a
           class="support-link"
@@ -139,8 +147,9 @@
             border-radius: 999px;
             font-weight: 600;
           "
-          >Contact Admin</a
         >
+          Contact Admin
+        </a>
       </div>
 
       <div class="footer">

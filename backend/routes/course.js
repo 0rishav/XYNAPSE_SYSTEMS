@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/auth.js";
+import { isAuthenticated, requireRole } from "../middlewares/auth.js";
 import {
   createCourse,
   deleteCourse,
@@ -19,6 +19,7 @@ const courseRouter = express.Router();
 courseRouter.post(
   "/create",
   isAuthenticated,
+  requireRole("admin"),
   multerMiddleware([
     { name: "thumbnail", maxCount: 1 },
     { name: "logo", maxCount: 1 },
@@ -40,17 +41,38 @@ courseRouter.put(
 
 courseRouter.get("/:id", getCourseById);
 
-courseRouter.patch("/delete/:id", isAuthenticated, deleteCourse);
+courseRouter.patch(
+  "/delete/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  deleteCourse
+);
 
-courseRouter.patch("/publish/:id", isAuthenticated, togglePublishCourse);
+courseRouter.patch(
+  "/publish/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  togglePublishCourse
+);
 
-courseRouter.patch("/feature/:id", isAuthenticated, toggleFeatureCourse);
+courseRouter.patch(
+  "/feature/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  toggleFeatureCourse
+);
 
-courseRouter.patch("/moderate/:id", isAuthenticated, moderateCourse);
+courseRouter.patch(
+  "/moderate/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  moderateCourse
+);
 
 courseRouter.patch(
   "/thumbnail/:id",
   isAuthenticated,
+  requireRole("admin"),
   multerMiddleware([
     { name: "thumbnail", maxCount: 1 },
     { name: "logo", maxCount: 1 },

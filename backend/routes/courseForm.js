@@ -1,6 +1,7 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/auth.js";
+import { isAuthenticated, requireRole } from "../middlewares/auth.js";
 import {
+  assignInstructor,
   deleteCourseForm,
   getAllCourseForms,
   getFormsByCourseId,
@@ -13,13 +14,12 @@ import {
 
 const courseFormRouter = express.Router();
 
-//done
+
+// done
 courseFormRouter.post("/create-form", submitCourseForm);
 
 
-//for-admin
 courseFormRouter.get("/all-form", getAllCourseForms);
-
 
 // for admin
 courseFormRouter.get("/search-form", isAuthenticated, searchCourseForms);
@@ -33,5 +33,12 @@ courseFormRouter.get("/form/:id", isAuthenticated, getSingleCourseForm);
 courseFormRouter.patch("/delete/:id", isAuthenticated, deleteCourseForm);
 
 courseFormRouter.get("/course/:courseId", isAuthenticated, getFormsByCourseId);
+
+courseFormRouter.patch(
+  "/assign/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  assignInstructor
+);
 
 export default courseFormRouter;

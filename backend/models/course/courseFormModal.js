@@ -19,11 +19,32 @@ const courseFormSchema = new mongoose.Schema(
       required: true,
     },
 
+    instructorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth",
+      default: null,
+    },
+
+    studentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Auth",
+      default: null,
+    },
+
     status: {
       type: String,
-      enum: ["pending", "processed", "rejected"],
+      enum: [
+        "pending",
+        "verified",
+        "assigned",
+        "ongoing",
+        "completed",
+        "paid",
+        "rejected",
+      ],
       default: "pending",
     },
+
     adminNotes: { type: String, trim: true },
 
     isDeleted: { type: Boolean, default: false },

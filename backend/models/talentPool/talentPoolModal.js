@@ -38,15 +38,6 @@ const talentPoolSchema = new mongoose.Schema(
       default: "Pending",
       trim: true,
     },
-    // message: {
-    //   type: String,
-    //   trim: true,
-    //   default: "",
-    // },
-    // tags: {
-    //   type: [String],
-    //   default: [],
-    // },
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
     createdBy: {

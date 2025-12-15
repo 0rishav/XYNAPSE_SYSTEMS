@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
 import { updateUser } from "../../redux/authslice";
-
+import CourseForms from "../../components/CourseForms";
 const inputBaseClasses =
   "w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500";
 
@@ -213,9 +213,10 @@ function Profile() {
             </ul>
           </div>
 
+          <CourseForms userEmail={profile?.email} />
+
           <StatusBanner status={profileStatus} />
         </div>
-
         <div className="space-y-8 lg:col-span-2">
           <div className="rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
             <div className="flex items-center justify-between">
