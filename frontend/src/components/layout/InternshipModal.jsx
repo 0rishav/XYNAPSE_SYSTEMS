@@ -70,25 +70,25 @@ export default function InternshipModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={closeModal}
-        aria-hidden
+        aria-hidden="true"
       />
 
       {/* Modal Container */}
-      <div className="relative z-10 w-full max-w-3xl rounded-xl bg-white p-6 sm:p-8 shadow-xl dark:bg-gray-900 transform transition-all scale-100">
+      <div className="relative z-10 w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-3xl rounded-xl bg-white p-6 sm:p-8 shadow-xl dark:bg-gray-900 transform transition-all scale-100 overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-4">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-200 pb-2 mb-4">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 dark:text-white break-words">
             Apply Internship - {modalBranch?.name}
           </h3>
           <button
             type="button"
             onClick={closeModal}
-            className="rounded-full p-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="mt-2 sm:mt-0 rounded-full p-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             aria-label="Close modal"
           >
             ✕
@@ -97,8 +97,8 @@ export default function InternshipModal({
 
         {/* Form */}
         <form onSubmit={submitForm} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/** Name */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Name */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Name
@@ -113,7 +113,7 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** Email */}
+            {/* Email */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Email
@@ -129,7 +129,7 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** Phone */}
+            {/* Phone */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Phone
@@ -143,12 +143,11 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** Resume */}
+            {/* Resume */}
             <div className="flex flex-col sm:col-span-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Resume (optional)
               </label>
-
               <label className="relative cursor-pointer rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 transition flex items-center justify-between px-4 py-2">
                 <span className="text-gray-700 dark:text-gray-300">
                   {formData.resume ? formData.resume.name : "Choose a file..."}
@@ -213,7 +212,7 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** Department */}
+            {/* Department */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Department
@@ -227,7 +226,7 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** LinkedIn */}
+            {/* LinkedIn */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 LinkedIn
@@ -241,7 +240,7 @@ export default function InternshipModal({
               />
             </div>
 
-            {/** Portfolio */}
+            {/* Portfolio */}
             <div className="flex flex-col">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Portfolio
@@ -257,7 +256,7 @@ export default function InternshipModal({
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-3 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
               onClick={closeModal}
@@ -269,11 +268,11 @@ export default function InternshipModal({
             <button
               type="submit"
               className={`rounded-md px-4 py-2 text-sm font-semibold text-white shadow transition
-      ${
-        loading
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-gradient-to-r from-sky-500 to-blue-600 hover:shadow-lg hover:from-sky-600 hover:to-blue-700"
-      }`}
+          ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-sky-500 to-blue-600 hover:shadow-lg hover:from-sky-600 hover:to-blue-700"
+          }`}
               disabled={loading}
             >
               {loading ? "Submitting..." : "Submit"}

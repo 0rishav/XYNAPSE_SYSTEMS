@@ -306,6 +306,7 @@ const InvoicePage = () => {
       </div>
 
       <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+        {/* Search + Info */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex-1">
             <input
@@ -319,17 +320,19 @@ const InvoicePage = () => {
               className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
             />
           </div>
-          <div className="text-sm text-slate-500 dark:text-slate-400">
+          <div className="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
             Showing {invoices.length} of {totalPages * limit} invoices
           </div>
         </div>
 
+        {/* Error */}
         {error && (
           <div className="mb-6 rounded-2xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
             {error}
           </div>
         )}
 
+        {/* Loading */}
         {loading ? (
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
@@ -348,102 +351,162 @@ const InvoicePage = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
-            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
-              <thead className="bg-slate-50/50 dark:bg-slate-900/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Invoice #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Student
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Course
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
-                {invoices.map((invoice) => (
-                  <tr
-                    key={invoice._id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
-                      {invoice.invoiceNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {invoice.studentId?.name || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {invoice.courseId?.title || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {formatCurrency(calculateTotal(invoice))}
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={invoice.paymentStatus}
-                        onChange={(e) =>
-                          handleStatusChange(invoice._id, e.target.value)
-                        }
-                        className={`px-2 outline-none py-1 text-xs font-semibold rounded-full ${
-                          invoice.paymentStatus === "paid"
-                            ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
-                            : invoice.paymentStatus === "pending"
-                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
-                            : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
-                        }`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </td>
-
-                    {/* 🔥 Status Badge */}
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => viewInvoiceDetails(invoice)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => openEditModal(invoice)}
-                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(invoice._id)}
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="hidden xl:block overflow-x-auto rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+              <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
+                <thead className="bg-slate-50/50 dark:bg-slate-900/50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Invoice #
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Student
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Course
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Amount
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
+                  {invoices.map((invoice) => (
+                    <tr
+                      key={invoice._id}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20"
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                        {invoice.invoiceNumber}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {invoice.studentId?.name || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {invoice.courseId?.title || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {formatCurrency(calculateTotal(invoice))}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <select
+                          value={invoice.paymentStatus}
+                          onChange={(e) =>
+                            handleStatusChange(invoice._id, e.target.value)
+                          }
+                          className={`px-2 py-1 text-xs font-semibold rounded-full outline-none ${
+                            invoice.paymentStatus === "paid"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                              : invoice.paymentStatus === "pending"
+                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
+                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                          }`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="paid">Paid</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-2 flex-wrap">
+                          <button
+                            onClick={() => viewInvoiceDetails(invoice)}
+                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => openEditModal(invoice)}
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(invoice._id)}
+                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="xl:hidden flex flex-col gap-4">
+              {invoices.map((invoice) => (
+                <div
+                  key={invoice._id}
+                  className="bg-white/90 dark:bg-slate-950/50 p-4 rounded-2xl shadow flex flex-col gap-2"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-sm text-slate-900 dark:text-white">
+                      {invoice.invoiceNumber}
+                    </span>
+                    <select
+                      value={invoice.paymentStatus}
+                      onChange={(e) =>
+                        handleStatusChange(invoice._id, e.target.value)
+                      }
+                      className={`px-2 py-1 text-xs font-semibold rounded-full outline-none ${
+                        invoice.paymentStatus === "paid"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                          : invoice.paymentStatus === "pending"
+                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
+                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                      }`}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="paid">Paid</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {invoice.studentId?.name || "N/A"}
+                  </div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {invoice.courseId?.title || "N/A"}
+                  </div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {formatCurrency(calculateTotal(invoice))}
+                  </div>
+                  <div className="flex justify-end gap-2 mt-2 flex-wrap">
+                    <button
+                      onClick={() => viewInvoiceDetails(invoice)}
+                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => openEditModal(invoice)}
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(invoice._id)}
+                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}

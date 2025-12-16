@@ -31,6 +31,9 @@ import InterviewQuestionDetailPage from "./pages/Interview-Question/InterviewQue
 import Dashboard from "./pages/dashboard/Dashboard";
 import MyInvoices from "./pages/dashboard/MyInvoices";
 import MyInternshipPage from "./pages/dashboard/MyInternshipPage";
+import JobMela from "./pages/JobMela";
+import Users from "./admin/users/Users";
+import AllCoursesPage from "./pages/AllCoursesPage";
 
 function AppShell() {
   const location = useLocation();
@@ -69,14 +72,19 @@ function AppShell() {
               path="/resources/interview-questions"
               element={<InterviewQuestion />}
             />
-             <Route
+            <Route
               path="/interview-questions/:name"
               element={<InterviewQuestionDetailPage />}
             />
             <Route path="/course/:courseId" element={<CourseDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/my-invoices" element={<MyInvoices />} />
-            <Route path="/dashboard/my-internships" element={<MyInternshipPage />} />
+            <Route
+              path="/dashboard/my-internships"
+              element={<MyInternshipPage />}
+            />
+            <Route path="/job-mela" element={<JobMela />} />
+            <Route path="/courses" element={<AllCoursesPage />} />
 
           </Route>
 
@@ -84,6 +92,7 @@ function AppShell() {
             <Route path="/admin/*" element={<AdminLayout />}>
               <Route index element={<InternshipPage />} />
               <Route path="internship" element={<InternshipPage />} />
+              <Route path="users" element={<Users />} />
               <Route path="courses" element={<CourseAdminPage />} />
               <Route path="course-forms" element={<CourseFormAdminPage />} />
               <Route path="interview" element={<InterviewQuestionPage />} />

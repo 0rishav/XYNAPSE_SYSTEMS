@@ -20,26 +20,28 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
     );
 
   if (!isObjectIdOrHexString(courseId)) {
-    return next(
-      new ErrorHandler("Invalid Course ID format.", 400)
-    );
+    return next(new ErrorHandler("Invalid Course ID format.", 400));
   }
 
-  const existingForm = await CourseForm.findOne({
-    email,
+  const studentId = req.user?._id || null;
+
+  const duplicateQuery = {
     courseId,
     isDeleted: false,
-  });
+    ...(studentId
+      ? { studentId }
+      : { email }),
+  };
 
-  if (existingForm) {
-    if (existingForm.status !== "rejected") {
-      return next(
-        new ErrorHandler(
-          `You have already applied for this course. Current status: ${existingForm.status}.`,
-          409
-        )
-      );
-    }
+  const existingForm = await CourseForm.findOne(duplicateQuery);
+
+  if (existingForm && existingForm.status !== "rejected") {
+    return next(
+      new ErrorHandler(
+        `You have already applied for this course. Current status: ${existingForm.status}.`,
+        409
+      )
+    );
   }
 
   const newForm = await CourseForm.create({
@@ -48,6 +50,8 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
     mobile,
     city,
     courseId,
+    studentId,
+    appliedAsGuest: !studentId,
   });
 
   const populatedForm = await CourseForm.findById(newForm._id)
@@ -66,7 +70,7 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
       subject: "New Course Form Submission",
       template: "course-form-mail.ejs",
       data: {
-        form: populatedForm, 
+        form: populatedForm,
       },
     });
   } catch (err) {
@@ -98,7 +102,6 @@ export const getAllCourseForms = CatchAsyncError(async (req, res, next) => {
     data: forms,
   });
 });
-
 
 export const getSingleCourseForm = CatchAsyncError(async (req, res, next) => {
   const formId = req.params.id;

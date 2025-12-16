@@ -24,7 +24,7 @@ const JobMelaPage = () => {
     location: "",
     salary: "",
     description: "",
-    applicationDeadline: ""
+    applicationDeadline: "",
   });
 
   useEffect(() => {
@@ -34,14 +34,14 @@ const JobMelaPage = () => {
   const fetchJobPostings = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await jobMelaService.getAllJobFairs({
         page: currentPage,
         limit,
         status: statusFilter,
         jobType: jobTypeFilter,
-        companyName: searchTerm
+        companyName: searchTerm,
       });
       setJobs(response.jobs || []);
       setTotalPages(Math.ceil(response.total / limit) || 1);
@@ -93,7 +93,9 @@ const JobMelaPage = () => {
       location: job.location || "",
       salary: job.salary?.$numberDecimal || job.salary || "",
       description: job.description || "",
-      applicationDeadline: job.applicationDeadline ? new Date(job.applicationDeadline).toISOString().split('T')[0] : ""
+      applicationDeadline: job.applicationDeadline
+        ? new Date(job.applicationDeadline).toISOString().split("T")[0]
+        : "",
     });
     setShowModal(true);
   };
@@ -108,7 +110,7 @@ const JobMelaPage = () => {
       location: "",
       salary: "",
       description: "",
-      applicationDeadline: ""
+      applicationDeadline: "",
     });
     setShowModal(true);
   };
@@ -124,25 +126,25 @@ const JobMelaPage = () => {
       location: "",
       salary: "",
       description: "",
-      applicationDeadline: ""
+      applicationDeadline: "",
     });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const payload = {
         ...formData,
-        salary: formData.salary ? parseFloat(formData.salary) : undefined
+        salary: formData.salary ? parseFloat(formData.salary) : undefined,
       };
 
       if (editingJob) {
@@ -150,7 +152,7 @@ const JobMelaPage = () => {
       } else {
         await jobMelaService.createJobFair(payload);
       }
-      
+
       // Reset form and refresh list
       closeEditModal();
       fetchJobPostings();
@@ -195,7 +197,9 @@ const JobMelaPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Job Postings</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Job Postings
+          </h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage job fair postings
           </p>
@@ -218,6 +222,7 @@ const JobMelaPage = () => {
       </div>
 
       <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+        {/* Filters */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <input
@@ -231,7 +236,7 @@ const JobMelaPage = () => {
               className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
             />
           </div>
-          
+
           <div>
             <select
               value={statusFilter}
@@ -246,7 +251,7 @@ const JobMelaPage = () => {
               <option value="closed">Closed</option>
             </select>
           </div>
-          
+
           <div>
             <select
               value={jobTypeFilter}
@@ -264,111 +269,214 @@ const JobMelaPage = () => {
               <option value="Other">Other</option>
             </select>
           </div>
-          
+
           <div className="text-sm text-slate-500 dark:text-slate-400 self-center">
             Showing {jobs.length} of {totalPages * limit} postings
           </div>
         </div>
 
+        {/* Error */}
         {error && (
           <div className="mb-6 rounded-2xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
             {error}
           </div>
         )}
 
+        {/* Loading / Empty */}
         {loading ? (
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 rounded-2xl bg-slate-200/80 dark:bg-slate-800"></div>
+              <div
+                key={i}
+                className="h-16 rounded-2xl bg-slate-200/80 dark:bg-slate-800"
+              ></div>
             ))}
           </div>
         ) : jobs.length === 0 ? (
           <div className="rounded-2xl bg-slate-100 p-8 text-center dark:bg-slate-900">
             <p className="text-slate-500 dark:text-slate-400">
-              {searchTerm || statusFilter || jobTypeFilter ? "No job postings match your filters." : "No job postings found."}
+              {searchTerm || statusFilter || jobTypeFilter
+                ? "No job postings match your filters."
+                : "No job postings found."}
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
-            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
-              <thead className="bg-slate-50/50 dark:bg-slate-900/50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Job Title</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Company</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Location</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Job Type</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Deadline</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Status</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
-                {jobs.map((job) => (
-                  <tr key={job._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
-                      <div className="max-w-xs truncate">{job.title || "N/A"}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {job.companyName || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {job.location || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getJobTypeClass(job.jobType)}`}>
-                        {job.jobType || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {formatDate(job.applicationDeadline)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(job.status)}`}>
-                        {job.status || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
+          <>
+            {/* Desktop Table (1080px+) */}
+            <div className="hidden lg:block overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+              <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
+                <thead className="bg-slate-50/50 dark:bg-slate-900/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Job Title
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Company
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Location
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Job Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Deadline
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
+                  {jobs.map((job) => (
+                    <tr
+                      key={job._id}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                        {job.title || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {job.companyName || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {job.location || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getJobTypeClass(
+                            job.jobType
+                          )}`}
+                        >
+                          {job.jobType || "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {formatDate(job.applicationDeadline)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
+                            job.status
+                          )}`}
+                        >
+                          {job.status || "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2 flex-wrap">
                         <button
-                          onClick={() => viewJobDetails(job)}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          onClick={() => viewJobDetails(job)}
                         >
                           View
                         </button>
                         <button
-                          onClick={() => openEditModal(job)}
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          onClick={() => openEditModal(job)}
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => handleStatusUpdate(job._id, job.status === "active" ? "closed" : "active")}
                           className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                          onClick={() =>
+                            handleStatusUpdate(
+                              job._id,
+                              job.status === "active" ? "closed" : "active"
+                            )
+                          }
                         >
                           {job.status === "active" ? "Close" : "Activate"}
                         </button>
                         <button
-                          onClick={() => handleDelete(job._id)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          onClick={() => handleDelete(job._id)}
                         >
                           Delete
                         </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards (below 1080px) */}
+            <div className="lg:hidden space-y-4">
+              {jobs.map((job) => (
+                <div
+                  key={job._id}
+                  className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-medium text-slate-900 dark:text-white">
+                        {job.title || "N/A"}
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {job.companyName || "N/A"}
+                      </div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        {job.location || "N/A"} - {job.jobType || "N/A"}
+                      </div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                        Deadline: {formatDate(job.applicationDeadline)}
+                      </div>
+                    </div>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
+                        job.status
+                      )}`}
+                    >
+                      {job.status || "N/A"}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                      onClick={() => viewJobDetails(job)}
+                    >
+                      View
+                    </button>
+                    <button
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                      onClick={() => openEditModal(job)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                      onClick={() =>
+                        handleStatusUpdate(
+                          job._id,
+                          job.status === "active" ? "closed" : "active"
+                        )
+                      }
+                    >
+                      {job.status === "active" ? "Close" : "Activate"}
+                    </button>
+                    <button
+                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                      onClick={() => handleDelete(job._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
             >
               Previous
             </button>
@@ -376,9 +484,11 @@ const JobMelaPage = () => {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
             >
               Next
             </button>
@@ -540,76 +650,108 @@ const JobMelaPage = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Job Title</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Job Title
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingJob.title || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Company Name</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Company Name
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingJob.companyName || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Location</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Location
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingJob.location || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Job Type</p>
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getJobTypeClass(viewingJob.jobType)}`}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Job Type
+                </p>
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getJobTypeClass(
+                    viewingJob.jobType
+                  )}`}
+                >
                   {viewingJob.jobType || "N/A"}
                 </span>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Application Deadline</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Application Deadline
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {formatDate(viewingJob.applicationDeadline)}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Status</p>
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(viewingJob.status)}`}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Status
+                </p>
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
+                    viewingJob.status
+                  )}`}
+                >
                   {viewingJob.status || "N/A"}
                 </span>
               </div>
-              
+
               <div className="md:col-span-2">
-                <p className="text-sm text-slate-500 dark:text-slate-400">Salary</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Salary
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
-                  {viewingJob.salary ? `₹${parseFloat(viewingJob.salary.$numberDecimal || viewingJob.salary).toFixed(2)}` : "Not specified"}
+                  {viewingJob.salary
+                    ? `₹${parseFloat(
+                        viewingJob.salary.$numberDecimal || viewingJob.salary
+                      ).toFixed(2)}`
+                    : "Not specified"}
                 </p>
               </div>
             </div>
-            
+
             <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Description</h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+                Description
+              </h3>
               <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                 {viewingJob.description || "No description provided"}
               </p>
             </div>
-            
+
             <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Job Link</h3>
-              <a 
-                href={viewingJob.jobLink} 
-                target="_blank" 
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+                Job Link
+              </h3>
+              <a
+                href={viewingJob.jobLink}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 {viewingJob.jobLink || "No link provided"}
               </a>
             </div>
-            
+
             <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Update Status</h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+                Update Status
+              </h3>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleStatusUpdate(viewingJob._id, "active")}
@@ -625,7 +767,7 @@ const JobMelaPage = () => {
                 </button>
               </div>
             </div>
-            
+
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={closeViewModal}

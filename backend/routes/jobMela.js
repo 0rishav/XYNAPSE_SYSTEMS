@@ -8,6 +8,7 @@ import {
   updateJobFair,
   updateJobFairStatus,
 } from "../controllers/jobMela.js";
+import { requirePaidCourse } from "../middlewares/requiredPaidCourse.js";
 
 const jobMelaRouter = express.Router();
 
@@ -19,9 +20,16 @@ jobMelaRouter.post(
 );
 
 jobMelaRouter.get(
-  "/all-job",
+  "/all-job-admin",
   isAuthenticated,
   requireRole("admin"),
+  getAllJobFairs
+);
+
+jobMelaRouter.get(
+  "/all-job",
+  isAuthenticated,
+  requirePaidCourse,
   getAllJobFairs
 );
 

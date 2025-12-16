@@ -22,7 +22,7 @@ class JobMelaService {
   // Get all job postings with filters
   async getAllJobFairs(params = {}) {
     try {
-      const response = await axiosInstance.get("/jobMela/all-job", { params });
+      const response = await axiosInstance.get("/jobMela/all-job-admin", { params });
       return this.handleResponse(response);
     } catch (error) {
       this.handleError(error);

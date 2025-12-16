@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated } from "../middlewares/auth.js";
+import { isAuthenticated, optionalAuth } from "../middlewares/auth.js";
 import {
   createInternshipApplication,
   deleteInternshipApplication,
@@ -23,6 +23,7 @@ const internshipRouter = express.Router();
 //integrated
 internshipRouter.post(
   "/create",
+  optionalAuth,
   multerMiddleware([{ name: "resumeUrl", maxCount: 1 }]),
   createInternshipApplication
 );

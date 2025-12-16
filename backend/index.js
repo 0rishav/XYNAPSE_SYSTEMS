@@ -18,6 +18,7 @@ import invoiceRouter from "./routes/invoices.js";
 import salarySlipRouter from "./routes/salarySlip.js";
 import employeeApplicationRouter from "./routes/employeeApplication.js";
 import jobMelaRouter from "./routes/jobMela.js";
+import getTouchRouter from "./routes/getTouch.js";
 
 dotenv.config();
 
@@ -64,7 +65,8 @@ app.use("/api/v1/internship", internshipRouter);    //done
 app.use("/api/v1/invoice", invoiceRouter);    //done
 app.use("/api/v1/salary-slip", salarySlipRouter);  //done
 app.use("/api/v1/employee", employeeApplicationRouter);  //done
-app.use("/api/v1/jobMela", jobMelaRouter);   
+app.use("/api/v1/jobMela", jobMelaRouter); 
+app.use("/api/v1/getTouch", getTouchRouter);   
 
 app.use(ErrorMiddleware);
 

@@ -28,9 +28,12 @@ export default function TopBar({
           </div>
 
           <div className="flex justify-start md:justify-center">
-            <button className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30">
+            <Link
+              to="/job-mela"
+              className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30"
+            >
               Job Mela
-            </button>
+            </Link>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-100">

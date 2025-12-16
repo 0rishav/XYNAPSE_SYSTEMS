@@ -1,9 +1,9 @@
-import { FaUserGraduate, FaHome, FaEnvelope, FaFileAlt, FaBars, FaChevronLeft, FaChevronRight, FaMoon, FaSun, FaBook, FaClipboardList, FaQuestionCircle, FaReceipt, FaMoneyBill, FaUserPlus, FaBriefcase } from "react-icons/fa";
+import { FaUserGraduate, FaHome, FaEnvelope, FaFileAlt, FaBars, FaChevronLeft, FaChevronRight, FaMoon, FaSun, FaBook, FaClipboardList, FaQuestionCircle, FaReceipt, FaMoneyBill, FaUserPlus, FaBriefcase, FaUser } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 
 const menuItems = [
-  // { name: "Dashboard", icon: <FaHome />, link: "/admin/dashboard" },
+  { name: "Users", icon: <FaUser />, link: "/admin/users" },
   { name: "Courses", icon: <FaBook />, link: "/admin/courses" },
   { name: "Course Forms", icon: <FaClipboardList />, link: "/admin/course-forms" },
   { name: "Internship", icon: <FaUserGraduate />, link: "/admin/internship" },
@@ -12,8 +12,6 @@ const menuItems = [
   { name: "Salary Slips", icon: <FaMoneyBill />, link: "/admin/salary-slips" },
   { name: "Employee Applications", icon: <FaUserPlus />, link: "/admin/employee-applications" },
   { name: "Job Postings", icon: <FaBriefcase />, link: "/admin/job-postings" },
-  // { name: "Messages", icon: <FaEnvelope />, link: "/admin/messages" },
-  // { name: "Reports", icon: <FaFileAlt />, link: "/admin/reports" },
 ];
 
 const AdminSidebar = ({ isOpen, toggleSidebar, isMobileOpen, toggleMobileSidebar }) => {

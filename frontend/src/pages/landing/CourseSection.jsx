@@ -4,7 +4,6 @@ import { AnimatedReveal } from "./Landing";
 const sectionCardClasses =
   "rounded-3xl border border-slate-00/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
 
-// Gradient animation keyframes for Tailwind
 const gradientAnimationStyle = `
 @keyframes gradient-x {
   0%,100% { background-position: 0% 50%; }
@@ -17,7 +16,6 @@ const gradientAnimationStyle = `
 `;
 
 const CourseSection = ({ topCoursesLoading, topCourses }) => {
-  // Only show first 6 courses
   const displayedCourses = topCourses?.slice(0, 6) || [];
 
   return (

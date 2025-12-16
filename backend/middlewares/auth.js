@@ -37,6 +37,57 @@ export const isAuthenticated = CatchAsyncError(async (req, res, next) => {
   next();
 });
 
+export const optionalAuth = CatchAsyncError(async (req, res, next) => {
+  const token = req.cookies.accessToken;
+
+  if (!token) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  let decoded;
+  try {
+    decoded = TokenService.verifyAccessToken(token);
+  } catch (err) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  if (!decoded) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  const user = await Auth.findById(decoded._id);
+  if (!user || !user.isActive || user.isBlock) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  const session = await AuthSession.findById(sessionId);
+  if (!session || !session.isActive) {
+    req.user = null;
+    req.session = null;
+    return next();
+  }
+
+  req.user = user;
+  req.session = session;
+
+  next();
+});
+
 export const requireRole = (...roles) =>
   CatchAsyncError(async (req, res, next) => {
     if (!req.user) {

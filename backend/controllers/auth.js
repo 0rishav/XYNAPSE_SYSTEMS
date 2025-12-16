@@ -12,6 +12,7 @@ import { sendMail } from "../utils/sendMail.js";
 import bcrypt from "bcrypt";
 import fs from "fs/promises";
 import InternshipApplication from "../models/Internship/internshipModal.js";
+import CourseForm from "../models/course/courseFormModal.js";
 
 export const registerUser = CatchAsyncError(async (req, res, next) => {
   const { name, email, mobile, bio, password, confirmPassword, role } =
@@ -255,27 +256,26 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
 
   const isProd = process.env.NODE_ENV === "production";
 
-res.cookie("accessToken", accessToken, {
-  httpOnly: true,
-  secure: isProd,          
-  sameSite: isProd ? "None" : "Lax",
-  maxAge: 15 * 60 * 1000,
-});
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "None" : "Lax",
+    maxAge: 15 * 60 * 1000,
+  });
 
-res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: isProd,
-  sameSite: isProd ? "None" : "Lax",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "None" : "Lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
-res.cookie("sessionId", sessionId, {
-  httpOnly: true,
-  secure: isProd,
-  sameSite: isProd ? "None" : "Lax",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
-
+  res.cookie("sessionId", sessionId, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "None" : "Lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   user.failedLoginAttempts = 0;
   user.lastLoginAt = new Date();
@@ -294,6 +294,30 @@ res.cookie("sessionId", sessionId, {
     }
   } catch (err) {
     console.error("Error updating internship applications:", err);
+  }
+
+  try {
+    const updatedCourseForms = await CourseForm.updateMany(
+      {
+        email: user.email,
+        studentId: null,
+      },
+      {
+        $set: {
+          studentId: user._id,
+          appliedAsGuest: false,
+          guestLinkedAt: new Date(),
+        },
+      }
+    );
+
+    if (updatedCourseForms.modifiedCount > 0) {
+      console.log(
+        `Updated ${updatedCourseForms.modifiedCount} course form(s) with studentId ${user._id}`
+      );
+    }
+  } catch (err) {
+    console.error("Error updating course forms:", err);
   }
 
   await AuditLog.create({
@@ -600,12 +624,13 @@ export const getMe = CatchAsyncError(async (req, res, next) => {
 });
 
 export const getAllUsers = CatchAsyncError(async (req, res, next) => {
-  const admin = req.user; 
+  const admin = req.user;
 
   if (admin.role !== "admin") {
     return next(new ErrorHandler("Access denied", 403));
   }
 
+  // Audit log
   await AuditLog.create({
     userId: admin._id,
     eventType: "FETCH_ALL_USERS",
@@ -614,17 +639,56 @@ export const getAllUsers = CatchAsyncError(async (req, res, next) => {
     metadata: { action: "admin_fetch_all_users" },
   });
 
-  const users = await Auth.find({ isDeleted: false })
+  const {
+    search = "",
+    role,
+    roleStatus,
+    isTwofaEnabled,
+    emailVerified,
+    phoneVerified,
+    page = 1,
+    limit = 20,
+  } = req.query;
+
+  const filters = { isDeleted: false };
+
+  if (search) {
+    filters.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { mobile: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  if (role) filters.role = role;
+  if (roleStatus) filters.roleStatus = roleStatus;
+  if (isTwofaEnabled !== undefined)
+    filters.isTwofaEnabled = isTwofaEnabled === "true";
+  if (emailVerified !== undefined)
+    filters.emailVerified = emailVerified === "true";
+  if (phoneVerified !== undefined)
+    filters.phoneVerified = phoneVerified === "true";
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const total = await Auth.countDocuments(filters);
+
+  const users = await Auth.find(filters)
     .select(
-      "_id name email mobile bio socialLinks role roleStatus emailVerified phoneVerified isTwofaEnabled lastLoginAt createdAt updatedAt"
+      "_id name email mobile bio socialLinks role roleStatus emailVerified phoneVerified isTwofaEnabled isActive isBlock lastLoginAt createdAt updatedAt"
     )
+
     .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit))
     .lean();
 
   res.status(200).json({
     success: true,
     message: "Users fetched successfully",
-    total: users.length,
+    total,
+    page: Number(page),
+    limit: Number(limit),
     data: users,
   });
 });
@@ -868,4 +932,71 @@ export const verifyUserAccount = CatchAsyncError(async (req, res, next) => {
     message: `User account ${status} successfully`,
     data: { userId: user._id, roleStatus: user.roleStatus },
   });
+});
+
+export const updateUserRole = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!role || !["student", "admin", "instructor"].includes(role)) {
+    return next(new ErrorHandler("Invalid role provided", 400));
+  }
+
+  const user = await Auth.findById(id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  user.role = role;
+  await user.save();
+
+  res.status(200).json({ success: true, message: "Role updated", user });
+});
+
+export const toggleIsDeleted = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await Auth.findById(id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  user.isDeleted = !user.isDeleted;
+  user.deletedAt = user.isDeleted ? new Date() : null;
+  await user.save();
+
+  res.status(200).json({ success: true, message: "isDeleted toggled", user });
+});
+
+export const toggleIsActive = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await Auth.findById(id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  user.isActive = !user.isActive;
+  user.deactivatedAt = user.isActive ? null : new Date();
+  await user.save();
+
+  res.status(200).json({ success: true, message: "isActive toggled", user });
+});
+
+export const toggleIsBlock = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await Auth.findById(id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  user.isBlock = !user.isBlock;
+  user.blockedAt = user.isBlock ? new Date() : null;
+  await user.save();
+
+  res.status(200).json({ success: true, message: "isBlock toggled", user });
+});
+
+export const hardDeleteUser = CatchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+
+  const user = await Auth.findById(id);
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  await Auth.findByIdAndDelete(id);
+
+  res.status(200).json({ success: true, message: "User permanently deleted" });
 });

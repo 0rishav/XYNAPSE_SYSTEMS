@@ -28,7 +28,7 @@ const SalarySlipPage = () => {
     bankDetails: {
       accountNumber: "",
       bankName: "",
-      ifscCode: ""
+      ifscCode: "",
     },
     address: {
       line1: "",
@@ -36,9 +36,9 @@ const SalarySlipPage = () => {
       city: "",
       state: "",
       country: "",
-      zipCode: ""
+      zipCode: "",
     },
-    notes: ""
+    notes: "",
   });
 
   const [historyData, setHistoryData] = useState({
@@ -46,7 +46,7 @@ const SalarySlipPage = () => {
     salary: "",
     paidOn: "",
     paymentMethod: "Bank Transfer",
-    notes: ""
+    notes: "",
   });
 
   useEffect(() => {
@@ -57,7 +57,9 @@ const SalarySlipPage = () => {
   const fetchEmployees = async () => {
     try {
       const response = await authService.getAllUsers();
-      setEmployees(response.data.filter(user => user.role === "instructor") || []);
+      setEmployees(
+        response.data.filter((user) => user.role === "instructor") || []
+      );
     } catch (err) {
       console.error("Failed to fetch employees:", err);
     }
@@ -66,14 +68,14 @@ const SalarySlipPage = () => {
   const fetchSalarySlips = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await salarySlipService.getAllSalarySlips({
         page: currentPage,
         limit,
         status: statusFilter,
         department: departmentFilter,
-        search: searchTerm
+        search: searchTerm,
       });
       setSalarySlips(response.salarySlips || []);
       setTotalPages(Math.ceil(response.total / limit) || 1);
@@ -109,49 +111,49 @@ const SalarySlipPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleBankDetailsChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       bankDetails: {
         ...prev.bankDetails,
-        [name]: value
-      }
+        [name]: value,
+      },
     }));
   };
 
   const handleAddressChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       address: {
         ...prev.address,
-        [name]: value
-      }
+        [name]: value,
+      },
     }));
   };
 
   const handleHistoryChange = (e) => {
     const { name, value } = e.target;
-    setHistoryData(prev => ({
+    setHistoryData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const payload = {
         ...formData,
-        salary: parseFloat(formData.salary)
+        salary: parseFloat(formData.salary),
       };
 
       if (editingSlip) {
@@ -159,7 +161,7 @@ const SalarySlipPage = () => {
       } else {
         await salarySlipService.createSalarySlip(payload);
       }
-      
+
       // Reset form and refresh list
       setFormData({
         authId: "",
@@ -170,7 +172,7 @@ const SalarySlipPage = () => {
         bankDetails: {
           accountNumber: "",
           bankName: "",
-          ifscCode: ""
+          ifscCode: "",
         },
         address: {
           line1: "",
@@ -178,9 +180,9 @@ const SalarySlipPage = () => {
           city: "",
           state: "",
           country: "",
-          zipCode: ""
+          zipCode: "",
         },
-        notes: ""
+        notes: "",
       });
       setEditingSlip(null);
       setShowModal(false);
@@ -193,23 +195,23 @@ const SalarySlipPage = () => {
 
   const handleHistorySubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const payload = {
         ...historyData,
         salary: parseFloat(historyData.salary),
-        paidOn: new Date(historyData.paidOn)
+        paidOn: new Date(historyData.paidOn),
       };
 
       await salarySlipService.addSalaryHistory(selectedEmployee._id, payload);
-      
+
       // Reset form and refresh
       setHistoryData({
         month: "",
         salary: "",
         paidOn: "",
         paymentMethod: "Bank Transfer",
-        notes: ""
+        notes: "",
       });
       setShowHistoryModal(false);
       setSelectedEmployee(null);
@@ -231,7 +233,7 @@ const SalarySlipPage = () => {
       bankDetails: {
         accountNumber: slip.bankDetails?.accountNumber || "",
         bankName: slip.bankDetails?.bankName || "",
-        ifscCode: slip.bankDetails?.ifscCode || ""
+        ifscCode: slip.bankDetails?.ifscCode || "",
       },
       address: {
         line1: slip.address?.line1 || "",
@@ -239,9 +241,9 @@ const SalarySlipPage = () => {
         city: slip.address?.city || "",
         state: slip.address?.state || "",
         country: slip.address?.country || "",
-        zipCode: slip.address?.zipCode || ""
+        zipCode: slip.address?.zipCode || "",
       },
-      notes: slip.notes || ""
+      notes: slip.notes || "",
     });
     setShowModal(true);
   };
@@ -257,7 +259,7 @@ const SalarySlipPage = () => {
       bankDetails: {
         accountNumber: "",
         bankName: "",
-        ifscCode: ""
+        ifscCode: "",
       },
       address: {
         line1: "",
@@ -265,9 +267,9 @@ const SalarySlipPage = () => {
         city: "",
         state: "",
         country: "",
-        zipCode: ""
+        zipCode: "",
       },
-      notes: ""
+      notes: "",
     });
     setShowModal(true);
   };
@@ -277,9 +279,9 @@ const SalarySlipPage = () => {
     setHistoryData({
       month: "",
       salary: slip.salary?.$numberDecimal || slip.salary || "",
-      paidOn: new Date().toISOString().split('T')[0],
+      paidOn: new Date().toISOString().split("T")[0],
       paymentMethod: "Bank Transfer",
-      notes: ""
+      notes: "",
     });
     setShowHistoryModal(true);
   };
@@ -294,7 +296,10 @@ const SalarySlipPage = () => {
 
   const formatCurrency = (amount) => {
     if (!amount) return "₹0.00";
-    const num = typeof amount === 'object' ? parseFloat(amount.$numberDecimal) : parseFloat(amount);
+    const num =
+      typeof amount === "object"
+        ? parseFloat(amount.$numberDecimal)
+        : parseFloat(amount);
     return `₹${num.toFixed(2)}`;
   };
 
@@ -307,7 +312,9 @@ const SalarySlipPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Salary Slips</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Salary Slips
+          </h1>
           <p className="text-slate-600 dark:text-slate-400">
             Manage employee salary slips
           </p>
@@ -330,158 +337,246 @@ const SalarySlipPage = () => {
       </div>
 
       <div className="rounded-3xl border border-slate-200/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+        {/* Search + Filters */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <input
-              type="text"
-              placeholder="Search employees..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
-            />
-          </div>
-          
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
-            >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="onLeave">On Leave</option>
-              <option value="resigned">Resigned</option>
-              <option value="terminated">Terminated</option>
-            </select>
-          </div>
-          
-          <div>
-            <input
-              type="text"
-              placeholder="Filter by department..."
-              value={departmentFilter}
-              onChange={(e) => {
-                setDepartmentFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
-            />
-          </div>
-          
+          <input
+            type="text"
+            placeholder="Search employees..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
+          >
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="onLeave">On Leave</option>
+            <option value="resigned">Resigned</option>
+            <option value="terminated">Terminated</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Filter by department..."
+            value={departmentFilter}
+            onChange={(e) => {
+              setDepartmentFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-2 text-sm text-slate-900 shadow-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-slate-700/80 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-500"
+          />
           <div className="text-sm text-slate-500 dark:text-slate-400 self-center">
             Showing {salarySlips.length} of {totalPages * limit} salary slips
           </div>
         </div>
 
+        {/* Error */}
         {error && (
           <div className="mb-6 rounded-2xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-200">
             {error}
           </div>
         )}
 
+        {/* Loading */}
         {loading ? (
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-16 rounded-2xl bg-slate-200/80 dark:bg-slate-800"></div>
+              <div
+                key={i}
+                className="h-16 rounded-2xl bg-slate-200/80 dark:bg-slate-800"
+              ></div>
             ))}
           </div>
         ) : salarySlips.length === 0 ? (
           <div className="rounded-2xl bg-slate-100 p-8 text-center dark:bg-slate-900">
             <p className="text-slate-500 dark:text-slate-400">
-              {searchTerm || statusFilter || departmentFilter ? "No salary slips match your filters." : "No salary slips found."}
+              {searchTerm || statusFilter || departmentFilter
+                ? "No salary slips match your filters."
+                : "No salary slips found."}
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
-            <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
-              <thead className="bg-slate-50/50 dark:bg-slate-900/50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Employee</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Employee Code</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Designation</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Department</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Salary</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Status</th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
-                {salarySlips.map((slip) => (
-                  <tr key={slip._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
-                      {slip.authId?.name || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {slip.employeeCode || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {slip.designation || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {slip.department || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                      {formatCurrency(slip.salary)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        slip.status === "active" 
-                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200" 
-                          : slip.status === "onLeave" 
-                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200" 
-                            : slip.status === "resigned" 
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200" 
-                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
-                      }`}>
-                        {slip.status || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => viewSalarySlipDetails(slip)}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                        >
-                          View
-                        </button>
-                        <button
-                          onClick={() => openEditModal(slip)}
-                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => openHistoryModal(slip)}
-                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                        >
-                          Pay
-                        </button>
-                        <button
-                          onClick={() => handleDelete(slip._id)}
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table (≥1080px) */}
+            <div className="hidden lg:block overflow-x-auto rounded-2xl border border-slate-200/80 bg-white/90 shadow-sm dark:border-slate-800/80 dark:bg-slate-950/50">
+              <table className="min-w-full divide-y divide-slate-200/80 dark:divide-slate-800/80">
+                <thead className="bg-slate-50/50 dark:bg-slate-900/50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Employee
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Employee Code
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Designation
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Department
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Salary
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider dark:text-slate-400">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white/50 divide-y divide-slate-200/80 dark:bg-slate-950/50 dark:divide-slate-800/80">
+                  {salarySlips.map((slip) => (
+                    <tr
+                      key={slip._id}
+                      className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                        {slip.authId?.name || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {slip.employeeCode || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {slip.designation || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {slip.department || "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        {formatCurrency(slip.salary)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            slip.status === "active"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                              : slip.status === "onLeave"
+                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
+                              : slip.status === "resigned"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                          }`}
+                        >
+                          {slip.status || "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => viewSalarySlipDetails(slip)}
+                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => openEditModal(slip)}
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openHistoryModal(slip)}
+                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                          >
+                            Pay
+                          </button>
+                          <button
+                            onClick={() => handleDelete(slip._id)}
+                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View (<1080px) */}
+            <div className="block lg:hidden flex-col gap-4">
+              {salarySlips.map((slip) => (
+                <div
+                  key={slip._id}
+                  className="bg-white/90 dark:bg-slate-950/50 p-4 rounded-2xl shadow flex flex-col gap-2"
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {slip.authId?.name || "N/A"}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        slip.status === "active"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                          : slip.status === "onLeave"
+                          ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
+                          : slip.status === "resigned"
+                          ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                          : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                      }`}
+                    >
+                      {slip.status || "N/A"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Emp. Code: {slip.employeeCode || "N/A"}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Designation: {slip.designation || "N/A"}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Department: {slip.department || "N/A"}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Salary: {formatCurrency(slip.salary)}
+                  </p>
+                  <div className="flex justify-end gap-2 flex-wrap">
+                    <button
+                      onClick={() => viewSalarySlipDetails(slip)}
+                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => openEditModal(slip)}
+                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => openHistoryModal(slip)}
+                      className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                    >
+                      Pay
+                    </button>
+                    <button
+                      onClick={() => handleDelete(slip._id)}
+                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
@@ -491,7 +586,9 @@ const SalarySlipPage = () => {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
@@ -517,7 +614,7 @@ const SalarySlipPage = () => {
             bankDetails: {
               accountNumber: "",
               bankName: "",
-              ifscCode: ""
+              ifscCode: "",
             },
             address: {
               line1: "",
@@ -525,9 +622,9 @@ const SalarySlipPage = () => {
               city: "",
               state: "",
               country: "",
-              zipCode: ""
+              zipCode: "",
             },
-            notes: ""
+            notes: "",
           });
         }}
       >
@@ -546,7 +643,7 @@ const SalarySlipPage = () => {
                 disabled={!!editingSlip}
               >
                 <option value="">Select an employee</option>
-                {employees.map(employee => (
+                {employees.map((employee) => (
                   <option key={employee._id} value={employee._id}>
                     {employee.name}
                   </option>
@@ -613,7 +710,9 @@ const SalarySlipPage = () => {
           </div>
 
           <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Bank Details</h3>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+              Bank Details
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -660,7 +759,9 @@ const SalarySlipPage = () => {
           </div>
 
           <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Address</h3>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+              Address
+            </h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -777,7 +878,7 @@ const SalarySlipPage = () => {
                   bankDetails: {
                     accountNumber: "",
                     bankName: "",
-                    ifscCode: ""
+                    ifscCode: "",
                   },
                   address: {
                     line1: "",
@@ -785,9 +886,9 @@ const SalarySlipPage = () => {
                     city: "",
                     state: "",
                     country: "",
-                    zipCode: ""
+                    zipCode: "",
                   },
-                  notes: ""
+                  notes: "",
                 });
               }}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
@@ -807,7 +908,9 @@ const SalarySlipPage = () => {
       {/* Modal for adding salary history */}
       <Modal
         isOpen={showHistoryModal}
-        title={`Add Salary History for ${selectedEmployee?.authId?.name || "Employee"}`}
+        title={`Add Salary History for ${
+          selectedEmployee?.authId?.name || "Employee"
+        }`}
         onClose={() => {
           setShowHistoryModal(false);
           setSelectedEmployee(null);
@@ -816,7 +919,7 @@ const SalarySlipPage = () => {
             salary: "",
             paidOn: "",
             paymentMethod: "Bank Transfer",
-            notes: ""
+            notes: "",
           });
         }}
       >
@@ -908,7 +1011,7 @@ const SalarySlipPage = () => {
                   salary: "",
                   paidOn: "",
                   paymentMethod: "Bank Transfer",
-                  notes: ""
+                  notes: "",
                 });
               }}
               className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
@@ -929,126 +1032,161 @@ const SalarySlipPage = () => {
       {viewingSlip && (
         <Modal
           isOpen={!!viewingSlip}
-          title={`Salary Slip Details: ${viewingSlip.authId?.name || "Employee"}`}
+          title={`Salary Slip Details: ${
+            viewingSlip.authId?.name || "Employee"
+          }`}
           onClose={closeViewModal}
         >
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Employee Name</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Employee Name
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.authId?.name || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Employee Code</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Employee Code
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.employeeCode || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Email</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Email
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.authId?.email || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Designation</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Designation
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.designation || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Department</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Department
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.department || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Monthly Salary</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Monthly Salary
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {formatCurrency(viewingSlip.salary)}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Contact Number</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Contact Number
+                </p>
                 <p className="font-medium text-slate-900 dark:text-white">
                   {viewingSlip.contactNumber || "N/A"}
                 </p>
               </div>
-              
+
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Status</p>
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  viewingSlip.status === "active" 
-                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200" 
-                    : viewingSlip.status === "onLeave" 
-                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200" 
-                      : viewingSlip.status === "resigned" 
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200" 
-                        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
-                }`}>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Status
+                </p>
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    viewingSlip.status === "active"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+                      : viewingSlip.status === "onLeave"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
+                      : viewingSlip.status === "resigned"
+                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+                  }`}
+                >
                   {viewingSlip.status || "N/A"}
                 </span>
               </div>
             </div>
-            
+
             <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Bank Details</h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+                Bank Details
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Account Number</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Account Number
+                  </p>
                   <p className="font-medium text-slate-900 dark:text-white">
                     {viewingSlip.bankDetails?.accountNumber || "N/A"}
                   </p>
                 </div>
-                
+
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Bank Name</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Bank Name
+                  </p>
                   <p className="font-medium text-slate-900 dark:text-white">
                     {viewingSlip.bankDetails?.bankName || "N/A"}
                   </p>
                 </div>
-                
+
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">IFSC Code</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    IFSC Code
+                  </p>
                   <p className="font-medium text-slate-900 dark:text-white">
                     {viewingSlip.bankDetails?.ifscCode || "N/A"}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">Address</h3>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-3">
+                Address
+              </h3>
               <div className="space-y-2">
                 <p className="font-medium text-slate-900 dark:text-white">
-                  {viewingSlip.address?.line1 || ""} {viewingSlip.address?.line2 || ""}
+                  {viewingSlip.address?.line1 || ""}{" "}
+                  {viewingSlip.address?.line2 || ""}
                 </p>
                 <p className="font-medium text-slate-900 dark:text-white">
-                  {viewingSlip.address?.city || ""}, {viewingSlip.address?.state || ""}
+                  {viewingSlip.address?.city || ""},{" "}
+                  {viewingSlip.address?.state || ""}
                 </p>
                 <p className="font-medium text-slate-900 dark:text-white">
-                  {viewingSlip.address?.zipCode || ""}, {viewingSlip.address?.country || ""}
+                  {viewingSlip.address?.zipCode || ""},{" "}
+                  {viewingSlip.address?.country || ""}
                 </p>
               </div>
             </div>
-            
+
             {viewingSlip.notes && (
               <div className="border-t border-slate-200/80 dark:border-slate-800/80 pt-4">
-                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Notes</h3>
+                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
+                  Notes
+                </h3>
                 <p className="text-slate-700 dark:text-slate-300">
                   {viewingSlip.notes}
                 </p>
               </div>
             )}
-            
+
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={closeViewModal}

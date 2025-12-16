@@ -4,6 +4,7 @@ import {
   changePassword,
   getAllUsers,
   getMe,
+  hardDeleteUser,
   loginUser,
   logoutUser,
   refreshToken,
@@ -11,7 +12,11 @@ import {
   resetPassword,
   sendForgotPasswordOtp,
   sendVerificationRequest,
+  toggleIsActive,
+  toggleIsBlock,
+  toggleIsDeleted,
   updateProfile,
+  updateUserRole,
   verifyForgotPasswordOtp,
   verifyUserAccount,
 } from "../controllers/auth.js";
@@ -63,6 +68,41 @@ authRouter.patch(
 // regarding instructor/admin verification
 
 authRouter.post("/send-verification", isAuthenticated, sendVerificationRequest);
+
+authRouter.patch(
+  "/role/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  updateUserRole
+);
+
+authRouter.patch(
+  "/toggle/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  toggleIsActive
+);
+
+authRouter.patch(
+  "/block/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  toggleIsBlock
+);
+
+authRouter.patch(
+  "/soft-delete/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  toggleIsDeleted
+);
+
+authRouter.delete(
+  "/hard-delete/:id",
+  isAuthenticated,
+  requireRole("admin"),
+  hardDeleteUser
+);
 
 authRouter.patch(
   "/accept-verification/:userId",

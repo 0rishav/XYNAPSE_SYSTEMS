@@ -69,25 +69,25 @@ export default function FormModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={closeModal}
-        aria-hidden
+        aria-hidden="true"
       />
 
       {/* Modal container */}
-      <div className="relative z-10 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl dark:bg-gray-900 transform transition-all scale-100 sm:scale-100">
+      <div className="relative z-10 w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-2xl rounded-2xl bg-white p-6 sm:p-8 shadow-2xl dark:bg-gray-900 transform transition-all scale-100 overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-6">
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-200 pb-3 mb-6">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white break-words">
             Enroll - {modalBranch?.name}
           </h3>
           <button
             type="button"
             onClick={closeModal}
-            className="rounded-full p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="mt-2 sm:mt-0 rounded-full p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             aria-label="Close modal"
           >
             ✕
@@ -176,7 +176,7 @@ export default function FormModal({
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
               onClick={closeModal}

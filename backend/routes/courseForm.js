@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated, requireRole } from "../middlewares/auth.js";
+import { isAuthenticated, optionalAuth, requireRole } from "../middlewares/auth.js";
 import {
   assignInstructor,
   deleteCourseForm,
@@ -16,7 +16,7 @@ const courseFormRouter = express.Router();
 
 
 // done
-courseFormRouter.post("/create-form", submitCourseForm);
+courseFormRouter.post("/create-form",optionalAuth, submitCourseForm);
 
 
 courseFormRouter.get("/all-form", getAllCourseForms);
