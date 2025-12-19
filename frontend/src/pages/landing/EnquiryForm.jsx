@@ -58,7 +58,6 @@ const EnquiryForm = () => {
     }
   };
 
-  // Auto hide success message after 3 sec
   useEffect(() => {
     if (successMsg) {
       const timer = setTimeout(() => {
@@ -89,13 +88,12 @@ const EnquiryForm = () => {
           </div>
         </AnimatedReveal>
 
-        {/* FORM */}
         <AnimatedReveal variant="right">
           <form
             onSubmit={handleSubmit}
             className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900/60"
           >
-            {/* SUCCESS MESSAGE */}
+            
             {successMsg && (
               <div className="rounded-lg bg-green-100 border border-green-300 px-4 py-2 text-sm font-medium text-green-700">
                 {successMsg}

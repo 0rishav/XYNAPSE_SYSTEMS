@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import worldSvg from "/images/world-1.jpg";
 
 export default function TopBar({
   openModal,
@@ -11,10 +12,39 @@ export default function TopBar({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
 
+  const worldRef = useRef(null);
+
+  useEffect(() => {
+    const world = worldRef.current;
+    let angle = 0;
+
+    const animate = () => {
+      angle += 0.3; // rotation speed
+      world.style.transform = `rotate(${angle}deg)`;
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+  }, []);
+
   return (
     <>
       <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-        <div className="mx-auto flex max-w-7xl g px-4 py-3 flex-row items-center justify-between sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
+          {/* Left: Worldwide globe */}
+          <div className="flex items-center">
+            <div className="relative w-10 h-10 mr-3">
+              <img
+                ref={worldRef}
+                src={worldSvg}
+                alt="Worldwide"
+                className="w-full h-full object-contain drop-shadow-lg rounded-full animate-bounce-slow"
+                style={{ animation: "bounce 2s infinite alternate" }}
+              />
+            </div>
+          </div>
+
+          {/* Center: Contact info / Job Mela */}
           <div className="hidden md:flex md:flex-wrap md:items-center gap-4 text-slate-600 dark:text-slate-200">
             <span className="inline-flex items-center gap-1.5">
               📞 1800-120-4748
@@ -22,12 +52,9 @@ export default function TopBar({
             <span className="hidden md:inline-flex items-center gap-1.5">
               📱 Download Mobile App
             </span>
-            <span className="hidden items-center gap-1.5 md:inline-flex">
+            <span className="hidden md:inline-flex items-center gap-1.5">
               ➕ Blogs
             </span>
-          </div>
-
-          <div className="flex justify-start md:justify-center">
             <Link
               to="/job-mela"
               className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30"
@@ -36,7 +63,8 @@ export default function TopBar({
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-slate-600 dark:text-slate-100">
+          {/* Right: Buttons / Social icons */}
+          <div className="flex items-center gap-3">
             <button
               onClick={() => openModal("enroll", { name: "Online Enrollment" })}
               className="hidden md:inline-flex items-center gap-1 rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-500 enroll-cta"
@@ -80,7 +108,6 @@ export default function TopBar({
                 >
                   🎥 Video Lectures
                 </a>
-
                 <Link
                   to="/resources/interview-questions"
                   className="block w-full rounded-b-xl px-4 py-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -113,21 +140,16 @@ export default function TopBar({
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="social-icon group relative inline-flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-white dark:bg-slate-900 transition-all duration-300 ease-out hover:scale-110 hover:shadow-lg hover:-translate-y-1 active:scale-95"
+                  className="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white dark:bg-slate-900 transition-all duration-300 ease-out hover:scale-110 hover:shadow-lg hover:-translate-y-1 active:scale-95"
                   style={{
                     borderColor: item.color,
+                    color: item.color,
                     animationDelay: `${index * 100}ms`,
                     animation: `fadeInUp 0.6s ease-out ${index * 100}ms both`,
                   }}
+                  title={item.label}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-sm group-hover:rotate-12"
-                    viewBox="0 0 24 24"
-                    fill={item.color}
-                  >
-                    <path d={item.iconPath} />
-                  </svg>
+                  {item.icon}
                   <div
                     className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-20"
                     style={{ backgroundColor: item.color }}
@@ -138,7 +160,7 @@ export default function TopBar({
 
             <button
               onClick={() => setSidebarOpen(true)}
-              className="md:hidden ml-auto text-xl"
+              className="md:hidden ml-2 text-xl"
             >
               ☰
             </button>
@@ -176,6 +198,7 @@ export default function TopBar({
           </div>
 
           <div className="flex flex-col gap-4 text-sm flex-1 mt-2">
+            {/* Contact Info */}
             <div className="flex flex-col gap-2 text-slate-600 dark:text-slate-200">
               <span className="flex items-center gap-2">📞 1800-120-4748</span>
               <span className="flex items-center gap-2">
@@ -184,7 +207,16 @@ export default function TopBar({
               <span className="flex items-center gap-2">➕ Blogs</span>
             </div>
 
+            {/* Main Buttons */}
             <div className="flex flex-col gap-3 mt-3">
+              {/* Job Mela Button added */}
+              <Link
+                to="/job-mela"
+                className="rounded-lg bg-rose-600 px-4 py-2 text-white text-left font-medium shadow hover:bg-rose-500 transition-colors"
+              >
+                Job Mela
+              </Link>
+
               <button
                 onClick={() =>
                   openModal("enroll", { name: "Online Enrollment" })
@@ -203,6 +235,7 @@ export default function TopBar({
                 Internship
               </button>
 
+              {/* Resources Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setResourcesOpen(!resourcesOpen)}
@@ -217,7 +250,6 @@ export default function TopBar({
                 </button>
                 {resourcesOpen && (
                   <div className="mt-1 flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-md dark:border-white/20 dark:bg-slate-900">
-                    {/* Video Lectures */}
                     <a
                       href="https://youtube.com/@realxynapse?si=7PS2DXi8SZKJ_3Tb"
                       target="_blank"
@@ -237,6 +269,7 @@ export default function TopBar({
                 )}
               </div>
 
+              {/* Login/Profile */}
               {!isAuthenticated ? (
                 <Link
                   to="/login"
@@ -254,6 +287,7 @@ export default function TopBar({
               )}
             </div>
 
+            {/* Social Icons */}
             <div className="flex items-center gap-3 mt-6">
               {socials.map((item) => (
                 <a
@@ -262,14 +296,9 @@ export default function TopBar({
                   target="_blank"
                   rel="noreferrer"
                   className="p-2 rounded-full border border-gray-300 dark:border-white/30 bg-white dark:bg-slate-800 flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform"
+                  title={item.label}
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill={item.color}
-                    className="h-5 w-5"
-                  >
-                    <path d={item.iconPath} />
-                  </svg>
+                  {item.icon}
                 </a>
               ))}
             </div>

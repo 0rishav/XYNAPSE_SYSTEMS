@@ -351,16 +351,21 @@ export const generateOfferLetter = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Application ID", 400));
   }
 
+  if (!offerLetterData || Object.keys(offerLetterData).length === 0) {
+    return next(new ErrorHandler("Offer letter data is required", 400));
+  }
+
   const application = await InternshipApplication.findById(id);
   if (!application) {
     return next(new ErrorHandler("Internship application not found", 404));
   }
 
-  if (offerLetterData) {
-    application.offerLetterData = offerLetterData;
-  }
+  application.offerLetterData = {
+    ...application.offerLetterData?.toObject(),
+    ...offerLetterData,
+  };
 
-  await application.save();
+  await application.save({ runValidators: true });
 
   res.status(200).json({
     success: true,

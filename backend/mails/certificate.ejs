@@ -1,341 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Certificate of Internship</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
-      @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+<head>
+  <meta charset="UTF-8" />
+  <title>Certificate of Internship</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
 
-      html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #1a3a5c 0%, #0f1e30 100%);
-      }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+    }
 
-      .certificate-container {
-        width: 100%;
-        max-width: 1200px;
-        height: 850px;
-        margin: 40px auto;
-        padding: 50px;
-        box-sizing: border-box;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        position: relative;
-        text-align: center;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-      }
+    .certificate-container {
+      width: 100%;
+      height: 100vh;
+      box-sizing: border-box;
+      background: #ffffff;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+      border: 6px solid #c8a864;
+      overflow: hidden;
+    }
 
-      .outer-border {
-        position: absolute;
-        top: 25px;
-        left: 25px;
-        right: 25px;
-        bottom: 25px;
-        border: 8px solid #c8a864;
-        border-radius: 4px;
-        pointer-events: none;
-      }
+    /* Corner floral ornaments */
+    .corner-flower {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #d4af37;
+      box-shadow: inset 0 0 10px #f4e5b8;
+      background: radial-gradient(circle, #f4e5b8 0%, #d4af37 100%);
+    }
+    .corner-top-left { top: -40px; left: -40px; }
+    .corner-top-right { top: -40px; right: -40px; }
+    .corner-bottom-left { bottom: -40px; left: -40px; }
+    .corner-bottom-right { bottom: -40px; right: -40px; }
 
-      .outer-border::before,
-      .outer-border::after,
-      .inner-border::before,
-      .inner-border::after {
-        content: '';
-        position: absolute;
-        width: 60px;
-        height: 60px;
-        border: 8px solid #c8a864;
-      }
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 120px;
+      color: rgba(200, 168, 100, 0.05);
+      font-weight: 700;
+      pointer-events: none;
+      font-family: "Playfair Display", serif;
+      letter-spacing: 5px;
+      z-index: 0;
+    }
 
-      .outer-border::before {
-        top: -8px;
-        left: -8px;
-        border-right: none;
-        border-bottom: none;
-        border-radius: 4px 0 0 0;
-      }
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+      padding: 20px 30px;
+    }
 
-      .outer-border::after {
-        top: -8px;
-        right: -8px;
-        border-left: none;
-        border-bottom: none;
-        border-radius: 0 4px 0 0;
-      }
+    .certificate-title {
+      font-family: "Playfair Display", serif;
+      font-size: 64px;
+      font-weight: 700;
+      color: #1a3a5c;
+      margin: 0 0 5px 0;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
 
-      .inner-border::before {
-        bottom: -8px;
-        left: -8px;
-        border-right: none;
-        border-top: none;
-        border-radius: 0 0 0 4px;
-      }
+    .subtitle {
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #c8a864;
+      margin: 0 0 30px 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
-      .inner-border::after {
-        bottom: -8px;
-        right: -8px;
-        border-left: none;
-        border-top: none;
-        border-radius: 0 0 4px 0;
-      }
+    .presented-to {
+      font-family: "Playfair Display", serif;
+      font-size: 18px;
+      color: #c8a864;
+      margin: 0 0 15px 0;
+      font-weight: 600;
+    }
 
-      .inner-border {
-        position: absolute;
-        top: 40px;
-        left: 40px;
-        right: 40px;
-        bottom: 40px;
-        border: 2px solid #c8a864;
-        pointer-events: none;
-      }
+    .recipient-name {
+      font-family: "Playfair Display", serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: #1a3a5c;
+      margin: 0 0 25px 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 3px solid #c8a864;
+      display: inline-block;
+      padding-bottom: 8px;
+      min-width: 350px;
+    }
 
-      .gold-accent-left {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 50px;
-        background: linear-gradient(180deg, #d4af37 0%, #c8a864 50%, #d4af37 100%);
-        border-right: 2px solid #b8972f;
-      }
+    .description {
+      font-family: "Playfair Display", serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1a3a5c;
+      margin: 0 auto 40px;
+      max-width: 750px;
+      font-weight: 500;
+    }
 
-      .gold-accent-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: 50px;
-        background: linear-gradient(180deg, #d4af37 0%, #c8a864 50%, #d4af37 100%);
-        border-left: 2px solid #b8972f;
-      }
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 50px;
+      position: relative;
+    }
 
-      .watermark {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 150px;
-        color: rgba(26, 58, 92, 0.03);
-        font-weight: 700;
-        z-index: 0;
-        pointer-events: none;
-        font-family: "Playfair Display", serif;
-        letter-spacing: 5px;
-      }
+    .signature-block {
+      text-align: center;
+      flex: 1;
+    }
 
-      .content-wrapper {
-        position: relative;
-        z-index: 1;
-        padding: 60px 100px 40px;
-      }
+    .signature-line {
+      font-family: "Great Vibes", cursive;
+      font-size: 36px;
+      color: #1a3a5c;
+      margin-bottom: 8px;
+    }
 
-      .certificate-title {
-        font-family: "Playfair Display", serif;
-        font-size: 72px;
-        font-weight: 700;
-        color: #1a3a5c;
-        margin: 0 0 5px 0;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-      }
+    .signature-name {
+      font-family: "Playfair Display", serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #c8a864;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-      .subtitle {
-        font-family: "Playfair Display", serif;
-        font-size: 32px;
-        font-weight: 600;
-        color: #c8a864;
-        margin: 0 0 40px 0;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-      }
+    .signature-title {
+      font-family: "Playfair Display", serif;
+      font-size: 14px;
+      color: #1a3a5c;
+      margin: 5px 0 0 0;
+      font-weight: 400;
+    }
 
-      .presented-to {
-        font-family: "Playfair Display", serif;
-        font-size: 20px;
-        color: #c8a864;
-        margin: 0 0 20px 0;
-        font-weight: 600;
-      }
+    /* Static flower center for PDF */
+    .flower-divider {
+      width: 200px;
+      height: 200px;
+      margin: 0 20px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .flower-divider span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 50px;
+      background: radial-gradient(circle at 50% 30%, #f4e5b8 0%, #d4af37 100%);
+      border-radius: 50% 50% 0 0;
+      transform-origin: bottom center;
+    }
+    .flower-divider span:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg); }
+    .flower-divider span:nth-child(2) { transform: translate(-50%, -50%) rotate(45deg); }
+    .flower-divider span:nth-child(3) { transform: translate(-50%, -50%) rotate(90deg); }
+    .flower-divider span:nth-child(4) { transform: translate(-50%, -50%) rotate(135deg); }
+    .flower-divider span:nth-child(5) { transform: translate(-50%, -50%) rotate(180deg); }
+    .flower-divider span:nth-child(6) { transform: translate(-50%, -50%) rotate(225deg); }
+    .flower-divider span:nth-child(7) { transform: translate(-50%, -50%) rotate(270deg); }
+    .flower-divider span:nth-child(8) { transform: translate(-50%, -50%) rotate(315deg); }
+  </style>
+</head>
+<body>
+  <div class="certificate-container">
+    <!-- Curved corners -->
+    <div class="corner-flower corner-top-left"></div>
+    <div class="corner-flower corner-top-right"></div>
+    <div class="corner-flower corner-bottom-left"></div>
+    <div class="corner-flower corner-bottom-right"></div>
 
-      .recipient-name {
-        font-family: "Playfair Display", serif;
-        font-size: 48px;
-        font-weight: 700;
-        color: #1a3a5c;
-        margin: 0 0 35px 0;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        border-bottom: 3px solid #c8a864;
-        display: inline-block;
-        padding-bottom: 10px;
-        min-width: 500px;
-      }
+    <div class="watermark">XYNAPSE</div>
 
-      .description {
-        font-family: "Playfair Display", serif;
-        font-size: 16px;
-        line-height: 1.8;
-        color: #c8a864;
-        margin: 0 auto 50px;
-        max-width: 800px;
-        font-weight: 500;
-      }
+    <div class="content-wrapper">
+      <h1 class="certificate-title">CERTIFICATE</h1>
+      <h2 class="subtitle">OF ACHIEVEMENT</h2>
+      
+      <p class="presented-to">This certificate is proudly presented to</p>
+      <h3 class="recipient-name"><%= name %></h3>
+      
+      <p class="description">
+        For successfully completing the internship in <strong><%= department %></strong> at <strong>XYNAPSE SYSTEMS</strong> 
+        from <%= certificateData.startDate %> to <%= certificateData.endDate %>. This achievement recognizes exceptional 
+        dedication, outstanding performance, and valuable contributions to the organization.
+      </p>
 
-      .signature-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-top: 60px;
-        padding: 0 80px;
-        position: relative;
-      }
+      <div class="signature-section">
+        <div class="signature-block">
+          <div class="signature-line">Adora Montminy</div>
+          <p class="signature-name"><%= certificateData.signatoryName || 'ADORA MONTMINY' %></p>
+          <p class="signature-title"><%= certificateData.signatoryDesignation || 'Director' %></p>
+        </div>
 
-      .signature-block {
-        text-align: center;
-        flex: 1;
-      }
+        <!-- Flower in the center -->
+        <div class="flower-divider">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
 
-      .signature-line {
-        font-family: "Great Vibes", cursive;
-        font-size: 36px;
-        color: #1a3a5c;
-        margin-bottom: 8px;
-      }
-
-      .signature-name {
-        font-family: "Playfair Display", serif;
-        font-size: 16px;
-        font-weight: 700;
-        color: #c8a864;
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      .signature-title {
-        font-family: "Playfair Display", serif;
-        font-size: 14px;
-        color: #1a3a5c;
-        margin: 5px 0 0 0;
-        font-weight: 400;
-      }
-
-      .seal {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 150px;
-        height: 150px;
-        background: radial-gradient(circle at 30% 30%, #f4e5b8, #d4af37 50%, #b8972f);
-        border-radius: 50%;
-        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5), inset 0 -2px 8px rgba(0, 0, 0, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 6px solid #c8a864;
-      }
-
-      .seal::before {
-        content: '';
-        position: absolute;
-        width: 120px;
-        height: 120px;
-        border: 2px solid #b8972f;
-        border-radius: 50%;
-      }
-
-      .seal::after {
-        content: '';
-        position: absolute;
-        bottom: -40px;
-        width: 0;
-        height: 0;
-        border-left: 25px solid transparent;
-        border-right: 25px solid transparent;
-        border-top: 45px solid #d4af37;
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
-      }
-
-      .seal-ribbon-left {
-        position: absolute;
-        bottom: -35px;
-        left: -15px;
-        width: 0;
-        height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 40px solid #c8a864;
-        transform: rotate(-15deg);
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
-      }
-
-      .seal-ribbon-right {
-        position: absolute;
-        bottom: -35px;
-        right: -15px;
-        width: 0;
-        height: 0;
-        border-left: 20px solid transparent;
-        border-right: 20px solid transparent;
-        border-top: 40px solid #c8a864;
-        transform: rotate(15deg);
-        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
-      }
-
-      .seal-star {
-        width: 60px;
-        height: 60px;
-        background: radial-gradient(circle, #fff, #f4e5b8);
-        clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      }
-    </style>
-  </head>
-  <body>
-    <div class="certificate-container">
-      <div class="outer-border">
-        <div class="inner-border"></div>
-      </div>
-      <div class="gold-accent-left"></div>
-      <div class="gold-accent-right"></div>
-      <div class="watermark">XYNAPSE</div>
-
-      <div class="content-wrapper">
-        <h1 class="certificate-title">CERTIFICATE</h1>
-        <h2 class="subtitle">OF ACHIEVEMENT</h2>
-        
-        <p class="presented-to">This certificate is proudly presented to</p>
-        
-        <h3 class="recipient-name"><%= name %></h3>
-        
-        <p class="description">
-          For successfully completing the internship in <strong><%= department %></strong> at <strong>XYNAPSE SYSTEMS</strong> 
-          from <%= certificateData.startDate %> to <%= certificateData.endDate %>. This achievement recognizes exceptional 
-          dedication, outstanding performance, and valuable contributions to the organization.
-        </p>
-
-        <div class="signature-section">
-          <div class="signature-block">
-            <div class="signature-line">Adora Montminy</div>
-            <p class="signature-name"><%= certificateData.signatoryName || 'ADORA MONTMINY' %></p>
-            <p class="signature-title"><%= certificateData.signatoryDesignation || 'Director' %></p>
-          </div>
-
-          <div class="seal">
-            <div class="seal-star"></div>
-            <div class="seal-ribbon-left"></div>
-            <div class="seal-ribbon-right"></div>
-          </div>
-
-          <div class="signature-block">
-            <div class="signature-line">Claudia Alves</div>
-            <p class="signature-name">CLAUDIA ALVES</p>
-            <p class="signature-title">Manager</p>
-          </div>
+        <div class="signature-block">
+          <div class="signature-line">Claudia Alves</div>
+          <p class="signature-name">CLAUDIA ALVES</p>
+          <p class="signature-title">Manager</p>
         </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 </html>

@@ -9,11 +9,13 @@ import { PasswordService } from "../services/passwordService.js";
 import crypto from "crypto";
 
 export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
-  const { name, email, mobile, city, courseId } = req.body;
+  const { name, email, mobile, city, country, courseId } = req.body;
 
   if (!name) return next(new ErrorHandler("Name field is required.", 400));
   if (!email) return next(new ErrorHandler("Email field is required.", 400));
   if (!mobile) return next(new ErrorHandler("Mobile number is required.", 400));
+  if (!country)
+    return next(new ErrorHandler("Country field is required.", 400));
   if (!courseId)
     return next(
       new ErrorHandler("Course ID is required to submit the form.", 400)
@@ -28,9 +30,7 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
   const duplicateQuery = {
     courseId,
     isDeleted: false,
-    ...(studentId
-      ? { studentId }
-      : { email }),
+    ...(studentId ? { studentId } : { email }),
   };
 
   const existingForm = await CourseForm.findOne(duplicateQuery);
@@ -49,6 +49,7 @@ export const submitCourseForm = CatchAsyncError(async (req, res, next) => {
     email,
     mobile,
     city,
+    country,
     courseId,
     studentId,
     appliedAsGuest: !studentId,

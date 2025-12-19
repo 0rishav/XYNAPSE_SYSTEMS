@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const courseFormSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 100 },
+
     email: {
       type: String,
       required: true,
@@ -10,8 +11,18 @@ const courseFormSchema = new mongoose.Schema(
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email"],
     },
-    mobile: { type: String, required: true, trim: true, maxlength: 15 },
+
+    mobile: { type: String, required: true, trim: true, maxlength: 20 },
+
     city: { type: String, trim: true, maxlength: 100 },
+
+    country: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+      default: "India",
+    },
 
     courseId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -10,20 +10,28 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
     reportingManager: intern.offerLetterData?.reportingManager || "",
     stipend: intern.offerLetterData?.stipend || "",
     workingHours: intern.offerLetterData?.workingHours || "",
+
     responsibilities:
       intern.offerLetterData?.responsibilities?.length > 0
         ? intern.offerLetterData.responsibilities
-        : [""], // ← minimum 1 input
+        : [""],
+
     completionBenefits:
       intern.offerLetterData?.completionBenefits?.length > 0
         ? intern.offerLetterData.completionBenefits
         : [""],
+
     notes:
       intern.offerLetterData?.notes?.length > 0
         ? intern.offerLetterData.notes
         : [""],
+
     signatoryName: intern.offerLetterData?.signatoryName || "",
     signatoryDesignation: intern.offerLetterData?.signatoryDesignation || "",
+
+    ctc: intern.offerLetterData?.ctc || "",
+    monthlySalary: intern.offerLetterData?.monthlySalary || "",
+    acceptanceDeadline: intern.offerLetterData?.acceptanceDeadline || "",
   });
 
   const handleChange = (e) => {
@@ -83,7 +91,7 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
             <div>
@@ -95,7 +103,7 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
             <div>
@@ -107,12 +115,12 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
           </div>
 
-          {/* Other Text Inputs */}
+          {/* Text Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -123,10 +131,10 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                placeholder="e.g., 3 months"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Location
@@ -136,10 +144,10 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="e.g., Remote / Office"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Reporting Manager
@@ -149,10 +157,10 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="reportingManager"
                 value={formData.reportingManager}
                 onChange={handleChange}
-                placeholder="Manager Name"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Stipend
@@ -162,10 +170,64 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="stipend"
                 value={formData.stipend}
                 onChange={handleChange}
-                placeholder="e.g., $500/month"
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
+
+            {/* ✅ MISSING BACKEND FIELDS ADDED */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                CTC
+              </label>
+              <input
+                type="text"
+                name="ctc"
+                value={formData.ctc}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Monthly Salary
+              </label>
+              <input
+                type="text"
+                name="monthlySalary"
+                value={formData.monthlySalary}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              />
+            </div>
+          </div>
+
+          {/* Working Hours */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Working Hours
+            </label>
+            <input
+              type="text"
+              name="workingHours"
+              value={formData.workingHours}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+            />
+          </div>
+
+          {/* Acceptance Deadline */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Acceptance Deadline
+            </label>
+            <input
+              type="date"
+              name="acceptanceDeadline"
+              value={formData.acceptanceDeadline}
+              onChange={handleChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+            />
           </div>
 
           {/* Responsibilities */}
@@ -178,19 +240,14 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 <input
                   type="text"
                   value={res}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    handleArrayChange("responsibilities", idx, e.target.value);
-                  }}
-                  className="flex-1 border border-gray-300 rounded-md p-2 text-gray-900"
-                  placeholder={`Responsibility #${idx + 1}`}
+                  onChange={(e) =>
+                    handleArrayChange("responsibilities", idx, e.target.value)
+                  }
+                  className="flex-1 border border-gray-300 rounded-md p-2"
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeArrayItem("responsibilities", idx);
-                  }}
+                  onClick={() => removeArrayItem("responsibilities", idx)}
                   className="bg-red-500 text-white px-2 rounded-md"
                 >
                   ✕
@@ -199,74 +256,40 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
             ))}
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                addArrayItem("responsibilities");
-              }}
+              onClick={() => addArrayItem("responsibilities")}
               className="mt-2 bg-blue-500 text-white px-3 py-1 rounded-md"
             >
               + Add Responsibility
             </button>
           </div>
 
-          {/* Working Hours */}
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Working Hours
-            </label>
-            <input
-              type="text"
-              value={formData.workingHours}
-              onChange={(e) => {
-                e.stopPropagation();
-                setFormData({ ...formData, workingHours: e.target.value });
-              }}
-              className="w-full border border-gray-300 rounded-md p-2 text-gray-900 mt-1"
-              placeholder="e.g. 10:00 AM – 5:00 PM (Monday to Friday)"
-            />
-          </div>
-
           {/* Completion Benefits */}
-          <div className="mt-4">
+          <div>
             <label className="block text-sm font-medium text-gray-700">
               Completion Benefits
             </label>
-
-            {formData.completionBenefits.map((benefit, idx) => (
+            {formData.completionBenefits.map((b, idx) => (
               <div key={idx} className="flex gap-2 mt-2">
                 <input
                   type="text"
-                  value={benefit}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    handleArrayChange(
-                      "completionBenefits",
-                      idx,
-                      e.target.value
-                    );
-                  }}
-                  className="flex-1 border border-gray-300 rounded-md p-2 text-gray-900"
-                  placeholder={`Benefit #${idx + 1}`}
+                  value={b}
+                  onChange={(e) =>
+                    handleArrayChange("completionBenefits", idx, e.target.value)
+                  }
+                  className="flex-1 border border-gray-300 rounded-md p-2"
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeArrayItem("completionBenefits", idx);
-                  }}
+                  onClick={() => removeArrayItem("completionBenefits", idx)}
                   className="bg-red-500 text-white px-2 rounded-md"
                 >
                   ✕
                 </button>
               </div>
             ))}
-
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                addArrayItem("completionBenefits");
-              }}
+              onClick={() => addArrayItem("completionBenefits")}
               className="mt-2 bg-blue-500 text-white px-3 py-1 rounded-md"
             >
               + Add Benefit
@@ -274,49 +297,39 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
           </div>
 
           {/* Notes */}
-          <div className="mt-4">
+          <div>
             <label className="block text-sm font-medium text-gray-700">
               Notes
             </label>
-
-            {formData.notes.map((note, idx) => (
+            {formData.notes.map((n, idx) => (
               <div key={idx} className="flex gap-2 mt-2">
                 <input
                   type="text"
-                  value={note}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    handleArrayChange("notes", idx, e.target.value);
-                  }}
-                  className="flex-1 border border-gray-300 rounded-md p-2 text-gray-900"
-                  placeholder={`Note #${idx + 1}`}
+                  value={n}
+                  onChange={(e) =>
+                    handleArrayChange("notes", idx, e.target.value)
+                  }
+                  className="flex-1 border border-gray-300 rounded-md p-2"
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeArrayItem("notes", idx);
-                  }}
+                  onClick={() => removeArrayItem("notes", idx)}
                   className="bg-red-500 text-white px-2 rounded-md"
                 >
                   ✕
                 </button>
               </div>
             ))}
-
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                addArrayItem("notes");
-              }}
+              onClick={() => addArrayItem("notes")}
               className="mt-2 bg-blue-500 text-white px-3 py-1 rounded-md"
             >
               + Add Note
             </button>
           </div>
 
-          {/* Signatory Info */}
+          {/* Signatory */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -327,7 +340,7 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="signatoryName"
                 value={formData.signatoryName}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
             <div>
@@ -339,23 +352,23 @@ const EditOfferModal = ({ isOpen, onClose, intern, onSave }) => {
                 name="signatoryDesignation"
                 value={formData.signatoryDesignation}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900 placeholder-gray-400"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end mt-4 gap-3">
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
+              className="px-4 py-2 rounded-md bg-gray-300"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              className="px-4 py-2 rounded-md bg-blue-600 text-white"
             >
               Save Changes
             </button>

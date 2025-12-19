@@ -34,6 +34,10 @@ import MyInternshipPage from "./pages/dashboard/MyInternshipPage";
 import JobMela from "./pages/JobMela";
 import Users from "./admin/users/Users";
 import AllCoursesPage from "./pages/AllCoursesPage";
+import CollegePartner from "./pages/colleges/CollegePartner";
+import ClassroomTraining from "./pages/colleges/ClassroomTraining";
+import CollegeConnect from "./pages/colleges/CollegeConnect";
+import College from "./admin/college/College";
 
 function AppShell() {
   const location = useLocation();
@@ -85,13 +89,16 @@ function AppShell() {
             />
             <Route path="/job-mela" element={<JobMela />} />
             <Route path="/courses" element={<AllCoursesPage />} />
-
+            <Route path="/college/partners" element={<CollegePartner />} />
+            <Route path="/college/training" element={<ClassroomTraining />} />
+            <Route path="/college/connect" element={<CollegeConnect />} />
           </Route>
 
           <Route element={<AdminProtectedRoute />}>
             <Route path="/admin/*" element={<AdminLayout />}>
               <Route index element={<InternshipPage />} />
               <Route path="internship" element={<InternshipPage />} />
+              <Route path="college" element={<College />} />
               <Route path="users" element={<Users />} />
               <Route path="courses" element={<CourseAdminPage />} />
               <Route path="course-forms" element={<CourseFormAdminPage />} />

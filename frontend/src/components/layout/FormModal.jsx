@@ -6,67 +6,14 @@ export default function FormModal({
   closeModal,
   submitForm,
   formData,
+  setFormDataFormModal,
+  countryOptions,
   handleFormChange,
   loading,
   courses,
+  showSuccess,
 }) {
   if (!modalOpen) return null;
-
-  const selectStyles = {
-    control: (styles, state) => ({
-      ...styles,
-      backgroundColor: state.isFocused
-        ? document.documentElement.classList.contains("dark")
-          ? "#1f2937"
-          : "#f0f9ff"
-        : document.documentElement.classList.contains("dark")
-        ? "#111827"
-        : "#fff",
-      borderColor: state.isFocused
-        ? "#0ea5e9"
-        : document.documentElement.classList.contains("dark")
-        ? "#374151"
-        : "#d1d5db",
-      boxShadow: state.isFocused ? "0 0 0 1px #0ea5e9" : "none",
-      minHeight: 42,
-      borderRadius: 8,
-    }),
-    singleValue: (styles) => ({
-      ...styles,
-      color: document.documentElement.classList.contains("dark")
-        ? "#f9fafb"
-        : "#111827",
-    }),
-    placeholder: (styles) => ({
-      ...styles,
-      color: document.documentElement.classList.contains("dark")
-        ? "#9ca3af"
-        : "#6b7280",
-    }),
-    menu: (styles) => ({
-      ...styles,
-      backgroundColor: document.documentElement.classList.contains("dark")
-        ? "#1f2937"
-        : "#fff",
-      zIndex: 50,
-    }),
-    option: (styles, { isFocused, isSelected }) => ({
-      ...styles,
-      backgroundColor: isFocused
-        ? document.documentElement.classList.contains("dark")
-          ? "rgba(14,165,233,0.3)"
-          : "#bae6fd"
-        : isSelected
-        ? document.documentElement.classList.contains("dark")
-          ? "rgba(14,165,233,0.5)"
-          : "#7dd3fc"
-        : "transparent",
-      color: document.documentElement.classList.contains("dark")
-        ? "#f9fafb"
-        : "#111827",
-      cursor: "pointer",
-    }),
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -94,8 +41,14 @@ export default function FormModal({
           </button>
         </div>
 
+        {showSuccess && (
+          <div className="mb-4 p-3 bg-green-500 text-white text-center rounded">
+            Form submitted successfully!
+          </div>
+        )}
+
         {/* Form */}
-        <form onSubmit={submitForm} className="space-y-6">
+        <form onSubmit={(e) => submitForm(e, formData)} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div className="flex flex-col">
@@ -137,8 +90,9 @@ export default function FormModal({
                 name="phone"
                 value={formData.phone}
                 onChange={handleFormChange}
+                required
                 className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition"
-                placeholder="123-456-7890"
+                placeholder="+91 XXXXX XXXXX"
               />
             </div>
 
@@ -149,10 +103,32 @@ export default function FormModal({
               </label>
               <input
                 name="city"
-                value={formData.city || ""}
+                value={formData.city}
                 onChange={handleFormChange}
                 className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition"
                 placeholder="Your city"
+              />
+            </div>
+
+            {/* Country */}
+            <div className="flex flex-col sm:col-span-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Country
+              </label>
+              <Select
+                value={
+                  countryOptions.find((c) => c.value === formData.country) ||
+                  null
+                }
+                onChange={(selected) =>
+                  setFormDataFormModal((prev) => ({
+                    ...prev,
+                    country: selected?.value || "",
+                  }))
+                }
+                options={countryOptions}
+                placeholder="Select your country"
+                className="mt-2"
               />
             </div>
 
@@ -162,15 +138,18 @@ export default function FormModal({
                 Course
               </label>
               <Select
-                value={courses.find((c) => c.value === formData.course) || null}
+                value={
+                  courses.find((c) => c.value === formData.courseId) || null
+                }
                 onChange={(selected) =>
-                  handleFormChange({
-                    target: { name: "course", value: selected?.value },
-                  })
+                  setFormDataFormModal((prev) => ({
+                    ...prev,
+                    courseId: selected?.value || "",
+                  }))
                 }
                 options={courses}
                 placeholder="Select a course"
-                styles={selectStyles}
+                className="mt-2"
               />
             </div>
           </div>
@@ -188,11 +167,11 @@ export default function FormModal({
             <button
               type="submit"
               className={`rounded-lg px-5 py-2 text-sm font-semibold text-white shadow-md transition
-      ${
-        loading
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-gradient-to-r from-sky-500 to-blue-600 hover:shadow-lg hover:from-sky-600 hover:to-blue-700"
-      }`}
+            ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-sky-500 to-blue-600 hover:shadow-lg hover:from-sky-600 hover:to-blue-700"
+            }`}
               disabled={loading}
             >
               {loading ? "Submitting..." : "Submit"}

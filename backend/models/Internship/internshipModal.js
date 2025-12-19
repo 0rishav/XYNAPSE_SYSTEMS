@@ -84,6 +84,9 @@ const InternshipApplicationSchema = new mongoose.Schema(
       notes: { type: [String], default: [] },
       signatoryName: { type: String, default: "" },
       signatoryDesignation: { type: String, default: "" },
+      ctc: { type: String, default: "" },
+      monthlySalary: { type: String, default: "" },
+      acceptanceDeadline: { type: String, default: "" },
     },
 
     certificateData: {

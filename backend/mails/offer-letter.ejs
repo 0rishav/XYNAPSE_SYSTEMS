@@ -1,165 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Offer Letter</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Offer Letter</title>
 
-  <style>
-    body {
-      font-family: "Times New Roman", serif;
-      margin: 18px 22px;
-      line-height: 1.32;
-      color: #000;
-      font-size: 13px;
-    }
+    <style>
+      body {
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        margin: 0;
+        background: #ffffff;
+        font-size: 13px;
+        line-height: 1.7;
+        color: #0f172a;
+      }
+      .page {
+        max-width: 100%;
+        margin: auto;
+        background: #ffffff;
+        padding: 28px 32px;
+        border-radius: 10px;
+      }
+      .top-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 26px;
+      }
+      .box-left {
+        width: 20%;
+        height: 40px;
+        background: linear-gradient(135deg, #0f172a, #1e3a8a);
+        border-radius: 6px 0 0 6px;
+      }
+      .box-center {
+        width: 20%;
+        display: flex;
+        justify-content: center;
+      }
+      .box-center img {
+        height: 38px;
+        background: #ffffff;
+        padding: 6px 16px;
+        border-radius: 999px;
+      }
+      .box-right {
+        width: 60%;
+        height: 40px;
+        background: linear-gradient(135deg, #1e3a8a, #6366f1, #93c5fd);
+        border-radius: 0 6px 6px 0;
+      }
+      .address {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        font-size: 12.5px;
+      }
+      .address-left {
+        max-width: 65%;
+        white-space: pre-line;
+      }
+      .title {
+        text-align: center;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 28px;
+      }
+      .section-title {
+        font-weight: 600;
+        margin: 26px 0 10px;
+      }
+      .para-card {
+        background: #f8fafc;
+        border-left: 4px solid #6366f1;
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        page-break-inside: avoid;
+      }
+      .list-box {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 14px;
+        page-break-inside: avoid;
+      }
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      ul li {
+        margin-bottom: 6px;
+      }
+      .page-break {
+        page-break-before: always;
+        padding-top: 40px; /* top margin for new page */
+      }
+      .signature {
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        page-break-inside: avoid;
+      }
+      .signature-line {
+        margin-top: 28px;
+        border-top: 1px solid #cbd5f5;
+        padding-top: 6px;
+      }
+    </style>
+  </head>
 
-    .header {
-      text-align: center;
-      margin-bottom: 12px;
-      page-break-inside: avoid;
-    }
+  <body>
+    <div class="page">
+      <div class="top-header">
+        <div class="box-left"></div>
+        <div class="box-center">
+          <img src="https://via.placeholder.com/120x40?text=LOGO" />
+        </div>
+        <div class="box-right"></div>
+      </div>
 
-    .header img {
-      height: 38px;
-      margin-bottom: 5px;
-    }
+      <div class="address">
+        <div class="address-left">
+          XYNAPSE SYSTEM Ground Floor, Plot No: 128-P2, Near Ginger Hotel, EPIP
+          Zone Whitefield, Bengaluru Karnataka – 560066 E-Mail:
+          contact@codexuslabs.com
+        </div>
+        <div>Date: <%= application.offerLetterData?.date || "" %></div>
+      </div>
 
-    .header h1 {
-      font-size: 20px;
-      color: #0046be;
-      margin: 0;
-    }
+      <!-- TITLE -->
+      <div class="title">Offer Letter for Internship / Employment</div>
 
-    .header hr {
-      border: 1px solid #0046be;
-      width: 40px;
-      margin: 6px auto 0 auto;
-    }
+      <!-- INTRO -->
+      <div class="para-card">
+        Dear <strong><%= application.name %></strong>,
+      </div>
 
-    .content p {
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
+      <div class="para-card">
+        We are delighted to extend this formal offer of internship/employment to
+        you and are pleased to welcome you to the Codexus Labs team. After
+        evaluating your profile, skills, and performance during the selection
+        process, we are confident that you will make valuable contributions to
+        our organization.
+      </div>
 
-    .section-box {
-      background-color: #f2f8ff;
-      padding: 8px 10px;
-      border-left: 3px solid #0046be;
-      margin-bottom: 10px;
-      page-break-inside: avoid;
-    }
+      <div class="para-card">
+        You are offered a position in the
+        <strong><%= application.department %></strong> department. You will be
+        expected to perform your duties with professionalism, integrity, and
+        dedication while actively collaborating with internal teams to support
+        business objectives and organizational growth.
+      </div>
 
-    ul {
-      margin-left: 14px;
-      padding-left: 0;
-      list-style: none;
-    }
+      <!-- COMPENSATION -->
+      <div class="section-title">Compensation Details</div>
+      <div class="para-card">
+        Stipend / Salary:
+        <strong><%= application.offerLetterData?.stipend || "" %></strong><br />
+        Monthly Salary:
+        <strong><%= application.offerLetterData?.monthlySalary || "" %></strong
+        ><br />
+        Total CTC: <strong><%= application.offerLetterData?.ctc || "" %></strong
+        ><br />
+        Duration:
+        <strong><%= application.offerLetterData?.duration || "" %></strong
+        ><br />
+        Working Hours:
+        <strong><%= application.offerLetterData?.workingHours || "" %></strong
+        ><br />
+        Location:
+        <strong><%= application.offerLetterData?.location || "" %></strong
+        ><br />
+        Reporting Manager:
+        <strong
+          ><%= application.offerLetterData?.reportingManager || "" %></strong
+        >
+      </div>
 
-    ul li {
-      margin-bottom: 3px;
-    }
+      <% if (application.offerLetterData?.responsibilities?.length) { %>
+      <div class="section-title">Responsibilities</div>
+      <div class="list-box">
+        <ul>
+          <% application.offerLetterData.responsibilities.forEach(r => { %>
+          <li><%= r %></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %> 
 
-    ul li::before {
-      content: "•";
-      color: #0046be;
-      font-weight: bold;
-      display: inline-block;
-      width: 0.9em;
-      margin-left: -0.9em;
-    }
+      <% if (application.offerLetterData?.completionBenefits?.length) { %>
+      <div class="section-title">Completion Benefits</div>
+      <div class="list-box">
+        <ul>
+          <% application.offerLetterData.completionBenefits.forEach(b => { %>
+          <li><%= b %></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %> 
 
-    .signature {
-      margin-top: 18px;
-      text-align: right;
-      page-break-inside: avoid;
-    }
+      <% if (application.offerLetterData?.notes?.length) { %>
+      <div class="section-title">Important Notes</div>
+      <div class="list-box">
+        <ul>
+          <% application.offerLetterData.notes.forEach(note => { %>
+          <li><%= note %></li>
+          <% }) %>
+        </ul>
+      </div>
+      <% } %>
 
-    .signature img {
-      height: 38px;
-      display: block;
-      margin-bottom: 4px;
-    }
+      <div class="section-title">Acceptance of Offer</div>
+      <div class="para-card">
+        Kindly confirm your acceptance of this offer by signing and returning
+        this letter on or before
+        <strong
+          ><%= application.offerLetterData?.acceptanceDeadline || "" %></strong
+        >. Failure to respond within the stipulated timeline may result in
+        withdrawal of this offer.
+      </div>
 
-    .footer {
-      margin-top: 15px;
-      font-size: 10.5px;
-      color: #555;
-      text-align: center;
-      page-break-inside: avoid;
-    }
+      <div class="section-title">Acknowledgment</div>
+      <div class="para-card">
+        I, <strong><%= application.name %></strong>, acknowledge and accept the
+        terms and conditions mentioned in this offer letter and agree to abide
+        by company policies.
+      </div>
 
-  </style>
-</head>
-
-<body>
-
-  <div class="header">
-    <img src="https://via.placeholder.com/150x50?text=Logo" alt="Institute Logo" />
-    <h1>Internship Offer Letter</h1>
-    <hr />
-  </div>
-
-  <div class="content">
-    <p>Date: <strong><%= new Date().toLocaleDateString() %></strong></p>
-    <p>To,</p>
-    <p><strong><%= application.name || 'Candidate' %></strong></p>
-    <p>Dear <%= application.name || 'Candidate' %>,</p>
-
-    <p>
-      We are pleased to offer you an internship with <strong>XYNAPSE SYSTEM</strong>
-      in the <strong><%= application.department || 'Department' %></strong> department.
-    </p>
-
-    <div class="section-box">
-      <strong>Internship Details:</strong>
-      <ul>
-        <li><strong>Period:</strong> <%= application.offerLetterData.startDate || 'N/A' %> to <%= application.offerLetterData.endDate || 'N/A' %> (<%= application.offerLetterData.duration || 'N/A' %>)</li>
-        <li><strong>Location:</strong> <%= application.offerLetterData.location || 'N/A' %></li>
-        <li><strong>Reporting Manager:</strong> <%= application.offerLetterData.reportingManager || 'N/A' %></li>
-        <li><strong>Stipend:</strong> <%= application.offerLetterData.stipend || 'N/A' %></li>
-        <li><strong>Working Hours:</strong> <%= application.offerLetterData.workingHours || 'N/A' %></li>
-      </ul>
+      <!-- SIGNATURE -->
+      <div class="signature">
+        <div>
+          <div class="signature-line">Candidate Signature</div>
+        </div>
+        <div style="text-align: right">
+          <div class="signature-line">
+            <%= application.offerLetterData?.signatoryName || "" %><br />
+            <%= application.offerLetterData?.signatoryDesignation || "" %>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="section-box">
-      <strong>Responsibilities:</strong>
-      <ul>
-        <% (application.offerLetterData.responsibilities || []).forEach(function(item) { %>
-          <li><%= item %></li>
-        <% }); %>
-      </ul>
-    </div>
-
-    <div class="section-box">
-      <strong>Completion Benefits:</strong>
-      <ul>
-        <% (application.offerLetterData.completionBenefits || []).forEach(function(item) { %>
-          <li><%= item %></li>
-        <% }); %>
-      </ul>
-    </div>
-
-    <div class="section-box">
-      <strong>Notes:</strong>
-      <ul>
-        <% (application.offerLetterData.notes || []).forEach(function(item) { %>
-          <li><%= item %></li>
-        <% }); %>
-      </ul>
-    </div>
-
-    <p>Please confirm your acceptance by responding via email.</p>
-  </div>
-
-  <div class="signature">
-    <img src="<%= application.offerLetterData.signatureImage || 'https://via.placeholder.com/120x40?text=Signature' %>" alt="Signature" />
-    <p><strong><%= application.offerLetterData.signatoryName || 'Head of Department' %></strong></p>
-    <p><%= application.offerLetterData.signatoryDesignation || 'Institute Name' %></p>
-  </div>
-
-  <div class="footer">
-    www.institute.com | contact@institute.com | +91-XXXXXXXXXX
-  </div>
-
-</body>
+  </body>
 </html>
