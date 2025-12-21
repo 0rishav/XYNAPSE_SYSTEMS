@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import worldSvg from "/images/world-1.jpg";
+
+import Globe3D from "../Globe3D";
 
 export default function TopBar({
   openModal,
@@ -12,35 +13,14 @@ export default function TopBar({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
 
-  const worldRef = useRef(null);
-
-  useEffect(() => {
-    const world = worldRef.current;
-    let angle = 0;
-
-    const animate = () => {
-      angle += 0.3; // rotation speed
-      world.style.transform = `rotate(${angle}deg)`;
-      requestAnimationFrame(animate);
-    };
-
-    animate();
-  }, []);
-
   return (
     <>
       <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
-          {/* Left: Worldwide globe */}
           <div className="flex items-center">
-            <div className="relative w-10 h-10 mr-3">
-              <img
-                ref={worldRef}
-                src={worldSvg}
-                alt="Worldwide"
-                className="w-full h-full object-contain drop-shadow-lg rounded-full animate-bounce-slow"
-                style={{ animation: "bounce 2s infinite alternate" }}
-              />
+            <div className="relative w-16 h-16 mr-3 flex items-center justify-center perspective">
+              {/* Globe */}
+              <Globe3D />
             </div>
           </div>
 
@@ -57,7 +37,7 @@ export default function TopBar({
             </span>
             <Link
               to="/job-mela"
-              className="inline-flex items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30"
+              className="inline-flex login-btn items-center gap-2 rounded-full bg-rose-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-md shadow-rose-600/30"
             >
               Job Mela
             </Link>
@@ -67,7 +47,7 @@ export default function TopBar({
           <div className="flex items-center gap-3">
             <button
               onClick={() => openModal("enroll", { name: "Online Enrollment" })}
-              className="hidden md:inline-flex items-center gap-1 rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-500 enroll-cta"
+              className="hidden login-btn md:inline-flex items-center gap-1 rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-500 enroll-cta"
             >
               Enroll
             </button>
@@ -76,7 +56,7 @@ export default function TopBar({
               onClick={() =>
                 openModal("internship", { name: "Internship Application" })
               }
-              className="hidden md:inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800 shimmer-btn"
+              className="hidden login-btn md:inline-flex items-center gap-1 text-white rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold  hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800 shimmer-btn"
             >
               Internship
             </button>
@@ -133,25 +113,31 @@ export default function TopBar({
               </button>
             )}
 
-            <div className="hidden lg:flex lg:items-center gap-2">
+            <div className="hidden lg:flex lg:items-center overflow-visible gap-3">
               {socials.map((item, index) => (
                 <a
                   key={item.label}
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white dark:bg-slate-900 transition-all duration-300 ease-out hover:scale-110 hover:shadow-lg hover:-translate-y-1 active:scale-95"
+                  title={item.label}
+                  className="group relative flex h-9 w-9 items-center justify-center rounded-full
+      border-2 bg-white dark:bg-slate-900
+      hover:shadow-2xl
+      transition-shadow duration-300"
                   style={{
                     borderColor: item.color,
                     color: item.color,
-                    animationDelay: `${index * 100}ms`,
-                    animation: `fadeInUp 0.6s ease-out ${index * 100}ms both`,
+                    animation: `socialFloat 4.5s ease-in-out ${
+                      index * 0.6
+                    }s infinite`,
                   }}
-                  title={item.label}
                 >
-                  {item.icon}
+                  <span className="relative z-10">{item.icon}</span>
+
+                  {/* glow layer */}
                   <div
-                    className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-20"
+                    className="absolute inset-0 rounded-full opacity-20 blur-md"
                     style={{ backgroundColor: item.color }}
                   />
                 </a>
@@ -212,7 +198,7 @@ export default function TopBar({
               {/* Job Mela Button added */}
               <Link
                 to="/job-mela"
-                className="rounded-lg bg-rose-600 px-4 py-2 text-white text-left font-medium shadow hover:bg-rose-500 transition-colors"
+                className="rounded-lg login-btn bg-rose-600 px-4 py-2 text-white text-left font-medium shadow hover:bg-rose-500 transition-colors"
               >
                 Job Mela
               </Link>
@@ -221,7 +207,7 @@ export default function TopBar({
                 onClick={() =>
                   openModal("enroll", { name: "Online Enrollment" })
                 }
-                className="rounded-lg bg-sky-600 px-4 py-2 text-white text-left font-medium shadow hover:bg-sky-500 transition-colors"
+                className="rounded-lg bg-sky-600 px-4 login-btn py-2 text-white text-left font-medium shadow hover:bg-sky-500 transition-colors"
               >
                 Enroll
               </button>
@@ -230,7 +216,7 @@ export default function TopBar({
                 onClick={() =>
                   openModal("internship", { name: "Internship Application" })
                 }
-                className="rounded-lg border border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
+                className="rounded-lg login-btn border border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
               >
                 Internship
               </button>
@@ -273,14 +259,14 @@ export default function TopBar({
               {!isAuthenticated ? (
                 <Link
                   to="/login"
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg border login-btn border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
                 >
                   Student Login
                 </Link>
               ) : (
                 <button
                   onClick={goToProfile}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg border login-btn border-slate-300 px-4 py-2 text-left font-medium hover:bg-slate-100 dark:border-white/30 dark:hover:bg-slate-800 transition-colors"
                 >
                   My Profile
                 </button>

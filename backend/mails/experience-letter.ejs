@@ -82,47 +82,65 @@
   </head>
   <body>
     <div class="header">
-      <img src="https://via.placeholder.com/150x50?text=Logo" alt="Institute Logo" />
+      <img src="<%= logoBase64 %>" alt="Institute Logo" style="height: 100px" />
       <h1>Experience Letter</h1>
       <hr />
     </div>
 
     <div class="content">
-      <p>Date: <strong><%= application.experiencePoints.date || new Date().toLocaleDateString() %></strong></p>
+      <p>
+        Date: <strong>
+          <%= (application.experiencePoints && application.experiencePoints.date) ? application.experiencePoints.date : new Date().toLocaleDateString() %>
+        </strong>
+      </p>
 
       <p>To Whomsoever It May Concern,</p>
 
       <p>
-        This is to certify that <strong><%= application.name %></strong> has successfully
-        completed an internship with <strong>XYNAPSE SYSTEM</strong> in the
+        This is to certify that <strong><%= application.name %></strong> has
+        successfully completed an internship with
+        <strong>XYNAPSE SYSTEM</strong> in the
         <strong><%= application.department %></strong> department from
-        <strong><%= application.experiencePoints.startDate %></strong> to
-        <strong><%= application.experiencePoints.endDate %></strong>.
+        <strong><%= (application.experiencePoints && application.experiencePoints.startDate) ? application.experiencePoints.startDate : 'N/A' %></strong> to
+        <strong><%= (application.experiencePoints && application.experiencePoints.endDate) ? application.experiencePoints.endDate : 'N/A' %></strong>.
       </p>
 
       <p>
-        During the internship period, <%= application.name %> actively contributed to the following
-        tasks and responsibilities:
+        During the internship period, <%= application.name %> actively
+        contributed to the following tasks and responsibilities:
       </p>
 
       <div class="section-box">
         <ul>
-          <% (application.experiencePoints.responsibilities || []).forEach(function(item) { %>
+          <% 
+            var responsibilities = (application.experiencePoints && application.experiencePoints.responsibilities) ? application.experiencePoints.responsibilities : [];
+            responsibilities.forEach(function(item) { 
+          %>
             <li><%= item %></li>
           <% }); %>
         </ul>
       </div>
 
       <p>
-        We hereby acknowledge <%= application.name %>'s contributions and recommend them for
-        future endeavors. We wish them all the best in their professional career.
+        We hereby acknowledge <%= application.name %>'s contributions and
+        recommend them for future endeavors. We wish them all the best in their
+        professional career.
       </p>
     </div>
 
     <div class="signature">
-      <img src="<%= application.experiencePoints.signatureImage || 'https://via.placeholder.com/120x40?text=Signature' %>" alt="Signature" />
-      <p><strong><%= application.experiencePoints.signatoryName || 'Head of Department' %></strong></p>
-      <p><%= application.experiencePoints.signatoryDesignation || 'Institute Name' %></p>
+      <img
+        src="<%= (application.experiencePoints && application.experiencePoints.signatureImage) ? application.experiencePoints.signatureImage : 'https://via.placeholder.com/120x40?text=Signature' %>"
+        alt="Signature"
+      />
+      <p>
+        <strong>
+          <%= (application.experiencePoints && application.experiencePoints.signatoryName) ? application.experiencePoints.signatoryName : 'Head of Department' %>
+        </strong>
+      </p>
+      <p>
+        <%= (application.experiencePoints && application.experiencePoints.signatoryDesignation) ? application.experiencePoints.signatoryDesignation : 'Institute Name' %>
+      </p>
     </div>
 
     <div class="footer">

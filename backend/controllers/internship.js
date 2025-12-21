@@ -174,7 +174,7 @@ export const getSingleInternshipApplication = CatchAsyncError(
 
 export const getMyInternshipApplications = CatchAsyncError(
   async (req, res, next) => {
-    const userId = req.user?._id?.toString(); 
+    const userId = req.user?._id?.toString();
 
     if (!userId || !userId.match(/^[0-9a-fA-F]{24}$/)) {
       return next(new ErrorHandler("Invalid User ID", 400));
@@ -445,9 +445,16 @@ export const downloadOfferLetter = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Internship application not found", 404));
   }
 
+  const logoPath = path.join(__dirname, "../images/Logo.png");
+  const logoData = fs.readFileSync(logoPath);
+  const logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
+
   const templatePath = path.join(__dirname, "../mails/offer-letter.ejs");
 
-  const html = await ejs.renderFile(templatePath, { application });
+  const html = await ejs.renderFile(templatePath, {
+    application,
+    logoBase64, 
+  });
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -456,7 +463,12 @@ export const downloadOfferLetter = CatchAsyncError(async (req, res, next) => {
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
 
-  const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+  const pdfBuffer = await page.pdf({
+    format: "A4",
+    printBackground: true,
+    margin: { top: "20px", right: "20px", bottom: "20px", left: "20px" },
+  });
+
   await browser.close();
 
   res.set({
@@ -484,9 +496,16 @@ export const downloadExperienceLetter = CatchAsyncError(
       return next(new ErrorHandler("Internship application not found", 404));
     }
 
+    const logoPath = path.join(__dirname, "../images/Logo.png");
+    const logoData = fs.readFileSync(logoPath);
+    const logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
+
     const templatePath = path.join(__dirname, "../mails/experience-letter.ejs");
 
-    const html = await ejs.renderFile(templatePath, { application });
+    const html = await ejs.renderFile(templatePath, {
+      application,
+      logoBase64, 
+    });
 
     const browser = await puppeteer.launch({
       headless: true,
@@ -523,12 +542,17 @@ export const downloadCertificate = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Internship application not found", 404));
   }
 
+  const logoPath = path.join(__dirname, "../images/Logo.png");
+  const logoData = fs.readFileSync(logoPath);
+  const logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
+
   const templatePath = path.join(__dirname, "../mails/certificate.ejs");
 
   const html = await ejs.renderFile(templatePath, {
     name: application.name,
     department: application.department,
     certificateData: application.certificateData || {},
+    logoBase64, 
   });
 
   const browser = await puppeteer.launch({
@@ -555,3 +579,4 @@ export const downloadCertificate = CatchAsyncError(async (req, res, next) => {
 
   res.send(pdfBuffer);
 });
+
