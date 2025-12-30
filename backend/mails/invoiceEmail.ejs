@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Invoice</title>
+
     <style>
       * {
         box-sizing: border-box;
@@ -15,69 +16,50 @@
       body {
         background: #fff;
         color: #111827;
-        font-size: 13px;
-        line-height: 1.6;
+        font-size: 12px; /* 🔽 font thoda chhota */
+        line-height: 1.4; /* 🔽 line-height kam */
       }
 
       .invoice-page {
         width: 100%;
-        padding: 24px;
-        position: relative; /* Watermark ke liye zaruri */
+        padding: 16px; /* 🔽 overall padding kam */
+        position: relative;
       }
 
-      /* Background watermark */
       .bg-watermark {
         position: absolute;
-        top: 20%;
+        top: 22%;
         left: 50%;
         transform: translate(-50%, -50%) rotate(-15deg);
-        font-size: 70px;
-        color: rgba(0, 0, 0, 0.05);
+        font-size: 60px; /* 🔽 */
+        color: rgba(0, 0, 0, 0.04);
         font-weight: 700;
-        z-index: 500;
-        pointer-events: none;
       }
 
-      /* PAID watermark */
       .paid-watermark {
         position: absolute;
-        top: 40%;
+        top: 42%;
         left: 50%;
         transform: translate(-50%, -50%) rotate(-15deg);
-        font-size: 100px;
-        color: rgba(0, 0, 0, 0.1);
+        font-size: 90px; /* 🔽 */
+        color: rgba(0, 0, 0, 0.08);
         font-weight: 700;
-        z-index: 1000;
-        pointer-events: none;
       }
 
       .invoice-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        border-bottom: 3px solid #1e3a8a;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
-        position: relative; /* z-index ke liye */
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        border-bottom: 2px solid #1e3a8a; /* 🔽 */
+        padding-bottom: 8px;
+        margin-bottom: 10px;
       }
 
       .header-left img {
-        height: 70px;
-      }
-
-      .company-name {
-        font-size: 20px;
-        font-weight: 700;
+        height: 60px; /* 🔽 */
       }
 
       .header-right {
-        font-size: 22px;
+        font-size: 20px; /* 🔽 */
         font-weight: 700;
         color: #1e3a8a;
       }
@@ -85,47 +67,37 @@
       .invoice-meta {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 18px;
-        font-size: 13px;
-      }
-
-      .invoice-meta strong {
-        font-weight: 700;
+        margin-bottom: 6px; /* 🔽 */
       }
 
       .info-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        margin-bottom: 20px;
-      }
-
-      .info-box {
-        line-height: 1.6;
+        gap: 16px; /* 🔽 */
+        margin-bottom: 10px;
       }
 
       .info-title {
         font-weight: 700;
-        margin-bottom: 6px;
         color: #1e3a8a;
+        margin-bottom: 4px; /* 🔽 */
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-bottom: 20px;
+        margin-bottom: 10px; /* 🔽 */
       }
 
       th {
         background: #1e3a8a;
         color: #fff;
-        text-align: left;
-        padding: 10px;
-        font-size: 13px;
+        padding: 6px; /* 🔽 */
+        font-size: 12px;
       }
 
       td {
-        padding: 9px 10px;
+        padding: 6px; /* 🔽 */
         border-bottom: 1px solid #e5e7eb;
       }
 
@@ -133,87 +105,97 @@
         text-align: right;
       }
 
+      .comments {
+        margin-top: 10px; /* 🔽 */
+        font-size: 11px; /* 🔽 */
+      }
+
       .summary-wrapper {
         display: flex;
         justify-content: flex-end;
-        margin-top: 20px;
+        margin-top: 8px; /* 🔽 */
       }
 
       .summary-box {
-        width: 320px;
+        width: 300px; /* 🔽 */
         border: 1px solid #e5e7eb;
-        padding: 14px;
+        padding: 10px; /* 🔽 */
       }
 
       .summary-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 6px;
+        margin-bottom: 4px; /* 🔽 */
       }
 
       .summary-row.total {
         font-weight: 700;
-        font-size: 15px;
+        font-size: 13px;
         border-top: 2px solid #1e3a8a;
-        padding-top: 8px;
-        margin-top: 8px;
-      }
-
-      .comments {
-        margin-top: 18px;
-        font-size: 12.5px;
+        padding-top: 6px;
+        margin-top: 6px;
       }
 
       .invoice-footer {
-        margin-top: 30px;
-        border-top: 1px solid #e5e7eb;
-        padding-top: 10px;
+        margin-top: 14px; /* 🔽 */
         text-align: center;
-        font-size: 12px;
+        font-size: 11px;
         color: #374151;
-      }
-
-      @media print {
-        body {
-          margin: 0;
-        }
+        border-top: 1px solid #e5e7eb;
+        padding-top: 6px;
       }
     </style>
   </head>
 
   <body>
+    <% const subTotal = invoice.courses.reduce( (sum, c) => sum +
+    Number(c.amount || 0), 0 ); const cgst = Number(invoice.taxes?.cgst || 0);
+    const sgst = Number(invoice.taxes?.sgst || 0); const igst =
+    Number(invoice.taxes?.igst || 0); const otherTaxes =
+    Number(invoice.taxes?.otherTaxes || 0); const discount =
+    Number(invoice.discount || 0); const totalAmount = subTotal + cgst + sgst +
+    igst + otherTaxes - discount; const paidAmount = Number(invoice.paidAmount
+    || 0); const dueAmount = Math.max(totalAmount - paidAmount, 0); const
+    dueDate = new Date(invoice.createdAt); dueDate.setDate(dueDate.getDate() +
+    30); %>
+
     <div class="invoice-page">
-      <!-- Background watermark -->
-      <div class="bg-watermark">XYNAPSE SYSTEM</div>
-      <!-- Paid watermark -->
+      <div class="bg-watermark">XYNAPSE</div>
+
+      <% if (dueAmount === 0) { %>
       <div class="paid-watermark">PAID</div>
+      <% } %>
 
       <div class="invoice-header">
         <div class="header-left">
-          <img src="<%= logoBase64 %>" alt="Logo" />
-          <!-- <div class="company-name">XYNAPSE SYSTEM</div> -->
+          <img src="<%= logoBase64 %>" />
         </div>
         <div class="header-right">RECEIPT</div>
       </div>
 
       <div class="invoice-meta">
         <div><strong>INVOICE #</strong> <%= invoice.invoiceNumber %></div>
-        <div><strong>DATE</strong> <%= invoice.date %></div>
+        <div>
+          <strong>DATE</strong> <%= new Date(invoice.createdAt).toDateString()
+          %>
+        </div>
+      </div>
+
+      <div class="invoice-meta">
+        <div><strong>DUE DATE</strong> <%= dueDate.toDateString() %></div>
       </div>
 
       <div class="info-grid">
-        <div class="info-box">
+        <div>
           <div class="info-title">MAILING INFO</div>
-          Ground Floor, Plot No: 128-P2,<br />
-          Near Ginger Hotel, EPIP Zone,<br />
+          Xynapes Systems Institute<br />
           Whitefield, Bengaluru<br />
-          Phone: 7081140055<br />
-          Mail: office@codexuslabs.com
+          Phone: 7081140055
         </div>
-        <div class="info-box">
+
+        <div>
           <div class="info-title">STUDENT DETAILS</div>
           <strong><%= student.name %></strong><br />
-          Bio: <%= student.bio %><br />
           Phone: <%= student.mobile %><br />
           Mode: <%= invoice.paymentMode %>
         </div>
@@ -222,7 +204,7 @@
       <table>
         <thead>
           <tr>
-            <th>COURSES</th>
+            <th>COURSE</th>
             <th>INSTRUCTOR</th>
             <th>AMOUNT</th>
           </tr>
@@ -230,33 +212,83 @@
         <tbody>
           <% invoice.courses.forEach(c => { %>
           <tr>
-            <td><%= c.courseId.title %></td>
-            <td><%= c.instructorId.name %></td>
-            <td>₹<%= parseFloat(c.amount.toString()) %></td>
+            <td><%= c.course?.title || "-" %></td>
+            <td><%= c.instructor?.name || "-" %></td>
+            <td>₹<%= Number(c.amount).toFixed(2) %></td>
           </tr>
           <% }) %>
         </tbody>
       </table>
 
-      <% if(invoice.notes) { %>
       <div class="comments">
-        <strong>OTHER COMMENTS / TAX RATE 18%</strong><br />
-        <%= invoice.notes %>
+        <strong>OTHER COMMENTS / TAX RATE 18%</strong><br /><br />
+
+        <strong>Xynapse Systems Institute – Terms & Conditions</strong
+        ><br /><br />
+
+        <strong>1. Payment & Refund Policy</strong><br />
+        Once the course payment is made, it is strictly non-refundable under any
+        circumstances. However, students may choose to enroll in another course
+        within one month of the original payment. After this period, no further
+        assistance will be provided.<br /><br />
+
+        <strong>2. Trainer Change Policy</strong><br />
+        Requests for a trainer change will be accepted only within the first 1
+        or 2 classes. Requests made after attending several classes will be
+        difficult to accommodate, as the trainer payment is processed in
+        advance. In such cases, the course must be completed with the same
+        trainer.<br /><br />
+
+        <strong>3. Payment Structure</strong><br />
+        Course fees are to be paid in a one-time payment. Any due amount must be
+        cleared within 30 days, with a maximum of two installments allowed.<br /><br />
+
+        <strong>4. Class Schedule</strong><br />
+        Weekdays: 1 hour per session<br />
+        Weekends: 2 hours per session<br />
+        Students must choose only one option (weekday or weekend); both cannot
+        be selected.<br /><br />
+
+        <strong>4. Mode of Training</strong><br />
+        All classes will be conducted in online mode. Trainers are professional
+        and experienced.
       </div>
-      <% } %>
 
       <div class="summary-wrapper">
         <div class="summary-box">
           <div class="summary-row">
-            <span>SUBTOTAL</span>
-            <span>₹<%= invoice.courses.reduce((sum, c) => sum + parseFloat(c.amount.toString()), 0) %></span>
+            <span>SUBTOTAL</span><span>₹<%= subTotal.toFixed(2) %></span>
           </div>
-          <div class="summary-row"><span>CGST</span><span>₹<%= parseFloat(invoice.taxes.cgst.toString()) %></span></div>
-          <div class="summary-row"><span>SGST</span><span>₹<%= parseFloat(invoice.taxes.sgst.toString()) %></span></div>
-          <div class="summary-row"><span>IGST</span><span>₹<%= parseFloat(invoice.taxes.igst.toString()) %></span></div>
-          <div class="summary-row"><span>Other Taxes</span><span>₹<%= parseFloat(invoice.taxes.otherTaxes.toString()) %></span></div>
-          <div class="summary-row"><span>DISCOUNT</span><span>₹<%= parseFloat(invoice.discount.toString()) %></span></div>
-          <div class="summary-row total"><span>TOTAL</span><span>₹<%= parseFloat(invoice.totalAmount.toString()) %></span></div>
+          <div class="summary-row">
+            <span>CGST</span><span>₹<%= cgst.toFixed(2) %></span>
+          </div>
+          <div class="summary-row">
+            <span>SGST</span><span>₹<%= sgst.toFixed(2) %></span>
+          </div>
+          <div class="summary-row">
+            <span>IGST</span><span>₹<%= igst.toFixed(2) %></span>
+          </div>
+          <div class="summary-row">
+            <span>OTHER TAXES</span><span>₹<%= otherTaxes.toFixed(2) %></span>
+          </div>
+          <div class="summary-row">
+            <span>DISCOUNT</span><span>-₹<%= discount.toFixed(2) %></span>
+          </div>
+
+          <div class="summary-row total">
+            <span>TOTAL AMOUNT</span>
+            <span>₹<%= totalAmount.toFixed(2) %></span>
+          </div>
+
+          <div class="summary-row">
+            <span>PAID AMOUNT</span>
+            <span>₹<%= paidAmount.toFixed(2) %></span>
+          </div>
+
+          <div class="summary-row total">
+            <span>DUE AMOUNT</span>
+            <span>₹<%= dueAmount.toFixed(2) %></span>
+          </div>
         </div>
       </div>
 

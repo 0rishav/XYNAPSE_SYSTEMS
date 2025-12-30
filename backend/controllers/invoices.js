@@ -10,6 +10,7 @@ import fs from "fs";
 import puppeteer from "puppeteer";
 import mongoose from "mongoose";
 import CourseForm from "../models/course/courseFormModal.js";
+import Course from "../models/course/courseModal.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,12 +27,11 @@ export const createInvoice = CatchAsyncError(async (req, res, next) => {
   const student = await Auth.findById(studentId);
   if (!student) return next(new ErrorHandler("Student not found", 404));
 
+  const coursesData = [];
+
   for (const c of courses) {
     if (!c.courseId) return next(new ErrorHandler("Course ID is required", 400));
-    if (!c.instructorId)
-      return next(new ErrorHandler("Instructor ID is required", 400));
-    if (!c.amount)
-      return next(new ErrorHandler("Course amount is required", 400));
+    if (!c.instructorId) return next(new ErrorHandler("Instructor ID is required", 400));
 
     const courseForm = await CourseForm.findOne({
       studentId,
@@ -39,30 +39,43 @@ export const createInvoice = CatchAsyncError(async (req, res, next) => {
       isDeleted: false,
     });
 
-    if (!courseForm) {
-      return next(
-        new ErrorHandler(
-          `Course form not found for student and course ${c.courseId}`,
-          404
-        )
-      );
+    if (!courseForm)
+      return next(new ErrorHandler(`Course form not found for student and course ${c.courseId}`, 404));
+
+    if (courseForm.status !== "paid")
+      return next(new ErrorHandler(`Invoice cannot be created. Status for course ${c.courseId} is not Paid`, 400));
+
+    const course = await Course.findById(c.courseId);
+    if (!course) return next(new ErrorHandler(`Course not found: ${c.courseId}`, 404));
+
+    const totalPrice = course.price;
+    const paidAmount = parseFloat(c.paidAmount || 0);
+    const dueAmount = totalPrice - paidAmount;
+
+    // Installments from body or default
+    const installments = c.installments && Array.isArray(c.installments)
+      ? c.installments.map(inst => ({
+          amount: mongoose.Types.Decimal128.fromString(inst.amount.toString()),
+          status: inst.status || "pending",
+          paidDate: inst.paidDate || (inst.status === "paid" ? new Date() : null),
+        }))
+      : [
+          { amount: mongoose.Types.Decimal128.fromString(paidAmount.toString()), status: "paid", paidDate: new Date() },
+        ];
+
+    if (dueAmount > 0 && (!c.installments || c.installments.length === 0)) {
+      installments.push({ amount: mongoose.Types.Decimal128.fromString(dueAmount.toString()), status: "pending" });
     }
 
-    if (courseForm.status !== "paid") {
-      return next(
-        new ErrorHandler(
-          `Invoice cannot be created. Status for course ${c.courseId} is not Paid`,
-          400
-        )
-      );
-    }
+    coursesData.push({
+      courseId: c.courseId,
+      instructorId: c.instructorId,
+      amount: mongoose.Types.Decimal128.fromString(totalPrice.toString()),
+      paidAmount: mongoose.Types.Decimal128.fromString(paidAmount.toString()),
+      dueAmount: mongoose.Types.Decimal128.fromString(dueAmount.toString()),
+      installments,
+    });
   }
-
-  const coursesData = courses.map((c) => ({
-    courseId: c.courseId,
-    instructorId: c.instructorId,
-    amount: mongoose.Types.Decimal128.fromString(c.amount.toString()),
-  }));
 
   const invoice = await Invoice.create({
     studentId,
@@ -73,23 +86,10 @@ export const createInvoice = CatchAsyncError(async (req, res, next) => {
       cgst: mongoose.Types.Decimal128.fromString((taxes?.cgst || 0).toString()),
       sgst: mongoose.Types.Decimal128.fromString((taxes?.sgst || 0).toString()),
       igst: mongoose.Types.Decimal128.fromString((taxes?.igst || 0).toString()),
-      otherTaxes: mongoose.Types.Decimal128.fromString(
-        (taxes?.otherTaxes || 0).toString()
-      ),
+      otherTaxes: mongoose.Types.Decimal128.fromString((taxes?.otherTaxes || 0).toString()),
     },
     notes: notes || "",
     createdBy: req.user._id,
-  });
-
-  const logoPath = path.join(__dirname, "../images/Logo.png");
-  const logoData = fs.readFileSync(logoPath);
-  const logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
-
-  await sendMail({
-    email: student.email,
-    subject: `Invoice Created: ${invoice.invoiceNumber}`,
-    template: "invoiceEmail.ejs",
-    data: { invoice, student, logoBase64 },
   });
 
   res.status(201).json({
@@ -105,19 +105,14 @@ export const getAllInvoices = CatchAsyncError(async (req, res, next) => {
   const filter = { isDeleted: false };
   if (studentId) filter.studentId = studentId;
   if (paymentStatus) filter.paymentStatus = paymentStatus;
+  if (courseId) filter["courses.courseId"] = courseId;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
 
   const invoices = await Invoice.find(filter)
     .populate("studentId", "name email")
-    .populate({
-      path: "courses.courseId", 
-      select: "title",
-    })
-    .populate({
-      path: "courses.instructorId", 
-      select: "name email",
-    })
+    .populate({ path: "courses.courseId", select: "title price" }) 
+    .populate({ path: "courses.instructorId", select: "name email" })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit))
@@ -134,13 +129,11 @@ export const getAllInvoices = CatchAsyncError(async (req, res, next) => {
   });
 });
 
-
 export const getSingleInvoice = CatchAsyncError(async (req, res, next) => {
   const { invoiceId } = req.params;
 
   let invoice = await Invoice.findById(invoiceId)
-    .populate("studentId", "name email")
-    .populate("instructorId", "name email")
+    .populate("studentId", "name email mobile bio")
     .lean();
 
   if (!invoice || invoice.isDeleted) {
@@ -149,8 +142,10 @@ export const getSingleInvoice = CatchAsyncError(async (req, res, next) => {
 
   const populatedCourses = await Promise.all(
     invoice.courses.map(async (c) => {
-      const course = await Course.findById(c.courseId).select("title");
-      const instructor = await Auth.findById(c.instructorId).select("name email");
+      const course = await Course.findById(c.courseId).select("title price");
+      const instructor = await Auth.findById(c.instructorId).select(
+        "name email"
+      );
       return { ...c, course, instructor };
     })
   );
@@ -159,7 +154,7 @@ export const getSingleInvoice = CatchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    invoice,
+    invoice, 
   });
 });
 
@@ -170,7 +165,7 @@ export const getMyInvoices = CatchAsyncError(async (req, res, next) => {
     isDeleted: false,
     $or: [{ studentId: authId }, { "courses.instructorId": authId }],
   })
-    .populate("studentId", "name email")
+    .populate("studentId", "name email mobile bio")
     .lean()
     .sort({ createdAt: -1 });
 
@@ -178,8 +173,10 @@ export const getMyInvoices = CatchAsyncError(async (req, res, next) => {
     invoices.map(async (inv) => {
       const populatedCourses = await Promise.all(
         inv.courses.map(async (c) => {
-          const course = await Course.findById(c.courseId).select("title");
-          const instructor = await Auth.findById(c.instructorId).select("name email");
+          const course = await Course.findById(c.courseId).select("title price");
+          const instructor = await Auth.findById(c.instructorId).select(
+            "name email"
+          );
           return { ...c, course, instructor };
         })
       );
@@ -191,7 +188,7 @@ export const getMyInvoices = CatchAsyncError(async (req, res, next) => {
     success: true,
     message: "Invoices fetched successfully",
     total: invoices.length,
-    data: invoices,
+    data: invoices, 
   });
 });
 
@@ -256,7 +253,9 @@ export const updateInvoice = CatchAsyncError(async (req, res, next) => {
       total += fee - discount + cgst + sgst + igst + otherTaxes;
     });
 
-    invoice.totalAmount = mongoose.Types.Decimal128.fromString(total.toFixed(2));
+    invoice.totalAmount = mongoose.Types.Decimal128.fromString(
+      total.toFixed(2)
+    );
   }
 
   await invoice.save();
@@ -369,14 +368,23 @@ export const downloadInvoicePDF = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Invoice ID", 400));
   }
 
-  const invoice = await Invoice.findById(invoiceId)
+  let invoice = await Invoice.findById(invoiceId)
     .populate("studentId", "name email bio mobile")
-    .populate("courses.courseId", "title")
-    .populate("courses.instructorId", "name email");
+    .lean();
 
   if (!invoice || invoice.isDeleted) {
     return next(new ErrorHandler("Invoice not found", 404));
   }
+
+  const populatedCourses = await Promise.all(
+    invoice.courses.map(async (c) => {
+      const course = await Course.findById(c.courseId).select("title price");
+      const instructor = await Auth.findById(c.instructorId).select("name email");
+      return { ...c, course, instructor };
+    })
+  );
+
+  invoice = { ...invoice, courses: populatedCourses };
 
   const logoPath = path.join(__dirname, "../images/Logo.png");
   const logoData = fs.readFileSync(logoPath);
@@ -414,4 +422,3 @@ export const downloadInvoicePDF = CatchAsyncError(async (req, res, next) => {
 
   res.send(pdfBuffer);
 });
-

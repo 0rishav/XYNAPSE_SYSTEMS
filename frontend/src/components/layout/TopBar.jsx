@@ -16,11 +16,29 @@ export default function TopBar({
   return (
     <>
       <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
-          <div className="flex items-center">
-            <div className="relative w-16 h-16 mr-3 flex items-center justify-center perspective">
-              {/* Globe */}
+        <div className="mx-auto max-w-8xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center">
+            <div className="relative w-16 h-16 flex items-center justify-center perspective">
               <Globe3D />
+            </div>
+
+            <div className="brand-text mt-2">
+              <span>X</span>
+              <span>Y</span>
+              <span>N</span>
+              <span>A</span>
+              <span>P</span>
+              <span>S</span>
+              <span>E</span>
+              <span className="gap"></span>
+              <span>S</span>
+              <span>Y</span>
+              <span>S</span>
+              <span>T</span>
+              <span>E</span>
+              <span>M</span>
+              <span>S</span>
+              
             </div>
           </div>
 

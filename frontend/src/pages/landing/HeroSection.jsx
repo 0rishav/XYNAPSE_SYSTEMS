@@ -3,13 +3,16 @@ import { Link } from "react-router-dom";
 import { AnimatedReveal } from "./Landing";
 
 const sectionCardClasses =
-  "rounded-3xl p-6 sm:p-10 shadow-lg bg-white/90 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/70";
+  "relative rounded-3xl p-6 sm:p-10 shadow-lg bg-white/90 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/70 overflow-hidden";
 
 const acronym = [
-  { letter: "T", text: "Transferring" },
-  { letter: "E", text: "Expert’s" },
-  { letter: "K", text: "Knowledge to" },
-  { letter: "S", text: "Students" },
+  { letter: "X", text: "eXcellence" },
+  { letter: "Y", text: "Your" },
+  { letter: "N", text: "Next-gen" },
+  { letter: "A", text: "Analytics" },
+  { letter: "P", text: "Platforms" },
+  { letter: "S", text: "Solutions" },
+  { letter: "E", text: "Engineering" },
 ];
 
 const HeroSection = () => {
@@ -19,27 +22,33 @@ const HeroSection = () => {
   useEffect(() => {
     const canvas = bubbleCanvasRef.current;
     const container = containerRef.current;
-    const ctx = canvas.getContext("2d");
-    let animationFrameId;
+    if (!canvas || !container) return;
 
-    const TOTAL = 12;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId;
+    const TOTAL = 14;
     let bubbles = [];
 
-    const initBubbles = () => {
+    const resizeCanvas = () => {
       const { width, height } = container.getBoundingClientRect();
       canvas.width = width;
       canvas.height = height;
+    };
 
+    const initBubbles = () => {
+      resizeCanvas();
       bubbles = Array.from({ length: TOTAL }).map(() => {
-        const baseR = 15 + Math.random() * 20;
+        const baseR = 22 + Math.random() * 20;
         return {
           baseR,
           r: baseR,
           targetR: baseR,
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: -0.3 + Math.random() * 0.6,
-          vy: -0.3 + Math.random() * 0.6,
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: -0.2 + Math.random() * 0.4,
+          vy: -0.2 + Math.random() * 0.4,
         };
       });
     };
@@ -47,31 +56,49 @@ const HeroSection = () => {
     const pickPulseGroup = () => {
       const ids = [...Array(TOTAL).keys()]
         .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+        .slice(0, 4);
+
       bubbles.forEach((b, i) => {
         b.targetR = ids.includes(i) ? b.baseR * 2.2 : b.baseR;
       });
     };
 
+    const drawBubble = (b) => {
+      const gradient = ctx.createRadialGradient(
+        b.x - b.r * 0.3,
+        b.y - b.r * 0.3,
+        b.r * 0.2,
+        b.x,
+        b.y,
+        b.r
+      );
+
+      gradient.addColorStop(0, "rgba(186,230,253,0.85)");
+      gradient.addColorStop(0.5, "rgba(56,189,248,0.45)");
+      gradient.addColorStop(1, "rgba(14,165,233,0.15)");
+
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.shadowBlur = 25;
+      ctx.shadowColor = "rgba(56,189,248,0.45)";
+      ctx.fill();
+    };
+
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       bubbles.forEach((b) => {
         b.x += b.vx;
         b.y += b.vy;
 
-        // Bounce edges
         if (b.x - b.r < 0 || b.x + b.r > canvas.width) b.vx *= -1;
         if (b.y - b.r < 0 || b.y + b.r > canvas.height) b.vy *= -1;
 
         b.r += (b.targetR - b.r) * 0.05;
-
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(14,165,233,0.15)";
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = "rgba(14,165,233,0.25)";
-        ctx.fill();
+        drawBubble(b);
       });
+
       animationFrameId = requestAnimationFrame(animate);
     };
 
@@ -80,28 +107,36 @@ const HeroSection = () => {
     const interval = setInterval(pickPulseGroup, 3500);
     animate();
 
-    const handleResize = () => {
-      initBubbles();
-    };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", initBubbles);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", initBubbles);
       clearInterval(interval);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
-    <section className={`${sectionCardClasses} grid gap-10 lg:grid-cols-2`}>
+    <section
+      ref={containerRef}
+      className={`${sectionCardClasses} grid gap-10 lg:grid-cols-2`}
+    >
+      {/* Bubble Background */}
+      <canvas
+        ref={bubbleCanvasRef}
+        className="absolute inset-0 z-0 pointer-events-none"
+      />
+
       {/* Left Content */}
-      <AnimatedReveal className="space-y-6" variant="left">
+      <AnimatedReveal className="relative z-10 space-y-6" variant="left">
         <p className="text-sm uppercase tracking-[0.4em] text-slate-500 dark:text-slate-300">
           Best Coaching Institute
         </p>
+
         <h1 className="text-4xl font-semibold text-slate-900 dark:text-white">
           Best Coaching Institute of the Year
         </h1>
+
         <div className="space-y-2 border-l-2 border-slate-900 pl-4 dark:border-slate-100">
           {acronym.map((item, index) => (
             <AnimatedReveal key={item.letter} delay={index * 80}>
@@ -112,41 +147,30 @@ const HeroSection = () => {
             </AnimatedReveal>
           ))}
         </div>
+
         <p className="text-base text-slate-600 dark:text-slate-300">
-          Teks Academy blends mentorship, real-world projects, and placement
+          XYNAPSE SYSTEMS blends mentorship, real-world projects, and placement
           prep so students take on the future with confidence.
         </p>
-        <div className="flex flex-wrap gap-4">
-          <Link
-            to="/contact"
-            className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
-          >
-            Talk to an expert
-          </Link>
-        </div>
+
+        <Link
+          to="/contact"
+          className="inline-block rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900"
+        >
+          Talk to an expert
+        </Link>
       </AnimatedReveal>
 
-      {/* Right Image Card with Bubble Background */}
+      {/* Right Image */}
       <AnimatedReveal
-        className="flex items-center justify-center"
+        className="relative z-10 flex items-center justify-center"
         variant="right"
       >
-        <div
-          ref={containerRef}
-          className="relative w-full max-w-md rounded-3xl overflow-hidden border border-dashed border-slate-300 dark:border-slate-700 h-96"
-        >
-          {/* Bubble Canvas */}
-          <canvas
-            ref={bubbleCanvasRef}
-            className="absolute top-0 left-0 w-full h-full z-0"
-          />
-          {/* Image */}
-          <img
-            src="/images/books.jpg"
-            alt="Students holding books"
-            className="relative z-10 w-full h-full object-cover rounded-2xl"
-          />
-        </div>
+        <img
+          src="/images/books.jpg"
+          alt="Students holding books"
+          className="w-full max-w-md h-96 rounded-3xl object-cover shadow-md"
+        />
       </AnimatedReveal>
     </section>
   );

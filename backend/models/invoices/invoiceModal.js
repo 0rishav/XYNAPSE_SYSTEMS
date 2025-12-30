@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
+import Counter from "../counterModal.js";
 
 const courseSubSchema = new mongoose.Schema({
   courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
   instructorId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth", required: true },
+  amount: { type: mongoose.Schema.Types.Decimal128, required: true }, 
+});
+
+const installmentSchema = new mongoose.Schema({
   amount: { type: mongoose.Schema.Types.Decimal128, required: true },
+  paidDate: { type: Date },
+  status: { type: String, enum: ["pending", "paid"], default: "pending" },
 });
 
 const invoiceSchema = new mongoose.Schema(
@@ -15,7 +22,7 @@ const invoiceSchema = new mongoose.Schema(
       index: true,
     },
 
-    courses: [courseSubSchema], 
+    courses: [courseSubSchema],
 
     invoiceNumber: { type: String, unique: true, index: true },
 
@@ -39,7 +46,12 @@ const invoiceSchema = new mongoose.Schema(
       igst: { type: mongoose.Schema.Types.Decimal128, default: 0 },
       otherTaxes: { type: mongoose.Schema.Types.Decimal128, default: 0 },
     },
-    totalAmount: { type: mongoose.Schema.Types.Decimal128 },
+
+    totalAmount: { type: mongoose.Schema.Types.Decimal128 }, 
+    paidAmount: { type: mongoose.Schema.Types.Decimal128, default: 0 },
+    dueAmount: { type: mongoose.Schema.Types.Decimal128, default: 0 }, 
+
+    installments: [installmentSchema],
 
     notes: { type: String, trim: true },
 
@@ -59,25 +71,28 @@ invoiceSchema.pre("save", async function (next) {
   const invoice = this;
 
   if (!invoice.invoiceNumber) {
-    const count = await mongoose.models.Invoice.countDocuments();
     const year = new Date().getFullYear();
-    invoice.invoiceNumber = `INV-${year}-${(count + 1).toString().padStart(5, "0")}`;
+    const counter = await Counter.findOneAndUpdate(
+      { _id: `invoice-${year}` },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+
+    invoice.invoiceNumber = `INV-${year}-${counter.seq.toString().padStart(5, "0")}`;
   }
 
-  // Calculate total from courses array
-  const coursesTotal = invoice.courses.reduce((sum, c) => {
-    return sum + (parseFloat(c.amount.toString()) || 0);
-  }, 0);
-
-  const discount = parseFloat(invoice.discount.toString()) || 0;
-  const cgst = parseFloat(invoice.taxes?.cgst.toString()) || 0;
-  const sgst = parseFloat(invoice.taxes?.sgst.toString()) || 0;
-  const igst = parseFloat(invoice.taxes?.igst.toString()) || 0;
-  const otherTaxes = parseFloat(invoice.taxes?.otherTaxes.toString()) || 0;
+  const coursesTotal = invoice.courses.reduce((sum, c) => sum + parseFloat(c.amount.toString() || 0), 0);
+  const discount = parseFloat(invoice.discount.toString() || 0);
+  const cgst = parseFloat(invoice.taxes?.cgst.toString() || 0);
+  const sgst = parseFloat(invoice.taxes?.sgst.toString() || 0);
+  const igst = parseFloat(invoice.taxes?.igst.toString() || 0);
+  const otherTaxes = parseFloat(invoice.taxes?.otherTaxes.toString() || 0);
 
   const total = coursesTotal - discount + cgst + sgst + igst + otherTaxes;
-
   invoice.totalAmount = mongoose.Types.Decimal128.fromString(total.toFixed(2));
+
+  const paid = parseFloat(invoice.paidAmount?.toString() || 0);
+  invoice.dueAmount = mongoose.Types.Decimal128.fromString((total - paid).toFixed(2));
 
   next();
 });
