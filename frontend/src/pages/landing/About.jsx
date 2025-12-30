@@ -27,11 +27,11 @@ const About = () => {
 
         <AnimatedReveal variant="right" className="space-y-4">
           <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-300">
-            About Teks Academy
+            About XYNAPSE SSYTEMS
           </p>
 
           <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
-            Teks – Making Job Cracking Easier!
+            XYNAPSE SYSTEMS – Making Job Cracking Easier!
           </h2>
 
           <div className="space-y-3">

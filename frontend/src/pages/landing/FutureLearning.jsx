@@ -20,7 +20,7 @@ const FutureLearning = () => {
               The Future of Learning is Here
             </h2>
             <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
-              Teks Academy E-Learning App
+              XYNAPSE SYSTEMS E-Learning App
             </p>
             <p className="text-sm text-slate-600 dark:text-slate-300">
               Access live and recorded classes, assignments, and mentor support

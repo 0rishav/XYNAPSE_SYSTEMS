@@ -79,6 +79,9 @@ const WorkingProfessional = () => {
             <span className="ml-1 text-base font-medium text-gray-500">
               Working Professionals
             </span>
+            <span className="ml-1 text-base font-medium text-gray-500">
+              World Wide
+            </span>
           </h2>
         </AnimatedReveal>
 
