@@ -115,7 +115,7 @@ export const getAllInternshipApplications = CatchAsyncError(
       order = "desc",
       courseId,
       year,
-      status, // new filter
+      status,
     } = req.query;
 
     page = parseInt(page);
@@ -124,7 +124,7 @@ export const getAllInternshipApplications = CatchAsyncError(
     const filter = {};
     if (courseId) filter.courseId = courseId;
     if (year) filter.year = year;
-    if (status) filter.status = status; // apply status filter
+    if (status) filter.status = status; 
 
     const sortOrder = order.toLowerCase() === "asc" ? 1 : -1;
 

@@ -2,6 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import courseService from "../services/courseService";
 import courseFormService from "../services/courseFormService";
+import axiosInstance from "../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 const sectionCardClasses =
   "rounded-3xl border border-slate-00/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
@@ -70,6 +72,109 @@ function CourseDetail() {
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
+
+  const [reviews, setReviews] = useState([]);
+
+  const [rating, setRating] = useState(5);
+  const [content, setContent] = useState("");
+
+  const [replyContent, setReplyContent] = useState({});
+  const [editContent, setEditContent] = useState({});
+  const [editingId, setEditingId] = useState(null);
+
+  const fetchReviews = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axiosInstance.get(
+        `/review/all-review/${courseId}`
+      );
+      setReviews(data.data);
+    } catch (err) {
+      const message = err?.response?.data?.message;
+      console.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [courseId]);
+
+  const submitReview = async () => {
+    if (!content) return;
+
+    try {
+      const { data } = await axiosInstance.post(`/review/create/${courseId}`, {
+        rating,
+        content,
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setContent("");
+        setRating(5);
+        fetchReviews();
+      }
+    } catch (err) {
+      const message = err.response?.data?.message;
+      toast.error(message);
+      console.log(message);
+    }
+  };
+
+  const submitReply = async (reviewId) => {
+    if (!replyContent[reviewId]) return;
+
+    try {
+      const { data } = await axiosInstance.post(`/review/reply/${reviewId}`, {
+        content: replyContent[reviewId],
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setReplyContent({ ...replyContent, [reviewId]: "" });
+        fetchReviews();
+      }
+    } catch (err) {
+      const message = err.response?.data?.message;
+      console.log(message);
+      toast.error(message);
+    }
+  };
+
+  const updateReview = async (reviewId) => {
+    try {
+      const { data } = await axiosInstance.patch(`/review/update/${reviewId}`, {
+        content: editContent[reviewId],
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setEditingId(null);
+        fetchReviews();
+      }
+    } catch (err) {
+      const message = err.response?.data?.message;
+      console.log(message);
+      toast.error(message);
+    }
+  };
+
+  const deleteReview = async (reviewId) => {
+    if (!confirm("Delete this review?")) return;
+
+    try {
+      const { data } = await axiosInstance.patch(
+        `/review/soft-delete/${reviewId}`
+      );
+      if (data.success) {
+        toast.success(data.message);
+        fetchReviews();
+      }
+    } catch (err) {
+      const message = err.response?.data?.message;
+      console.log(message);
+      toast.error(message);
+    }
+  };
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -166,7 +271,6 @@ function CourseDetail() {
   return (
     <main className="min-h-screen text-slate-900 dark:text-slate-50">
       <div className="mx-auto w-full space-y-16 px-4 py-16 sm:px-6 lg:px-10">
-        {/* Hero Section */}
         <section className={`${sectionCardClasses} grid gap-10 lg:grid-cols-3`}>
           <AnimatedReveal className="lg:col-span-2 space-y-6" variant="left">
             <div className="space-y-4">
@@ -335,7 +439,6 @@ function CourseDetail() {
           </AnimatedReveal>
         </section>
 
-        {/* Course Details Sections */}
         <section className={`${sectionCardClasses} space-y-8`}>
           <AnimatedReveal>
             <h2 className="text-3xl font-semibold text-slate-900 dark:text-white mb-6">
@@ -478,6 +581,139 @@ function CourseDetail() {
               ))}
             </div>
           </AnimatedReveal>
+
+          <div className="mt-10 space-y-6">
+            <div className="rounded-xl border p-4">
+              <h3 className="font-semibold mb-2">Add Review</h3>
+
+              <div className="flex gap-1 mb-5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`w-6 h-6 cursor-pointer ${
+                      star <= rating ? "text-yellow-400" : "text-gray-300"
+                    }`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.965a1 1 0 00.95.69h4.184c.969 0 1.371 1.24.588 1.81l-3.388 2.462a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.539 1.118l-3.388-2.462a1 1 0 00-1.176 0l-3.388 2.462c-.783.57-1.838-.196-1.539-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.044 9.392c-.783-.57-.38-1.81.588-1.81h4.184a1 1 0 00.95-.69l1.286-3.965z" />
+                  </svg>
+                ))}
+              </div>
+
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full border rounded p-2 outline-none"
+                placeholder="Write your review..."
+              />
+
+              <button
+                onClick={submitReview}
+                className="mt-2 rounded bg-sky-500 px-4 py-2 text-white"
+              >
+                Submit Review
+              </button>
+            </div>
+
+            {/* REVIEWS LIST */}
+            {loading ? (
+              <p>Loading reviews...</p>
+            ) : (
+              reviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="rounded-xl border p-4 space-y-3"
+                >
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="font-semibold">{review.user.name}</p>
+                      <p className="text-sm">{review.rating} ⭐</p>
+                    </div>
+
+                    <div className="flex gap-2 text-xs">
+                      <button
+                        onClick={() => setEditingId(review._id)}
+                        className="text-sky-500"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteReview(review._id)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* EDIT MODE */}
+                  {editingId === review._id ? (
+                    <>
+                      <textarea
+                        defaultValue={review.content}
+                        onChange={(e) =>
+                          setEditContent({
+                            ...editContent,
+                            [review._id]: e.target.value,
+                          })
+                        }
+                        className="w-full border rounded p-2"
+                      />
+                      <button
+                        onClick={() => updateReview(review._id)}
+                        className="mt-1 text-sm text-green-600"
+                      >
+                        Save
+                      </button>
+                    </>
+                  ) : (
+                    <p>{review.content}</p>
+                  )}
+
+                  {/* REPLIES */}
+                  <div className="ml-6 space-y-3">
+                    {review.replies.map((reply) => (
+                      <div key={reply._id} className="border-l pl-3">
+                        <div className="flex justify-between">
+                          <p className="font-medium text-sm">
+                            {reply.user.name}
+                          </p>
+                          <button
+                            onClick={() => deleteReview(reply._id)}
+                            className="text-xs text-red-500"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <p className="text-sm">{reply.content}</p>
+                      </div>
+                    ))}
+
+                    {/* ADD REPLY */}
+                    <textarea
+                      value={replyContent[review._id] || ""}
+                      onChange={(e) =>
+                        setReplyContent({
+                          ...replyContent,
+                          [review._id]: e.target.value,
+                        })
+                      }
+                      className="w-full border rounded p-2 text-sm"
+                      placeholder="Reply..."
+                    />
+                    <button
+                      onClick={() => submitReply(review._id)}
+                      className="text-xs text-sky-500"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </section>
       </div>
     </main>

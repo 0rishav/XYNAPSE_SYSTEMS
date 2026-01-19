@@ -2,9 +2,17 @@ import mongoose from "mongoose";
 import Counter from "../counterModal.js";
 
 const courseSubSchema = new mongoose.Schema({
-  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
-  instructorId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth", required: true },
-  amount: { type: mongoose.Schema.Types.Decimal128, required: true }, 
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+    required: true,
+  },
+  instructorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Auth",
+    required: true,
+  },
+  amount: { type: mongoose.Schema.Types.Decimal128, required: true },
 });
 
 const installmentSchema = new mongoose.Schema({
@@ -47,9 +55,9 @@ const invoiceSchema = new mongoose.Schema(
       otherTaxes: { type: mongoose.Schema.Types.Decimal128, default: 0 },
     },
 
-    totalAmount: { type: mongoose.Schema.Types.Decimal128 }, 
+    totalAmount: { type: mongoose.Schema.Types.Decimal128 },
     paidAmount: { type: mongoose.Schema.Types.Decimal128, default: 0 },
-    dueAmount: { type: mongoose.Schema.Types.Decimal128, default: 0 }, 
+    dueAmount: { type: mongoose.Schema.Types.Decimal128, default: 0 },
 
     installments: [installmentSchema],
 
@@ -78,10 +86,15 @@ invoiceSchema.pre("save", async function (next) {
       { new: true, upsert: true }
     );
 
-    invoice.invoiceNumber = `INV-${year}-${counter.seq.toString().padStart(5, "0")}`;
+    invoice.invoiceNumber = `INV-${year}-${counter.seq
+      .toString()
+      .padStart(5, "0")}`;
   }
 
-  const coursesTotal = invoice.courses.reduce((sum, c) => sum + parseFloat(c.amount.toString() || 0), 0);
+  const coursesTotal = invoice.courses.reduce(
+    (sum, c) => sum + parseFloat(c.amount.toString() || 0),
+    0
+  );
   const discount = parseFloat(invoice.discount.toString() || 0);
   const cgst = parseFloat(invoice.taxes?.cgst.toString() || 0);
   const sgst = parseFloat(invoice.taxes?.sgst.toString() || 0);
@@ -92,7 +105,9 @@ invoiceSchema.pre("save", async function (next) {
   invoice.totalAmount = mongoose.Types.Decimal128.fromString(total.toFixed(2));
 
   const paid = parseFloat(invoice.paidAmount?.toString() || 0);
-  invoice.dueAmount = mongoose.Types.Decimal128.fromString((total - paid).toFixed(2));
+  invoice.dueAmount = mongoose.Types.Decimal128.fromString(
+    (total - paid).toFixed(2)
+  );
 
   next();
 });

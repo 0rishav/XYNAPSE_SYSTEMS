@@ -4,7 +4,6 @@ import cloudinary from "../utils/cloudinaryConfig.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import fs from "fs";
 import { sendMail } from "../utils/sendMail.js";
-import path from "path";
 import mongoose from "mongoose";
 
 export const createEmployeeApplication = CatchAsyncError(

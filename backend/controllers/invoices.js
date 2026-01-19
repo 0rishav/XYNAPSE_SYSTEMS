@@ -52,7 +52,6 @@ export const createInvoice = CatchAsyncError(async (req, res, next) => {
     const paidAmount = parseFloat(c.paidAmount || 0);
     const dueAmount = totalPrice - paidAmount;
 
-    // Installments from body or default
     const installments = c.installments && Array.isArray(c.installments)
       ? c.installments.map(inst => ({
           amount: mongoose.Types.Decimal128.fromString(inst.amount.toString()),
@@ -95,6 +94,81 @@ export const createInvoice = CatchAsyncError(async (req, res, next) => {
   res.status(201).json({
     success: true,
     message: "Invoice created successfully",
+    invoice,
+  });
+});
+
+export const updateInvoice = CatchAsyncError(async (req, res, next) => {
+  const { invoiceId } = req.params;
+  const updateData = req.body;
+
+  const invoice = await Invoice.findById(invoiceId);
+  if (!invoice || invoice.isDeleted) {
+    return next(new ErrorHandler("Invoice not found", 404));
+  }
+
+  if (invoice.paymentStatus === "paid") {
+    const restrictedFields = ["courses", "totalAmount"];
+    for (let field of restrictedFields) {
+      if (field in updateData) {
+        return next(
+          new ErrorHandler(`Cannot update ${field} for a paid invoice`, 400)
+        );
+      }
+    }
+  }
+
+  const allowedFields = ["notes", "paymentMode", "paymentStatus", "updatedBy"];
+  allowedFields.forEach((key) => {
+    if (key in updateData) invoice[key] = updateData[key];
+  });
+
+  if (updateData.courses && invoice.paymentStatus !== "paid") {
+    invoice.courses = updateData.courses.map((c) => ({
+      courseId: c.courseId,
+      instructorId: c.instructorId,
+      courseFee: mongoose.Types.Decimal128.fromString(c.courseFee.toString()),
+      discount: mongoose.Types.Decimal128.fromString(
+        (c.discount || 0).toString()
+      ),
+      taxes: {
+        cgst: mongoose.Types.Decimal128.fromString(
+          (c.taxes?.cgst || 0).toString()
+        ),
+        sgst: mongoose.Types.Decimal128.fromString(
+          (c.taxes?.sgst || 0).toString()
+        ),
+        igst: mongoose.Types.Decimal128.fromString(
+          (c.taxes?.igst || 0).toString()
+        ),
+        otherTaxes: mongoose.Types.Decimal128.fromString(
+          (c.taxes?.otherTaxes || 0).toString()
+        ),
+      },
+    }));
+
+    let total = 0;
+    invoice.courses.forEach((c) => {
+      const fee = parseFloat(c.courseFee.toString()) || 0;
+      const discount = parseFloat(c.discount.toString()) || 0;
+      const cgst = parseFloat(c.taxes.cgst.toString()) || 0;
+      const sgst = parseFloat(c.taxes.sgst.toString()) || 0;
+      const igst = parseFloat(c.taxes.igst.toString()) || 0;
+      const otherTaxes = parseFloat(c.taxes.otherTaxes.toString()) || 0;
+
+      total += fee - discount + cgst + sgst + igst + otherTaxes;
+    });
+
+    invoice.totalAmount = mongoose.Types.Decimal128.fromString(
+      total.toFixed(2)
+    );
+  }
+
+  await invoice.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Invoice updated successfully",
     invoice,
   });
 });
@@ -189,81 +263,6 @@ export const getMyInvoices = CatchAsyncError(async (req, res, next) => {
     message: "Invoices fetched successfully",
     total: invoices.length,
     data: invoices, 
-  });
-});
-
-export const updateInvoice = CatchAsyncError(async (req, res, next) => {
-  const { invoiceId } = req.params;
-  const updateData = req.body;
-
-  const invoice = await Invoice.findById(invoiceId);
-  if (!invoice || invoice.isDeleted) {
-    return next(new ErrorHandler("Invoice not found", 404));
-  }
-
-  if (invoice.paymentStatus === "paid") {
-    const restrictedFields = ["courses", "totalAmount"];
-    for (let field of restrictedFields) {
-      if (field in updateData) {
-        return next(
-          new ErrorHandler(`Cannot update ${field} for a paid invoice`, 400)
-        );
-      }
-    }
-  }
-
-  const allowedFields = ["notes", "paymentMode", "paymentStatus", "updatedBy"];
-  allowedFields.forEach((key) => {
-    if (key in updateData) invoice[key] = updateData[key];
-  });
-
-  if (updateData.courses && invoice.paymentStatus !== "paid") {
-    invoice.courses = updateData.courses.map((c) => ({
-      courseId: c.courseId,
-      instructorId: c.instructorId,
-      courseFee: mongoose.Types.Decimal128.fromString(c.courseFee.toString()),
-      discount: mongoose.Types.Decimal128.fromString(
-        (c.discount || 0).toString()
-      ),
-      taxes: {
-        cgst: mongoose.Types.Decimal128.fromString(
-          (c.taxes?.cgst || 0).toString()
-        ),
-        sgst: mongoose.Types.Decimal128.fromString(
-          (c.taxes?.sgst || 0).toString()
-        ),
-        igst: mongoose.Types.Decimal128.fromString(
-          (c.taxes?.igst || 0).toString()
-        ),
-        otherTaxes: mongoose.Types.Decimal128.fromString(
-          (c.taxes?.otherTaxes || 0).toString()
-        ),
-      },
-    }));
-
-    let total = 0;
-    invoice.courses.forEach((c) => {
-      const fee = parseFloat(c.courseFee.toString()) || 0;
-      const discount = parseFloat(c.discount.toString()) || 0;
-      const cgst = parseFloat(c.taxes.cgst.toString()) || 0;
-      const sgst = parseFloat(c.taxes.sgst.toString()) || 0;
-      const igst = parseFloat(c.taxes.igst.toString()) || 0;
-      const otherTaxes = parseFloat(c.taxes.otherTaxes.toString()) || 0;
-
-      total += fee - discount + cgst + sgst + igst + otherTaxes;
-    });
-
-    invoice.totalAmount = mongoose.Types.Decimal128.fromString(
-      total.toFixed(2)
-    );
-  }
-
-  await invoice.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Invoice updated successfully",
-    invoice,
   });
 });
 

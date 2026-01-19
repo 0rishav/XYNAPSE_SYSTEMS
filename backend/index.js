@@ -20,6 +20,7 @@ import employeeApplicationRouter from "./routes/employeeApplication.js";
 import jobMelaRouter from "./routes/jobMela.js";
 import getTouchRouter from "./routes/getTouch.js";
 import collegeProgramRouter from "./routes/collegeProgram.js";
+import reviewRouter from "./routes/review.js";
 
 dotenv.config();
 
@@ -56,19 +57,20 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/course", courseRouter); //done
-app.use("/api/v1/courseForm", courseFormRouter); //done
-app.use("/api/v1/gallery", galleryRouter); //later
-app.use("/api/v1/interview", interviewQuestionRouter); // done
-app.use("/api/v1/alumni", alumniRouter); //later
-app.use("/api/v1/talentPool", talentPoolRouter); //later
-app.use("/api/v1/internship", internshipRouter); //done
-app.use("/api/v1/invoice", invoiceRouter); //done
-app.use("/api/v1/salary-slip", salarySlipRouter); //done
-app.use("/api/v1/employee", employeeApplicationRouter); //done
+app.use("/api/v1/course", courseRouter);
+app.use("/api/v1/courseForm", courseFormRouter); 
+app.use("/api/v1/gallery", galleryRouter); 
+app.use("/api/v1/interview", interviewQuestionRouter); 
+app.use("/api/v1/alumni", alumniRouter);
+app.use("/api/v1/talentPool", talentPoolRouter);
+app.use("/api/v1/internship", internshipRouter);
+app.use("/api/v1/invoice", invoiceRouter);
+app.use("/api/v1/salary-slip", salarySlipRouter);
+app.use("/api/v1/employee", employeeApplicationRouter);
 app.use("/api/v1/jobMela", jobMelaRouter);
 app.use("/api/v1/getTouch", getTouchRouter);
 app.use("/api/v1/collegeProgram", collegeProgramRouter);
+app.use("/api/v1/review", reviewRouter);
 
 app.use(ErrorMiddleware);
 

@@ -57,7 +57,7 @@ const salarySlipSchema = new mongoose.Schema(
 
 salarySlipSchema.pre("save", async function (next) {
   if (!this.employeeCode) {
-    const count = await mongoose.models.SalarySlip.countDocuments(); 
+    const count = await mongoose.models.SalarySlip.countDocuments();
     this.employeeCode = `EMP-${(count + 1).toString().padStart(5, "0")}`;
   }
   next();

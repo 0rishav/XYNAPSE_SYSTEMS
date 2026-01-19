@@ -20,7 +20,6 @@ import { multerMiddleware } from "../utils/multerConfig.js";
 
 const internshipRouter = express.Router();
 
-//integrated
 internshipRouter.post(
   "/create",
   optionalAuth,
@@ -28,7 +27,6 @@ internshipRouter.post(
   createInternshipApplication
 );
 
-//integrated
 internshipRouter.get("/all", getAllInternshipApplications);
 
 internshipRouter.get(

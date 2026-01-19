@@ -80,7 +80,7 @@ export default function TopBar({
             </button>
 
             <div className="relative hidden md:inline-block group">
-              <button className="inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800">
+              <button className="inline-flex login-btn text-white items-center gap-1 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800">
                 Resources
                 <svg
                   className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180"
@@ -125,7 +125,7 @@ export default function TopBar({
             ) : (
               <button
                 onClick={goToProfile}
-                className="inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold dark:border-white/30"
+                className="inline-flex login-btn items-center gap-1 rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold dark:border-white/30"
               >
                 My Profile
               </button>
