@@ -20,73 +20,76 @@ jobs:
             set -e
             echo "=== Starting Deployment of branch: prod ==="
 
-            # === Ensure SSH directory exists and GitHub host is trusted ===
+            # === SSH setup for GitHub ===
             mkdir -p ~/.ssh
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
 
-            # === Start ssh-agent and add private key ===
+            # === Start ssh-agent for git pull ===
             eval "$(ssh-agent -s)"
             ssh-add <(echo "${{ secrets.SERVER_SSH_KEY }}")
 
-            # === Navigate to correct project folder ===
-            cd /root/XYNAPSE_SYSTEMS || exit 1
+            # === Go to project ===
+            cd /root/XYNAPSE_SYSTEMS
 
-            # === Versioning and Deployment Metadata ===
+            # === Version info ===
             COMMIT_HASH=$(git rev-parse --short HEAD)
             DEPLOY_TIME=$(date '+%Y-%m-%d %H:%M:%S')
             VERSION_TAG="v-${DEPLOY_TIME//[: ]/-}-$COMMIT_HASH"
-            echo "Version: $VERSION_TAG"
+            echo "Deploying version: $VERSION_TAG"
 
-            # === Clean uncommitted changes ===
-            echo "Cleaning local changes"
+            # === Clean repo ===
             git reset --hard
             git clean -fd
 
-            # === Git operations ===
+            # === Git pull prod ===
             git remote set-url origin git@github.com:0rishav/XYNAPSE_SYSTEMS.git
-            echo "Fetching latest prod branch"
             git fetch origin
-            git checkout prod || git checkout -b prod origin/prod
+            git checkout prod
             git pull origin prod
 
-            # === Environment variables ===
+            # === ENV files ===
             echo "${{ secrets.BACKEND_ENV }}" > backend/.env
             echo "${{ secrets.FRONTEND_ENV }}" > frontend/.env
-            # echo "${{ secrets.CHATBOT_ENV }}" > chatbot/.env
 
-            # === Backend (Node.js + PM2) ===
-            echo "Installing backend dependencies"
+            # ================= BACKEND =================
+            echo "=== Backend deploy ==="
             cd backend
             npm install --production
 
-            echo "Restarting PM2 backend"
             pm2 reload xynapsesystems-backend || pm2 start index.js --name xynapsesystems-backend
 
-            # === Frontend (React/Vite) ===
+            # ================= FRONTEND =================
+            echo "=== Frontend build ==="
             cd ../frontend
-            echo "Installing frontend dependencies"
             npm install --force
-
-            echo "Building frontend"
             npm run build
 
-            echo "Deploying frontend to Nginx directory"
+            # === Frontend deploy (IMPORTANT FIX) ===
+            echo "=== Deploying frontend to Nginx root ==="
+
             mkdir -p /var/www/backups/xynapsesystems
             TIMESTAMP=$(date +%s)
 
-            if [ -d /var/www/xynapsesystems ]; then
-              cp -r /var/www/xynapsesystems "/var/www/backups/xynapsesystems/build-$TIMESTAMP"
+            # Backup old dist
+            if [ -d /var/www/xynapsesystems/dist ]; then
+              cp -r /var/www/xynapsesystems/dist \
+                /var/www/backups/xynapsesystems/dist-$TIMESTAMP
             fi
 
-            rm -rf /var/www/xynapsesystems/*
-            cp -r dist/* /var/www/xynapsesystems/
+            # Replace dist exactly (NGINX expects this)
+            rm -rf /var/www/xynapsesystems/dist
+            mkdir -p /var/www/xynapsesystems/dist
+            cp -r dist/* /var/www/xynapsesystems/dist/
+
+            # Permissions for nginx
+            chown -R www-data:www-data /var/www/xynapsesystems
+            chmod -R 755 /var/www/xynapsesystems
 
             # === Reload Nginx ===
-            echo "Reloading Nginx"
             systemctl reload nginx
 
-            # === Logging deployment ===
-            echo "Deployed $VERSION_TAG at $DEPLOY_TIME by GitHub Actions" >> /root/XYNAPSE_SYSTEMS/deploy.log
+            # === Log deployment ===
+            echo "Deployed $VERSION_TAG at $DEPLOY_TIME" >> /root/XYNAPSE_SYSTEMS/deploy.log
 
-            echo "=== Deployment of $VERSION_TAG completed successfully ==="
+            echo "=== Deployment completed successfully ==="
