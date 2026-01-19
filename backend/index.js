@@ -27,7 +27,6 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-console.log(server)
 
 const PORT = process.env.PORT || 5000;
 
