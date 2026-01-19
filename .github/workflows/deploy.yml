@@ -53,7 +53,7 @@ jobs:
             # === Environment variables ===
             echo "${{ secrets.BACKEND_ENV }}" > backend/.env
             echo "${{ secrets.FRONTEND_ENV }}" > frontend/.env
-            echo "${{ secrets.CHATBOT_ENV }}" > chatbot/.env
+            # echo "${{ secrets.CHATBOT_ENV }}" > chatbot/.env
 
             # === Backend (Node.js + PM2) ===
             echo "Installing backend dependencies"
