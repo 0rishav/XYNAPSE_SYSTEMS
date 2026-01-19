@@ -25,6 +25,10 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             chmod 644 ~/.ssh/known_hosts
 
+            # === Start ssh-agent and add private key ===
+            eval "$(ssh-agent -s)"
+            ssh-add <(echo "${{ secrets.SERVER_SSH_KEY }}")
+
             # === Navigate to correct project folder ===
             cd /root/XYNAPSE_SYSTEMS || exit 1
 
