@@ -11,6 +11,7 @@ import FutureLearning from "./FutureLearning";
 import AwardSection from "./AwardSection";
 import About from "./About";
 import HeroSection from "./HeroSection";
+import SEO from "../../components/SEO";
 
 export function AnimatedReveal({
   children,
@@ -33,7 +34,7 @@ export function AnimatedReveal({
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -54,7 +55,7 @@ export function AnimatedReveal({
       className={`transition-all duration-700 ease-out ${
         visible
           ? visibleClasses
-          : hiddenTransforms[variant] ?? hiddenTransforms.up
+          : (hiddenTransforms[variant] ?? hiddenTransforms.up)
       } ${className}`}
     >
       {children}
@@ -90,33 +91,41 @@ function Landing() {
   }, []);
 
   return (
-    <main className="min-h-screen text-slate-900 dark:text-slate-50">
-      <div className="space-y-16 px-0 py-12 sm:px-0 lg:px-0 max-w-[1800px] mx-auto">
-        {/* Hero Section */}
-        <HeroSection />
+    <>
+      <SEO
+        title="Software Training & IT Solutions"
+        description="Xynapse Systems offers industry-focused software training, IT solutions, and career-oriented programs for students and working professionals."
+        canonical="https://xynapsesystems.com/"
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
+      <main className="min-h-screen text-slate-900 dark:text-slate-50">
+        <div className="space-y-16 px-0 py-12 sm:px-0 lg:px-0 max-w-[1800px] mx-auto">
+          {/* Hero Section */}
+          <HeroSection />
 
-        <CollaborationPage />
+          <CollaborationPage />
 
-        <CourseSection
-          topCoursesLoading={topCoursesLoading}
-          topCourses={topCourses}
-        />
+          <CourseSection
+            topCoursesLoading={topCoursesLoading}
+            topCourses={topCourses}
+          />
 
-        <SuccessStories />
+          <SuccessStories />
 
-        <HiringPartner />
+          <HiringPartner />
 
-        <WorkingProfessional />
+          <WorkingProfessional />
 
-        <EnquiryForm />
+          <EnquiryForm />
 
-        <FutureLearning />
+          <FutureLearning />
 
-        <AwardSection />
+          <AwardSection />
 
-        <About />
-      </div>
-    </main>
+          <About />
+        </div>
+      </main>
+    </>
   );
 }
 

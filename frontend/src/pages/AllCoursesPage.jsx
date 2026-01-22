@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import { AnimatedReveal } from "./landing/Landing";
+import SEO from "../components/SEO";
 
 const gradientAnimationStyle = `
 @keyframes gradient-x {
@@ -71,6 +72,12 @@ const AllCoursesPage = () => {
 
   return (
     <>
+    <SEO
+        title="All Courses | Xynapse Systems"
+        description="Explore all courses offered by Xynapse Systems, including software training, IT solutions, and career-focused programs for students and working professionals."
+        canonical="https://xynapsesystems.com/courses"
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
       <style>{gradientAnimationStyle}</style>
 
       <div className="p-6 sm:p-10 space-y-8">

@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const JobMela = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // For 403
+  const [errorMessage, setErrorMessage] = useState(""); 
 
   const [status, setStatus] = useState("");
   const [jobType, setJobType] = useState("");

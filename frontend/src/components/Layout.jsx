@@ -115,7 +115,12 @@ const socials = [
     href: "https://twitter.com",
     color: "#1DA1F2",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-5 w-5"
+      >
         <path d="M19.633 7.997c.013.18.013.36.013.54 0 5.49-4.18 11.82-11.82 11.82-2.35 0-4.53-.69-6.37-1.88.33.04.64.05.98.05 1.94 0 3.72-.66 5.14-1.78a4.17 4.17 0 01-3.89-2.89c.26.04.52.07.79.07.38 0 .75-.05 1.1-.15a4.16 4.16 0 01-3.34-4.08v-.05c.56.31 1.2.5 1.88.52a4.16 4.16 0 01-1.85-3.47c0-.77.21-1.48.58-2.1a11.82 11.82 0 008.58 4.35 4.7 4.7 0 01-.1-.95 4.16 4.16 0 017.2-2.84 8.2 8.2 0 002.64-1 4.13 4.13 0 01-1.83 2.3 8.4 8.4 0 002.39-.64 8.8 8.8 0 01-2.09 2.17z" />
       </svg>
     ),
@@ -125,7 +130,12 @@ const socials = [
     href: "https://linkedin.com",
     color: "#0A66C2",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-5 w-5"
+      >
         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.851-3.037-1.853 0-2.136 1.447-2.136 2.941v5.665H9.353V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.604 0 4.27 2.372 4.27 5.459v6.282zM5.337 7.433a2.062 2.062 0 01-2.063-2.063 2.062 2.062 0 112.063 2.063zM6.967 20.452H3.705V9h3.262v11.452z" />
       </svg>
     ),
@@ -135,7 +145,12 @@ const socials = [
     href: "https://youtube.com",
     color: "#FF0000",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-5 w-5"
+      >
         <path d="M21.8 8.001s-.2-1.4-.8-2.01c-.76-.8-1.6-.8-1.99-.85-2.78-.2-6.95-.2-6.95-.2h-.01s-4.17 0-6.95.2c-.39.05-1.23.05-1.99.85-.6.61-.8 2.01-.8 2.01S3 9.6 3 11.2v1.59c0 1.6.2 3.2.2 3.2s.2 1.4.8 2.01c.76.8 1.76.77 2.2.86 1.6.15 6.8.2 6.8.2s4.18-.01 6.96-.21c.39-.05 1.23-.05 1.99-.85.6-.61.8-2.01.8-2.01s.2-1.6.2-3.2v-1.59c0-1.6-.2-3.2-.2-3.2zM10 14.5v-5l4.67 2.5L10 14.5z" />
       </svg>
     ),
@@ -145,7 +160,12 @@ const socials = [
     href: "https://facebook.com",
     color: "#1877F2",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-5 w-5"
+      >
         <path d="M22.675 0H1.325C.593 0 0 .593 0 1.326v21.348C0 23.407.593 24 1.325 24H12.82v-9.294H9.692V11.18h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.794.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.31h3.587l-.467 3.527h-3.12V24h6.116C23.407 24 24 23.407 24 22.674V1.326C24 .593 23.407 0 22.675 0z" />
       </svg>
     ),
@@ -155,7 +175,12 @@ const socials = [
     href: "https://instagram.com",
     color: "#E4405F",
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-5 w-5"
+      >
         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.347 3.608 1.322.975.975 1.26 2.242 1.322 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.347 2.633-1.322 3.608-.975.975-2.242 1.26-3.608 1.322-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.347-3.608-1.322-.975-.975-1.26-2.242-1.322-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.347-2.633 1.322-3.608C4.517 2.58 5.784 2.295 7.15 2.233 8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.012 7.052.07 5.773.128 4.632.39 3.678 1.345c-.954.954-1.217 2.095-1.275 3.374C2.012 5.668 2 6.077 2 9.335v5.33c0 3.258.012 3.667.07 4.947.058 1.279.321 2.42 1.275 3.374.954.954 2.095 1.217 3.374 1.275 1.28.058 1.689.07 4.947.07s3.667-.012 4.947-.07c1.279-.058 2.42-.321 3.374-1.275.954-.954 1.217-2.095 1.275-3.374.058-1.28.07-1.689.07-4.947v-5.33c0-3.258-.012-3.667-.07-4.947-.058-1.279-.321-2.42-1.275-3.374-.954-.954-2.095-1.217-3.374-1.275C15.667.012 15.258 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
       </svg>
     ),
@@ -330,7 +355,7 @@ function Layout({ children }) {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         if (data.success) {
@@ -371,7 +396,7 @@ function Layout({ children }) {
     const fetchCountries = async () => {
       try {
         const res = await axiosInstance.get(
-          "https://restcountries.com/v3.1/all?fields=name"
+          "https://restcountries.com/v3.1/all?fields=name",
         );
 
         const options = res.data
@@ -500,7 +525,7 @@ function Layout({ children }) {
         clearTimeout(collegesHoverTimeoutRef.current);
       }
     },
-    []
+    [],
   );
 
   const closeSidebar = () => {
@@ -730,13 +755,14 @@ function Layout({ children }) {
 
           <div className="border-b border-slate-200/70 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-slate-800 dark:bg-slate-950/80">
             <div className="mx-auto max-w-[1450px] flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-              <Link
-                to="/"
-                className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white"
-                onClick={closeSidebar}
-              >
-                XYNAPSE SYSTEMS
+              <Link to="/" onClick={closeSidebar} className="inline-block">
+                <img
+                  src="/images/Logo.png" 
+                  alt="Xynapse Systems"
+                  className="h-20 w-40"
+                />
               </Link>
+
               <div className="hidden items-center gap-6 lg:flex">
                 {filteredLinks.map((link) =>
                   link.college ? (
@@ -924,7 +950,7 @@ function Layout({ children }) {
                                   to={`${
                                     section.route
                                   }?program=${encodeURIComponent(
-                                    section.title
+                                    section.title,
                                   )}`}
                                   state={{ program: section.title }}
                                   className="inline-block bg-black text-white px-4 py-2 rounded-md text-sm font-semibold transition hover:bg-gray-800"
@@ -1417,7 +1443,7 @@ function Layout({ children }) {
                     >
                       {link.label}
                     </Link>
-                  )
+                  ),
                 )}
                 <ThemeToggle />
                 {isAuthenticated && (
@@ -1729,7 +1755,7 @@ function Layout({ children }) {
                 >
                   {link.label}
                 </Link>
-              )
+              ),
             )}
 
             {/* Authenticated User Profile */}

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
 import { Eye, EyeOff } from "lucide-react";
+import SEO from "../../components/SEO";
 
 const initialState = {
   fullName: "",
@@ -129,6 +130,13 @@ function Signup() {
       : "border-emerald-200/60 bg-emerald-100/70 text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-200";
 
   return (
+    <>
+    <SEO
+        title="Signup | Xynapse Systems"
+        description="Join Xynapse Systems to access industry-focused software training, IT solutions, and career-oriented programs."
+        canonical="https://xynapsesystems.com/signup"
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
     <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl flex-col items-center justify-center px-4 py-16">
       <div className="w-full rounded-3xl border border-slate-200/50 bg-white/80 p-8 shadow-2xl shadow-slate-900/5 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/60">
         <header className="space-y-2 text-center">
@@ -388,6 +396,7 @@ function Signup() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 

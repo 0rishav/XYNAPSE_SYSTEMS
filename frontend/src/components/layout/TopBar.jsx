@@ -22,7 +22,7 @@ export default function TopBar({
               <Globe3D />
             </div>
 
-            <div className="brand-text mt-2">
+            <div className="brand-text mt-2 text-slate-900 dark:text-white">
               <span>X</span>
               <span>Y</span>
               <span>N</span>

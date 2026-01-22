@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
+import SEO from "../../components/SEO";
 
 const steps = [
   {
@@ -203,6 +204,13 @@ function ForgotPassword() {
   };
 
   return (
+    <>
+    <SEO
+        title="Forgot Password | Xynapse Systems"
+        description="Reset your Xynapse Systems account password easily and securely to regain access to your courses and profile."
+        canonical="https://xynapsesystems.com/forgot-password"
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
     <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl flex-col items-center justify-center px-4 py-16">
       <div className="w-full rounded-3xl border border-slate-200/50 bg-white/80 p-8 shadow-2xl shadow-slate-900/5 backdrop-blur-xl dark:border-slate-700/50 dark:bg-slate-900/60">
         <header className="space-y-2 text-center">
@@ -247,6 +255,7 @@ function ForgotPassword() {
         </p>
       </div>
     </div>
+    </>
   );
 }
 

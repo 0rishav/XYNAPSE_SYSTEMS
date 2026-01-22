@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import SEO from "../../components/SEO";
 
 const QuestionSkeleton = () => (
   <div className="animate-pulse rounded-xl border p-5 space-y-3">
@@ -84,93 +85,108 @@ const InterviewQuestionDetailPage = () => {
   const courseInfo = questions[0]?.courseId;
 
   return (
-    <section className="px-6 py-14 max-w-7xl mx-auto">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900">
-          {courseInfo?.title || "Interview Questions"}
-        </h1>
-        <p className="mt-3 text-sm text-slate-600 max-w-3xl">
-          {courseInfo?.description ||
-            "Curated interview questions with clear explanations to build deep understanding and confidence."}
-        </p>
-      </div>
+    <>
+      <SEO
+        title={`${courseInfo?.title || "Interview Questions"} | Xynapse Systems`}
+        description={
+          courseInfo?.description ||
+          "Curated interview questions with clear explanations to build deep understanding and confidence."
+        }
+        canonical={`https://xynapsesystems.com/interview-questions/${courseInfo?._id || ""}`}
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
+      <section className="px-6 py-14 max-w-7xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-slate-900">
+            {courseInfo?.title || "Interview Questions"}
+          </h1>
+          <p className="mt-3 text-sm text-slate-600 max-w-3xl">
+            {courseInfo?.description ||
+              "Curated interview questions with clear explanations to build deep understanding and confidence."}
+          </p>
+        </div>
 
-      <div className="mb-8">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search question or answer..."
-          className="w-full rounded-xl border px-4 py-3 text-sm focus:ring-2 focus:ring-slate-900"
-        />
-      </div>
+        <div className="mb-8">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search question or answer..."
+            className="w-full rounded-xl border px-4 py-3 text-sm focus:ring-2 focus:ring-slate-900"
+          />
+        </div>
 
-      <div className="space-y-4">
-        {loading &&
-          Array.from({ length: 5 }).map((_, i) => <QuestionSkeleton key={i} />)}
+        <div className="space-y-4">
+          {loading &&
+            Array.from({ length: 5 }).map((_, i) => (
+              <QuestionSkeleton key={i} />
+            ))}
 
-        {!loading && questions.length === 0 && (
-          <div className="rounded-xl border p-10 text-center text-slate-500">
-            No interview questions found.
+          {!loading && questions.length === 0 && (
+            <div className="rounded-xl border p-10 text-center text-slate-500">
+              No interview questions found.
+            </div>
+          )}
+
+          {!loading &&
+            questions.map((q, index) => (
+              <div key={q._id} className="rounded-xl border bg-white shadow-sm">
+                {/* Question */}
+                <button
+                  onClick={() => setOpenId(openId === q._id ? null : q._id)}
+                  className="flex w-full items-start justify-between gap-4 p-5 text-left"
+                >
+                  <div>
+                    <span className="text-xs font-semibold text-slate-400">
+                      Q{(page - 1) * limit + index + 1}
+                    </span>
+                    <h3 className="mt-1 font-medium text-slate-900">
+                      {q.question}
+                    </h3>
+                  </div>
+                  <span className="text-xl">
+                    {openId === q._id ? "−" : "+"}
+                  </span>
+                </button>
+
+                {/* Answer */}
+                {openId === q._id && (
+                  <div className="border-t px-6 pb-6 pt-4">
+                    <ul className="list-disc space-y-2 pl-5 text-sm text-slate-700">
+                      {formatAnswer(q.answer).map((point, i) => (
+                        <li key={i}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="rounded-lg border px-4 py-2 text-sm disabled:opacity-40"
+            >
+              Prev
+            </button>
+
+            <span className="text-sm">
+              Page {page} of {totalPages}
+            </span>
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="rounded-lg border px-4 py-2 text-sm disabled:opacity-40"
+            >
+              Next
+            </button>
           </div>
         )}
-
-        {!loading &&
-          questions.map((q, index) => (
-            <div key={q._id} className="rounded-xl border bg-white shadow-sm">
-              {/* Question */}
-              <button
-                onClick={() => setOpenId(openId === q._id ? null : q._id)}
-                className="flex w-full items-start justify-between gap-4 p-5 text-left"
-              >
-                <div>
-                  <span className="text-xs font-semibold text-slate-400">
-                    Q{(page - 1) * limit + index + 1}
-                  </span>
-                  <h3 className="mt-1 font-medium text-slate-900">
-                    {q.question}
-                  </h3>
-                </div>
-                <span className="text-xl">{openId === q._id ? "−" : "+"}</span>
-              </button>
-
-              {/* Answer */}
-              {openId === q._id && (
-                <div className="border-t px-6 pb-6 pt-4">
-                  <ul className="list-disc space-y-2 pl-5 text-sm text-slate-700">
-                    {formatAnswer(q.answer).map((point, i) => (
-                      <li key={i}>{point}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="mt-10 flex items-center justify-center gap-4">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="rounded-lg border px-4 py-2 text-sm disabled:opacity-40"
-          >
-            Prev
-          </button>
-
-          <span className="text-sm">
-            Page {page} of {totalPages}
-          </span>
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="rounded-lg border px-4 py-2 text-sm disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
-      )}
-    </section>
+      </section>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import alumniService from "../../services/alumniService";
+import SEO from "../../components/SEO";
 
 const introParagraphs = [
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim orci id orci varius, non volutpat augue facilisis.",
@@ -263,6 +264,13 @@ function Alumni() {
     };
   }, [page, limit]);
   return (
+   <>
+    <SEO
+        title="Alumni | Xynapse Systems"
+        description="Explore the success stories of Xynapse Systems alumni and see how our programs shape careers."
+        canonical="https://xynapsesystems.com/placements/alumni"
+        image="https://xynapsesystems.com/images/Logo.png"
+      />
     <main className="min-h-screen  text-slate-900  dark:text-slate-50">
       <div className="mx-auto w-full  max-w-6xl space-y-16 px-4 py-16 sm:px-6 lg:px-10">
         <section className={`${sectionCardClasses} grid gap-10 lg:grid-cols-2`}>
@@ -344,6 +352,7 @@ function Alumni() {
         </section>
       </div>
     </main>
+   </>
   );
 }
 
