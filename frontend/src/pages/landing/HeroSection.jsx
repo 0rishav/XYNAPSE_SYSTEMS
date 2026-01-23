@@ -70,7 +70,7 @@ const HeroSection = () => {
         b.r * 0.2,
         b.x,
         b.y,
-        b.r
+        b.r,
       );
 
       gradient.addColorStop(0, "rgba(186,230,253,0.85)");
@@ -166,9 +166,12 @@ const HeroSection = () => {
         className="relative z-10 flex items-center justify-center"
         variant="right"
       >
-        <img
-          src="/images/books.jpg"
-          alt="Students holding books"
+        <video
+          src="https://res.cloudinary.com/dcll0n88n/video/upload/v1769151409/Untitled_design_4_lsbwf3.mp4"
+          autoPlay
+          muted
+          playsInline
+          loop
           className="w-full max-w-md h-96 rounded-3xl object-cover shadow-md"
         />
       </AnimatedReveal>

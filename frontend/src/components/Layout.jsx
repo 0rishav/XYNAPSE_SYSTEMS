@@ -111,9 +111,9 @@ const branches = [
 
 const socials = [
   {
-    label: "Twitter",
-    href: "https://twitter.com",
-    color: "#1DA1F2",
+    label: "Telegram",
+    href: "https://t.me/your_channel_or_username",
+    color: "#229ED9",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -121,10 +121,11 @@ const socials = [
         fill="currentColor"
         className="h-5 w-5"
       >
-        <path d="M19.633 7.997c.013.18.013.36.013.54 0 5.49-4.18 11.82-11.82 11.82-2.35 0-4.53-.69-6.37-1.88.33.04.64.05.98.05 1.94 0 3.72-.66 5.14-1.78a4.17 4.17 0 01-3.89-2.89c.26.04.52.07.79.07.38 0 .75-.05 1.1-.15a4.16 4.16 0 01-3.34-4.08v-.05c.56.31 1.2.5 1.88.52a4.16 4.16 0 01-1.85-3.47c0-.77.21-1.48.58-2.1a11.82 11.82 0 008.58 4.35 4.7 4.7 0 01-.1-.95 4.16 4.16 0 017.2-2.84 8.2 8.2 0 002.64-1 4.13 4.13 0 01-1.83 2.3 8.4 8.4 0 002.39-.64 8.8 8.8 0 01-2.09 2.17z" />
+        <path d="M9.04 15.47l-.38 5.36c.54 0 .78-.23 1.06-.5l2.54-2.43 5.26 3.85c.97.54 1.66.26 1.9-.9L23.9 2.9c.3-1.4-.5-1.95-1.44-1.6L1.6 9.1c-1.35.53-1.33 1.29-.23 1.63l5.36 1.67L19.18 4.9c.6-.4 1.15-.18.7.22" />
       </svg>
     ),
   },
+
   {
     label: "LinkedIn",
     href: "https://linkedin.com",
@@ -757,7 +758,7 @@ function Layout({ children }) {
             <div className="mx-auto max-w-[1450px] flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
               <Link to="/" onClick={closeSidebar} className="inline-block">
                 <img
-                  src="/images/Logo.png" 
+                  src="/images/Logo.png"
                   alt="Xynapse Systems"
                   className="h-20 w-40"
                 />
