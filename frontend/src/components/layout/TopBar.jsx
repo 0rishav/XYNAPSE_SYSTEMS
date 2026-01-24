@@ -18,8 +18,15 @@ export default function TopBar({
       <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
         <div className="mx-auto max-w-8xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
           <div className="flex flex-col items-center">
-            <div className="relative w-16 h-16 flex items-center justify-center perspective">
-              <Globe3D />
+            <div className="relative w-16 h-16 flex items-center justify-center">
+              <video
+                src="https://res.cloudinary.com/dcll0n88n/video/upload/v1769241488/earth_qghxkj.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
 
             <div className="brand-text mt-2 text-slate-900 dark:text-white">
@@ -38,7 +45,6 @@ export default function TopBar({
               <span>E</span>
               <span>M</span>
               <span>S</span>
-              
             </div>
           </div>
 
