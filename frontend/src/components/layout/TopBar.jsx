@@ -15,10 +15,10 @@ export default function TopBar({
 
   return (
     <>
-      <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100">
-        <div className="mx-auto max-w-8xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center">
-            <div className="relative w-16 h-16 flex items-center justify-center">
+      <div className="border-b border-slate-200/70 bg-slate-50 text-[13px] text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 overflow-visible">
+        <div className="mx-auto max-w-8xl px-4 py-3 flex items-center justify-between sm:px-6 lg:px-8 overflow-visible">
+          <div className="flex items-center md:flex-col md:items-center gap-3 md:gap-0">
+            <div className="relative w-14 h-14 md:w-16 md:h-16 flex items-center justify-center">
               <video
                 src="https://res.cloudinary.com/dcll0n88n/video/upload/v1769241488/earth_qghxkj.mp4"
                 autoPlay
@@ -29,7 +29,7 @@ export default function TopBar({
               />
             </div>
 
-            <div className="brand-text mt-2 text-slate-900 dark:text-white">
+            <div className="brand-text md:mt-2 text-slate-900 dark:text-white whitespace-nowrap">
               <span>X</span>
               <span>Y</span>
               <span>N</span>
@@ -48,7 +48,7 @@ export default function TopBar({
             </div>
           </div>
 
-          {/* Center: Contact info / Job Mela */}
+          {/* CENTER */}
           <div className="hidden md:flex md:flex-wrap md:items-center gap-4 text-slate-600 dark:text-slate-200">
             <span className="inline-flex items-center gap-1.5">
               📞 1800-120-4748
@@ -67,11 +67,11 @@ export default function TopBar({
             </Link>
           </div>
 
-          {/* Right: Buttons / Social icons */}
-          <div className="flex items-center gap-3">
+          {/* RIGHT */}
+          <div className="flex items-center gap-3 overflow-visible">
             <button
               onClick={() => openModal("enroll", { name: "Online Enrollment" })}
-              className="hidden login-btn md:inline-flex items-center gap-1 rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-500 enroll-cta"
+              className="hidden login-btn custom-md:inline-flex items-center gap-1 rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-500 enroll-cta"
             >
               Enroll
             </button>
@@ -80,12 +80,12 @@ export default function TopBar({
               onClick={() =>
                 openModal("internship", { name: "Internship Application" })
               }
-              className="hidden login-btn md:inline-flex items-center gap-1 text-white rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold  hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800 shimmer-btn"
+              className="hidden login-btn custom-md:inline-flex items-center gap-1 text-white rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800 shimmer-btn"
             >
               Internship
             </button>
 
-            <div className="relative hidden md:inline-block group">
+            <div className="relative hidden custom-md:inline-block group overflow-visible">
               <button className="inline-flex login-btn text-white items-center gap-1 rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-slate-100 dark:border-white/30 dark:text-slate-300 dark:hover:text-slate-800">
                 Resources
                 <svg
@@ -103,7 +103,7 @@ export default function TopBar({
                 </svg>
               </button>
 
-              <div className="invisible absolute left-0 top-full z-30 mt-2 w-48 rounded-xl border border-slate-200 bg-white shadow-xl opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-white/20 dark:bg-slate-900">
+              <div className="invisible absolute left-0 top-full z-50 mt-2 w-48 rounded-xl border border-slate-200 bg-white shadow-xl opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 dark:border-white/20 dark:bg-slate-900">
                 <a
                   href="https://youtube.com/@realxynapse?si=7PS2DXi8SZKJ_3Tb"
                   target="_blank"
@@ -112,6 +112,7 @@ export default function TopBar({
                 >
                   🎥 Video Lectures
                 </a>
+
                 <Link
                   to="/resources/interview-questions"
                   className="block w-full rounded-b-xl px-4 py-2 text-left text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -145,21 +146,14 @@ export default function TopBar({
                   target="_blank"
                   rel="noreferrer"
                   title={item.label}
-                  className="group relative flex h-9 w-9 items-center justify-center rounded-full
-      border-2 bg-white dark:bg-slate-900
-      hover:shadow-2xl
-      transition-shadow duration-300"
+                  className="group relative flex h-9 w-9 items-center justify-center rounded-full border-2 bg-white dark:bg-slate-900 hover:shadow-2xl transition-shadow duration-300"
                   style={{
                     borderColor: item.color,
                     color: item.color,
-                    animation: `socialFloat 4.5s ease-in-out ${
-                      index * 0.6
-                    }s infinite`,
+                    animation: `socialFloat 4.5s ease-in-out ${index * 0.6}s infinite`,
                   }}
                 >
                   <span className="relative z-10">{item.icon}</span>
-
-                  {/* glow layer */}
                   <div
                     className="absolute inset-0 rounded-full opacity-20 blur-md"
                     style={{ backgroundColor: item.color }}
@@ -183,7 +177,6 @@ export default function TopBar({
           sidebarOpen ? "visible" : "invisible"
         }`}
       >
-        {/* Backdrop */}
         <div
           onClick={() => setSidebarOpen(false)}
           className={`absolute inset-0 bg-black/40 transition-opacity ${
@@ -191,13 +184,11 @@ export default function TopBar({
           }`}
         />
 
-        {/* Sidebar */}
         <div
           className={`absolute right-0 top-0 h-full w-64 bg-white dark:bg-slate-900 p-5 transition-transform duration-300 shadow-2xl flex flex-col justify-between ${
             sidebarOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          {/* Close button */}
           <div className="flex justify-end">
             <button
               onClick={() => setSidebarOpen(false)}
@@ -208,7 +199,6 @@ export default function TopBar({
           </div>
 
           <div className="flex flex-col gap-4 text-sm flex-1 mt-2">
-            {/* Contact Info */}
             <div className="flex flex-col gap-2 text-slate-600 dark:text-slate-200">
               <span className="flex items-center gap-2">📞 1800-120-4748</span>
               <span className="flex items-center gap-2">
@@ -217,9 +207,7 @@ export default function TopBar({
               <span className="flex items-center gap-2">➕ Blogs</span>
             </div>
 
-            {/* Main Buttons */}
             <div className="flex flex-col gap-3 mt-3">
-              {/* Job Mela Button added */}
               <Link
                 to="/job-mela"
                 className="rounded-lg login-btn bg-rose-600 px-4 py-2 text-white text-left font-medium shadow hover:bg-rose-500 transition-colors"

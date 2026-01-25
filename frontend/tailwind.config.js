@@ -3,6 +3,15 @@ export default {
   darkMode: ["class", "[data-theme='dark']"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    // Screens directly yahan define kar do
+    screens: {
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      "custom-md": "1080px", // 1080px breakpoint
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     extend: {
       fontFamily: {
         baloo: ['"Baloo 2"', "cursive"],
@@ -20,7 +29,7 @@ export default {
         },
         "pulse-scale": {
           "0%, 100%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.3)" }, 
+          "50%": { transform: "scale(1.3)" },
         },
       },
       animation: {
@@ -28,9 +37,6 @@ export default {
         "spin-slow": "spin 8s linear infinite",
         float: "float 2s ease-in-out infinite",
         "pulse-scale": "pulse-scale 1.5s ease-in-out infinite",
-      },
-      screens: {
-        'custom-md': '940px',
       },
     },
   },

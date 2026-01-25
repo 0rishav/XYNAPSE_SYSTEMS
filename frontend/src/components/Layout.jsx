@@ -37,8 +37,6 @@ const footerNav = [
   { label: "Support", to: "/about" },
 ];
 
-// courseCollections removed — using backend-provided collections only
-
 const placementLinks = [
   {
     label: "Alumni",
@@ -253,7 +251,6 @@ function Layout({ children }) {
   });
 
   const openModal = (type, branch) => {
-    // Close the courses dropdown when opening a modal
     setIsCoursesOpen(false);
     setModalType(type);
     setModalBranch(branch);
@@ -535,6 +532,7 @@ function Layout({ children }) {
     setIsPlacementsMobileOpen(false);
     setShowAllMobileCourses(false);
   };
+
   const goToProfile = () => {
     closeSidebar();
     navigate("/profile");
@@ -556,13 +554,11 @@ function Layout({ children }) {
   };
 
   const openCoursesHoverMenu = () => {
-    // Don't open menu if a modal is active
     if (modalOpen) return;
 
     if (coursesHoverTimeoutRef.current) {
       clearTimeout(coursesHoverTimeoutRef.current);
     }
-    // close other menus when opening courses
     setIsBranchesOpen(false);
     setIsPlacementsOpen(false);
     setIsDiscoverOpen(false);
@@ -570,19 +566,17 @@ function Layout({ children }) {
   };
 
   const closeCoursesHoverMenu = () => {
-    // Don't close menu immediately if a modal is about to open
     if (modalOpen) return;
 
     coursesHoverTimeoutRef.current = setTimeout(() => {
       setIsCoursesOpen(false);
-    }, 300); // Increased timeout for better UX
+    }, 300);
   };
 
   const openPlacementsHoverMenu = () => {
     if (placementsHoverTimeoutRef.current) {
       clearTimeout(placementsHoverTimeoutRef.current);
     }
-    // close other menus when opening placements
     setIsBranchesOpen(false);
     setIsCoursesOpen(false);
     setIsDiscoverOpen(false);
@@ -593,7 +587,6 @@ function Layout({ children }) {
     if (branchesHoverTimeoutRef.current) {
       clearTimeout(branchesHoverTimeoutRef.current);
     }
-    // close other menus when opening branches
     setIsCoursesOpen(false);
     setIsPlacementsOpen(false);
     setIsDiscoverOpen(false);
@@ -604,7 +597,6 @@ function Layout({ children }) {
     if (collegesHoverTimeoutRef.current) {
       clearTimeout(collegesHoverTimeoutRef.current);
     }
-    // close other menus when opening colleges
     setIsCoursesOpen(false);
     setIsPlacementsOpen(false);
     setIsDiscoverOpen(false);
@@ -615,21 +607,19 @@ function Layout({ children }) {
   const closeCollegesHoverMenu = () => {
     collegesHoverTimeoutRef.current = setTimeout(() => {
       setIsCollegesOpen(false);
-    }, 300); // Increased timeout for better UX
+    }, 300);
   };
 
   const openDiscoverHoverMenu = () => {
     if (discoverHoverTimeoutRef.current) {
       clearTimeout(discoverHoverTimeoutRef.current);
     }
-    // close other menus when opening discover
     setIsBranchesOpen(false);
     setIsCoursesOpen(false);
     setIsPlacementsOpen(false);
     setIsDiscoverOpen(true);
   };
 
-  // Fetch 8 courses for mega menu
   useEffect(() => {
     let mounted = true;
     async function loadCourses() {
@@ -652,7 +642,6 @@ function Layout({ children }) {
     };
   }, []);
 
-  // Close all dropdowns when a modal opens to prevent conflicts
   useEffect(() => {
     if (modalOpen) {
       setIsCoursesOpen(false);
@@ -663,24 +652,22 @@ function Layout({ children }) {
     }
   }, [modalOpen]);
 
-  // Fetch dynamic course collections from backend and group by category
-
   const closePlacementsHoverMenu = () => {
     placementsHoverTimeoutRef.current = setTimeout(() => {
       setIsPlacementsOpen(false);
-    }, 300); // Increased timeout for better UX
+    }, 300);
   };
 
   const closeBranchesHoverMenu = () => {
     branchesHoverTimeoutRef.current = setTimeout(() => {
       setIsBranchesOpen(false);
-    }, 300); // Increased timeout for better UX
+    }, 300);
   };
 
   const closeDiscoverHoverMenu = () => {
     discoverHoverTimeoutRef.current = setTimeout(() => {
       setIsDiscoverOpen(false);
-    }, 300); // Increased timeout for better UX
+    }, 300);
   };
 
   const toggleCoursesMobileAccordion = () => {
