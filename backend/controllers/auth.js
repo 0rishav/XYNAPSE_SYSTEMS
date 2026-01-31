@@ -13,6 +13,9 @@ import bcrypt from "bcrypt";
 import fs from "fs/promises";
 import InternshipApplication from "../models/Internship/internshipModal.js";
 import CourseForm from "../models/course/courseFormModal.js";
+import Course from "../models/course/courseModal.js";
+import EmployeeApplication from "../models/employee/employeeApplicationModal.js";
+import Invoice from "../models/invoices/invoiceModal.js";
 
 export const registerUser = CatchAsyncError(async (req, res, next) => {
   const { name, email, mobile, bio, password, confirmPassword, role } =
@@ -26,7 +29,7 @@ export const registerUser = CatchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Confirm password is required", 400));
   if (password !== confirmPassword)
     return next(
-      new ErrorHandler("Password and confirm password do not match", 400)
+      new ErrorHandler("Password and confirm password do not match", 400),
     );
 
   if (email) {
@@ -41,15 +44,15 @@ export const registerUser = CatchAsyncError(async (req, res, next) => {
     return next(
       new ErrorHandler(
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character",
-        400
-      )
+        400,
+      ),
     );
   }
 
   const existingUser = await Auth.findOne({ $or: [{ email }, { mobile }] });
   if (existingUser)
     return next(
-      new ErrorHandler("User with this email or mobile already exists", 409)
+      new ErrorHandler("User with this email or mobile already exists", 409),
     );
 
   const { hash, version } = await PasswordService.hashPassword(password);
@@ -120,7 +123,7 @@ export const activateUser = CatchAsyncError(async (req, res, next) => {
     verificationResult.type !== "email_verification"
   ) {
     return next(
-      new ErrorHandler(verificationResult.reason || "Invalid OTP type", 400)
+      new ErrorHandler(verificationResult.reason || "Invalid OTP type", 400),
     );
   }
 
@@ -151,7 +154,7 @@ export const resendUserOtp = CatchAsyncError(async (req, res, next) => {
 
   const { otp, otpId } = await OTPService.resendOtp(
     userId,
-    "email_verification"
+    "email_verification",
   );
 
   const user = await Auth.findById(userId);
@@ -201,7 +204,7 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
 
   if (!user.emailVerified && !user.phoneVerified) {
     return next(
-      new ErrorHandler("Please verify your email or mobile before login", 403)
+      new ErrorHandler("Please verify your email or mobile before login", 403),
     );
   }
 
@@ -214,8 +217,8 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
       return next(
         new ErrorHandler(
           "Your instructor/admin request is rejected. Contact support.",
-          403
-        )
+          403,
+        ),
       );
     }
   }
@@ -250,7 +253,7 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
       deviceName: currentDeviceName,
       ipAddress: req.ip,
       userAgent: req.headers["user-agent"] || "",
-    }
+    },
   );
   const accessToken = TokenService.generateAccessToken(user);
 
@@ -284,12 +287,12 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
   try {
     const updatedApplications = await InternshipApplication.updateMany(
       { email: user.email, studentId: null },
-      { $set: { studentId: user._id } }
+      { $set: { studentId: user._id } },
     );
 
     if (updatedApplications.modifiedCount > 0) {
       console.log(
-        `Updated ${updatedApplications.modifiedCount} internship application(s) with studentId ${user._id}`
+        `Updated ${updatedApplications.modifiedCount} internship application(s) with studentId ${user._id}`,
       );
     }
   } catch (err) {
@@ -308,12 +311,12 @@ export const loginUser = CatchAsyncError(async (req, res, next) => {
           appliedAsGuest: false,
           guestLinkedAt: new Date(),
         },
-      }
+      },
     );
 
     if (updatedCourseForms.modifiedCount > 0) {
       console.log(
-        `Updated ${updatedCourseForms.modifiedCount} course form(s) with studentId ${user._id}`
+        `Updated ${updatedCourseForms.modifiedCount} course form(s) with studentId ${user._id}`,
       );
     }
   } catch (err) {
@@ -355,7 +358,7 @@ export const logoutUser = CatchAsyncError(async (req, res, next) => {
 
   if (!session)
     return next(
-      new ErrorHandler("Session not found or already invalidated", 400)
+      new ErrorHandler("Session not found or already invalidated", 400),
     );
 
   await TokenService.revokeSession(session._id);
@@ -392,13 +395,13 @@ export const refreshToken = CatchAsyncError(async (req, res, next) => {
   const session = await AuthSession.findById(sessionId);
   if (!session || !session.isActive) {
     return next(
-      new ErrorHandler("Invalid or expired refresh token/session", 401)
+      new ErrorHandler("Invalid or expired refresh token/session", 401),
     );
   }
 
   const verifyResult = await TokenService.verifyRefreshToken(
     refreshToken,
-    sessionId
+    sessionId,
   );
   if (!verifyResult) {
     await TokenService.revokeSession(sessionId);
@@ -522,7 +525,7 @@ export const verifyForgotPasswordOtp = CatchAsyncError(
     });
 
     res.status(200).json({ message: "OTP verified successfully", resetToken });
-  }
+  },
 );
 
 export const resetPassword = CatchAsyncError(async (req, res, next) => {
@@ -542,7 +545,7 @@ export const resetPassword = CatchAsyncError(async (req, res, next) => {
   if (!passwordRegex.test(newPassword)) {
     throw new ErrorHandler(
       "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
-      400
+      400,
     );
   }
 
@@ -675,7 +678,7 @@ export const getAllUsers = CatchAsyncError(async (req, res, next) => {
 
   const users = await Auth.find(filters)
     .select(
-      "_id name email mobile bio socialLinks role roleStatus emailVerified phoneVerified isTwofaEnabled isActive isBlock lastLoginAt createdAt updatedAt"
+      "_id name email mobile bio socialLinks role roleStatus emailVerified phoneVerified isTwofaEnabled isActive isBlock lastLoginAt createdAt updatedAt",
     )
 
     .sort({ createdAt: -1 })
@@ -702,7 +705,7 @@ export const changePassword = CatchAsyncError(async (req, res, next) => {
 
   if (newPassword !== confirmPassword) {
     return next(
-      new ErrorHandler("New password & confirm password must match", 400)
+      new ErrorHandler("New password & confirm password must match", 400),
     );
   }
 
@@ -713,8 +716,8 @@ export const changePassword = CatchAsyncError(async (req, res, next) => {
     return next(
       new ErrorHandler(
         "Password must include upper, lower, number, special char & be at least 8 chars",
-        400
-      )
+        400,
+      ),
     );
   }
 
@@ -873,8 +876,8 @@ export const sendVerificationRequest = CatchAsyncError(
       return next(
         new ErrorHandler(
           "Only instructor/admin can send verification request",
-          403
-        )
+          403,
+        ),
       );
     }
 
@@ -896,7 +899,7 @@ export const sendVerificationRequest = CatchAsyncError(
         instructorRequestDate: user.instructorRequestDate,
       },
     });
-  }
+  },
 );
 
 export const verifyUserAccount = CatchAsyncError(async (req, res, next) => {
@@ -909,7 +912,7 @@ export const verifyUserAccount = CatchAsyncError(async (req, res, next) => {
 
   if (!["approved", "rejected"].includes(status)) {
     return next(
-      new ErrorHandler("Status must be 'approved' or 'rejected'", 400)
+      new ErrorHandler("Status must be 'approved' or 'rejected'", 400),
     );
   }
 
@@ -920,7 +923,7 @@ export const verifyUserAccount = CatchAsyncError(async (req, res, next) => {
 
   if (!["instructor", "admin"].includes(user.role)) {
     return next(
-      new ErrorHandler("Only instructor/admin accounts can be verified", 400)
+      new ErrorHandler("Only instructor/admin accounts can be verified", 400),
     );
   }
 
@@ -999,4 +1002,62 @@ export const hardDeleteUser = CatchAsyncError(async (req, res, next) => {
   await Auth.findByIdAndDelete(id);
 
   res.status(200).json({ success: true, message: "User permanently deleted" });
+});
+
+export const getDashboardStats = CatchAsyncError(async (req, res, next) => {
+  const [
+    totalUsers,
+    totalCourses,
+    totalInternships,
+    totalEmployees,
+    revenueResult,
+  ] = await Promise.all([
+    Auth.countDocuments({ isDeleted: false }),
+
+    Course.countDocuments({ isDeleted: false }),
+
+    InternshipApplication.countDocuments({ isDeleted: false }),
+
+    EmployeeApplication.countDocuments({ isDeleted: false }),
+
+    Invoice.aggregate([
+      {
+        $match: {
+          paymentStatus: "paid",
+          isDeleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$paidAmount" },
+        },
+      },
+    ]),
+  ]);
+
+  const totalRevenue =
+    revenueResult.length > 0
+      ? parseFloat(revenueResult[0].totalRevenue.toString())
+      : 0;
+
+  if (
+    totalUsers === null ||
+    totalCourses === null ||
+    totalInternships === null ||
+    totalEmployees === null
+  ) {
+    return next(new ErrorHandler("Failed to fetch dashboard stats", 500));
+  }
+
+  res.status(200).json({
+    success: true,
+    stats: {
+      totalUsers,
+      totalCourses,
+      totalInternships,
+      totalEmployees,
+      totalRevenue,
+    },
+  });
 });

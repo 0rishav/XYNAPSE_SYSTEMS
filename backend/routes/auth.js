@@ -3,6 +3,7 @@ import {
   activateUser,
   changePassword,
   getAllUsers,
+  getDashboardStats,
   getMe,
   hardDeleteUser,
   loginUser,
@@ -51,7 +52,21 @@ authRouter.get(
   "/all-users",
   isAuthenticated,
   requireRole("admin"),
-  getAllUsers
+  getAllUsers,
+);
+
+authRouter.get(
+  "/all-users",
+  isAuthenticated,
+  requireRole("admin"),
+  getAllUsers,
+);
+
+authRouter.get(
+  "/stats",
+  isAuthenticated,
+  requireRole("admin"),
+  getDashboardStats,
 );
 
 authRouter.patch("/change-password", isAuthenticated, changePassword);
@@ -60,7 +75,7 @@ authRouter.patch(
   "/update-profile",
   isAuthenticated,
   multerMiddleware([{ name: "avatar", maxCount: 1 }]),
-  updateProfile
+  updateProfile,
 );
 
 // ADMIN ROUTES
@@ -73,42 +88,42 @@ authRouter.patch(
   "/role/:id",
   isAuthenticated,
   requireRole("admin"),
-  updateUserRole
+  updateUserRole,
 );
 
 authRouter.patch(
   "/toggle/:id",
   isAuthenticated,
   requireRole("admin"),
-  toggleIsActive
+  toggleIsActive,
 );
 
 authRouter.patch(
   "/block/:id",
   isAuthenticated,
   requireRole("admin"),
-  toggleIsBlock
+  toggleIsBlock,
 );
 
 authRouter.patch(
   "/soft-delete/:id",
   isAuthenticated,
   requireRole("admin"),
-  toggleIsDeleted
+  toggleIsDeleted,
 );
 
 authRouter.delete(
   "/hard-delete/:id",
   isAuthenticated,
   requireRole("admin"),
-  hardDeleteUser
+  hardDeleteUser,
 );
 
 authRouter.patch(
   "/accept-verification/:userId",
   isAuthenticated,
   requireRole("admin"),
-  verifyUserAccount
+  verifyUserAccount,
 );
 
 export default authRouter;
