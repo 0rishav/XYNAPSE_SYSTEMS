@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
-import Globe3D from "../Globe3D";
-
 export default function TopBar({
   openModal,
   isAuthenticated,
@@ -51,7 +49,7 @@ export default function TopBar({
           {/* CENTER */}
           <div className="hidden md:flex md:flex-wrap md:items-center gap-4 text-slate-600 dark:text-slate-200">
             <span className="inline-flex items-center gap-1.5">
-              📞 1800-120-4748
+              📞 7309900393
             </span>
             <span className="hidden md:inline-flex items-center gap-1.5">
               📱 Download Mobile App
