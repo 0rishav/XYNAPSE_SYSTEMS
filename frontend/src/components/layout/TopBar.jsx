@@ -198,7 +198,7 @@ export default function TopBar({
 
           <div className="flex flex-col gap-4 text-sm flex-1 mt-2">
             <div className="flex flex-col gap-2 text-slate-600 dark:text-slate-200">
-              <span className="flex items-center gap-2">📞 1800-120-4748</span>
+              <span className="flex items-center gap-2">📞 7309900393</span>
               <span className="flex items-center gap-2">
                 📱 Download Mobile App
               </span>
