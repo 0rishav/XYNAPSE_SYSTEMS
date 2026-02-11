@@ -5,7 +5,7 @@ const sectionCardClasses =
   "rounded-3xl border border-slate-00/80 bg-white/90 p-6 shadow-sm dark:border-slate-800/70 dark:bg-slate-900/50 sm:p-10";
 
 const professionals = [
-  { name: "Hansika", role: "BIM Designer", img: "/images/prof-1.jpg" },
+  { name: "Shruti Singh", role: "Software Engineer", img: "/images/shruti.jpeg" },
   { name: "Jai Rishant", role: "Digital Marketing", img: "/images/prof-2.jpg" },
   { name: "Pooja", role: "Jr. Developer", img: "/images/prof-3.jpg" },
   { name: "Praveen", role: "Developer", img: "/images/prof-4.jpg" },
@@ -98,7 +98,7 @@ const WorkingProfessional = () => {
                     <img
                       src={person.img}
                       alt={person.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div>
